@@ -1,0 +1,61 @@
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="@dimen/list_item_image_width"
+        android:layout_height="@dimen/list_item_image_height"
+        android:layout_centerVertical="true"
+        android:scaleType="centerCrop" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_item_image_height"
+        android:layout_toRightOf="@+id/image"
+        android:layout_toLeftOf="@+id/line_one_right"
+        android:gravity="center_vertical"
+        android:minHeight="@dimen/item_normal_height"
+        android:paddingLeft="@dimen/list_preferred_item_padding" >
+
+        <TextView
+            android:id="@+id/line_one"
+            style="@style/ListItemMainText.Single"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/line_two"
+            style="@style/ListItemSecondaryText.Single"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/line_one" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/line_one_right"
+        style="@style/ListItemSecondaryText.Single"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/right_container"
+        android:layout_centerVertical="true" />
+
+    <LinearLayout
+        android:id="@id/right_container"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <ImageView
+            android:id="@+id/now_playing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/now_playing_icon"
+            android:visibility="gone" />
+
+        <com.cyanogenmod.eleven.widgets.PopupMenuButton
+            android:id="@+id/popup_menu_button"
+            android:layout_width="@dimen/overflow_width"
+            android:layout_height="@dimen/overflow_height"
+            android:src="@drawable/menu_button" />
+    </LinearLayout>
+</merge>

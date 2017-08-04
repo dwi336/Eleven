@@ -1,0 +1,58 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="70dp" >
+
+    <LinearLayout
+        android:id="@+id/right_container"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_marginRight="@dimen/list_item_general_margin" >
+        <ImageView
+            android:id="@+id/now_playing"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/now_playing_icon"
+            android:visibility="gone" />
+
+        <com.cyanogenmod.eleven.widgets.PopupMenuButton
+            android:id="@+id/overflow"
+            android:layout_width="@dimen/overflow_width"
+            android:layout_height="@dimen/overflow_height"
+            android:gravity="center"
+            android:src="@drawable/menu_button" />
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/song_info"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_toLeftOf="@id/right_container"
+        android:layout_marginLeft="@dimen/list_item_general_margin"
+        android:gravity="center_vertical">
+
+        <TextView
+            android:id="@+id/title"
+            style="@style/ListItemMainText.Single"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/duration"
+            style="@style/ListItemSecondaryText.Single"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/title" />
+
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/divider"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:src="@drawable/inset_list_divider" />
+</RelativeLayout>

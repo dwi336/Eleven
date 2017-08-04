@@ -1,0 +1,17 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/activity_artist_detail_background_color" >
+
+    <include
+        layout="@layout/loading_empty_container" />
+
+    <ListView
+        android:id="@+id/songs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:divider="@null"
+        android:dividerHeight="0dp"/>
+</RelativeLayout>

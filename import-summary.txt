@@ -1,0 +1,33 @@
+ECLIPSE ANDROID PROJECT IMPORT SUMMARY
+======================================
+
+Ignored Files:
+--------------
+The following files were *not* copied into the new Gradle project; you
+should evaluate whether these are still needed in your project and if
+so manually move them:
+
+* Android.mk
+* MODULE_LICENSE_APACHE2
+* proguard.cfg
+
+Moved Files:
+------------
+Android Gradle projects use a different directory structure than ADT
+Eclipse projects. Here's how the projects were restructured:
+
+* src\com\cyanogenmod\eleven\IElevenService.aidl => src\main\aidl\com\cyanogenmod\eleven\IElevenService.aidl
+* src\com\cyanogenmod\eleven\service\MusicPlaybackTrack.aidl => src\main\aidl\com\cyanogenmod\eleven\service\MusicPlaybackTrack.aidl
+* src\ => src\main\java\
+
+Next Steps:
+-----------
+You can now build the project. The Gradle project needs network
+connectivity to download dependencies.
+
+Bugs:
+-----
+You tell me.
+
+(This import summary is for your information only, and can be deleted
+after import once you are satisfied with the results.)

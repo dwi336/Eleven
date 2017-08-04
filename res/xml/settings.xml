@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright (C) 2012 Andrew Neal
+  Copyright (C) 2014 The CyanogenMod Project
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- Data catetory -->
+    <!--<PreferenceCategory android:title="@string/settings_data_category" >-->
+
+        <!--&lt;!&ndash; Only on Wi-Fi &ndash;&gt;-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="true"-->
+            <!--android:key="only_on_wifi"-->
+            <!--android:summary="@string/settings_download_only_on_wifi_summary"-->
+            <!--android:title="@string/settings_download_only_on_wifi_title" />-->
+        <!--&lt;!&ndash; Missing artwork &ndash;&gt;-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="true"-->
+            <!--android:key="download_missing_artwork"-->
+            <!--android:title="@string/settings_download_missing_artwork_title" />-->
+        <!--&lt;!&ndash; Missing artist images &ndash;&gt;-->
+        <!--<CheckBoxPreference-->
+            <!--android:defaultValue="true"-->
+            <!--android:key="download_missing_artist_images"-->
+            <!--android:title="@string/settings_download_artist_images_title" />-->
+    <!--</PreferenceCategory>-->
+    <PreferenceCategory android:title="@string/settings_general_category" >
+
+        <!-- Music visualizer -->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="music_visualization"
+            android:title="@string/settings_show_music_visualization_title" />
+
+        <!-- Show Lyrics -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="show_lyrics"
+            android:title="@string/settings_show_lyrics_title"
+            android:summary="@string/settings_show_lyrics_summary"/>
+
+        <!-- Shake to switch songs -->
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="shake_to_play"
+            android:title="@string/settings_shake_to_play"
+            android:summary="@string/settings_shake_to_play_summary"/>
+
+        <!-- Show album art on lockscreen -->
+        <SwitchPreference
+            android:defaultValue="true"
+            android:key="lockscreen_album_art"
+            android:title="@string/settings_lockscreen_album_art"
+            android:summary="@string/settings_lockscreen_album_art_summary"/>
+    </PreferenceCategory>
+    <!-- Storage catetory -->
+    <PreferenceCategory android:title="@string/settings_storage_category" >
+
+        <!-- Delete cache -->
+        <Preference
+            android:key="delete_cache"
+            android:summary="@string/settings_delete_cache_summary"
+            android:title="@string/settings_delete_cache_title" />
+    </PreferenceCategory>
+</PreferenceScreen>
