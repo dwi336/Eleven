@@ -13,7 +13,7 @@
 
 package com.cyanogenmod.eleven.ui.activities;
 
-import android.app.ActionBar;
+import android.support.v7.app.ActionBar;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,14 +21,18 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,8 +47,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 
 import com.cyanogenmod.eleven.Config;
 import com.cyanogenmod.eleven.IElevenService;
@@ -72,6 +76,7 @@ import com.cyanogenmod.eleven.widgets.IPopupMenuCallback;
 import com.cyanogenmod.eleven.widgets.LoadingEmptyContainer;
 import com.cyanogenmod.eleven.widgets.NoResultsContainer;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -82,10 +87,10 @@ import static com.cyanogenmod.eleven.utils.MusicUtils.mService;
 
 /**
  * Provides the search interface for Apollo.
- *
+ * 
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class SearchActivity extends FragmentActivity implements
+public class SearchActivity extends AppCompatActivity implements
         LoaderCallbacks<SectionListContainer<SearchResult>>,
         OnScrollListener, OnQueryTextListener, OnItemClickListener, ServiceConnection,
         OnTouchListener {
@@ -103,7 +108,7 @@ public class SearchActivity extends FragmentActivity implements
      * Identifier for the search history loader
      */
     private static int HISTORY_LOADER = 1;
-
+   
     /**
      * The service token
      */
@@ -192,6 +197,8 @@ public class SearchActivity extends FragmentActivity implements
      */
     private PopupMenuHelper mPopupMenuHelper;
 
+    private boolean hasCallbacks;
+    
     /**
      * {@inheritDoc}
      */
@@ -298,9 +305,10 @@ public class SearchActivity extends FragmentActivity implements
                 setState(VisibleState.Loading);
             }
         };
-
+        hasCallbacks = false;
+        
         // Theme the action bar
-        final ActionBar actionBar = getActionBar();
+        final ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
 
         // Get the query String
@@ -311,7 +319,12 @@ public class SearchActivity extends FragmentActivity implements
             mTopLevelSearch = false;
 
             // get the search type to filter by
-            int type = getIntent().getIntExtra(SearchManager.SEARCH_MODE, -1);
+            int type;
+            try {
+            	type = getIntent().getIntExtra((String)SearchManager.class.getField("SEARCH_MODE").get(null), -1);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             if (type >= 0 && type < ResultType.values().length) {
                 mSearchType = ResultType.values()[type];
             }
@@ -329,6 +342,10 @@ public class SearchActivity extends FragmentActivity implements
                     break;
                 case Song:
                     resourceId = R.string.search_title_songs;
+                    break;
+                case Unknown:
+                    break;
+                default:
                     break;
             }
             actionBar.setTitle(getString(resourceId, mFilterString));
@@ -418,7 +435,8 @@ public class SearchActivity extends FragmentActivity implements
 
         // Filter the list the user is looking it via SearchView
         MenuItem searchItem = menu.findItem(R.id.menu_search);
-        mSearchView = (SearchView)searchItem.getActionView();
+        //mSearchView = (SearchView)searchItem.getActionView();
+        mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
         mSearchView.setOnQueryTextListener(this);
         mSearchView.setQueryHint(getString(R.string.searchHint));
 
@@ -427,11 +445,11 @@ public class SearchActivity extends FragmentActivity implements
         // layout params to hide it
         mSearchView.setIconifiedByDefault(false);
         mSearchView.setIconified(false);
-        int searchButtonId = getResources().getIdentifier("android:id/search_mag_icon", null, null);
+        int searchButtonId = getResources().getIdentifier("search_mag_icon", "id", "com.cyanogenmod.eleven");
         ImageView searchIcon = (ImageView)mSearchView.findViewById(searchButtonId);
         searchIcon.setLayoutParams(new LinearLayout.LayoutParams(0, 0));
 
-        searchItem.setOnActionExpandListener(new MenuItem.OnActionExpandListener() {
+        MenuItemCompat.setOnActionExpandListener(searchItem,new MenuItemCompat.OnActionExpandListener() {
             @Override
             public boolean onMenuItemActionExpand(MenuItem item) {
                 return true;
@@ -556,9 +574,20 @@ public class SearchActivity extends FragmentActivity implements
      * don't want to flash the loading icon very often since searches usually are pretty fast
      */
     public void setLoading() {
-        if (mCurrentState != VisibleState.Loading) {
-            if (!mHandler.hasCallbacks(mLoadingRunnable)) {
+        if (mCurrentState != VisibleState.Loading) {       	
+            //mHandler.hasCallbacks(mLoadingRunnable
+        	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                try {
+                    Class<?> clazz = mHandler.getClass();
+                    Method m = clazz.getMethod("hasCallbacks", Runnable.class);
+                    hasCallbacks = ((Boolean)(m.invoke(mHandler, new Object[] {mLoadingRunnable}))).booleanValue();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+        	}
+            if (!hasCallbacks) {
                 mHandler.postDelayed(mLoadingRunnable, LOADING_DELAY);
+                hasCallbacks = true;
             }
         }
     }
@@ -571,7 +600,8 @@ public class SearchActivity extends FragmentActivity implements
         // remove any delayed runnables.  This has to be before mCurrentState == state
         // in case the state doesn't change but we've created a loading runnable
         mHandler.removeCallbacks(mLoadingRunnable);
-
+        hasCallbacks = false;
+        
         // if we are already looking at view already, just quit
         if (mCurrentState == state) {
             return;
@@ -649,7 +679,11 @@ public class SearchActivity extends FragmentActivity implements
             SearchResult item = mAdapter.getTItem(position - 1);
             Intent intent = new Intent(this, SearchActivity.class);
             intent.putExtra(SearchManager.QUERY, mFilterString);
-            intent.putExtra(SearchManager.SEARCH_MODE, item.mType.ordinal());
+            try {
+                intent.putExtra((String)SearchManager.class.getField("SEARCH_MODE").get(null), item.mType.ordinal());
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             startActivity(intent);
         } else {
             SearchResult item = mAdapter.getTItem(position);
@@ -669,6 +703,10 @@ public class SearchActivity extends FragmentActivity implements
                             item.mId
                     };
                     MusicUtils.playAll(this, list, 0, -1, Config.IdType.NA, false);
+                    break;
+                case Unknown:
+                    break;
+                default:
                     break;
             }
         }
@@ -961,7 +999,7 @@ public class SearchActivity extends FragmentActivity implements
 
         @Override
         public void onLoaderReset(Loader<ArrayAdapter<String>> cursorAdapterLoader) {
-            ((ArrayAdapter)mSearchHistoryListView.getAdapter()).clear();
+            ((ArrayAdapter<?>)mSearchHistoryListView.getAdapter()).clear();
         }
     }
 

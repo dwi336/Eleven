@@ -16,18 +16,19 @@
 
 package com.cyanogenmod.eleven.menu;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatDialogFragment;
+import android.view.ViewGroup;
 import android.support.v4.app.Fragment;
 
 import com.cyanogenmod.eleven.R;
 
 /** Dialog to confirm a non-reversible action */
-public class ConfirmDialog extends DialogFragment {
+public class ConfirmDialog extends AppCompatDialogFragment {
     private static final String TITLE_ID = "titleId";
     private static final String OK_ID = "okId";
 
@@ -52,7 +53,7 @@ public class ConfirmDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         Bundle args = getArguments();
-        return new AlertDialog.Builder(getActivity())
+        Dialog dialog = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle)
             .setTitle(args.getInt(TITLE_ID))
             .setMessage(R.string.cannot_be_undone)
             .setPositiveButton(args.getInt(OK_ID), new OnClickListener() {
@@ -70,5 +71,7 @@ public class ConfirmDialog extends DialogFragment {
                     dialog.dismiss();
                 }
             }).create();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        return dialog;
     }
 }

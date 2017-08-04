@@ -13,20 +13,20 @@
 
 package com.cyanogenmod.eleven.ui.activities;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
-import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceManager;
 import android.view.MenuItem;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
 
 import com.cyanogenmod.eleven.R;
-import com.cyanogenmod.eleven.cache.ImageFetcher;
+import com.cyanogenmod.eleven.ui.fragments.PreferenceFragment;
 import com.cyanogenmod.eleven.utils.MusicUtils;
 import com.cyanogenmod.eleven.utils.PreferenceUtils;
 
@@ -35,30 +35,64 @@ import com.cyanogenmod.eleven.utils.PreferenceUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-@SuppressWarnings("deprecation")
-public class SettingsActivity extends PreferenceActivity implements OnSharedPreferenceChangeListener{
-
+public class SettingsActivity extends AppCompatActivity implements OnSharedPreferenceChangeListener{
+	   
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void onCreate(final Bundle savedInstanceState) {
+        getDelegate().installViewFactory();
+        getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
+        
         // Fade it in
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
 
-        // UP
-        getActionBar().setDisplayHomeAsUpEnabled(true);
+        // Calculate ActionBar height
+        TypedValue value = new TypedValue();
+        int height = 0;
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, value, true)){
+            height = TypedValue.complexToDimensionPixelSize(value.data,
+                    getResources().getDisplayMetrics());
+        }
+        
+        // Set the layout
+        setContentView(R.layout.activity_settings);
+        
+        findViewById(R.id.activity_pref_content).setPadding(0, height, 0, 0);
+        
+        Toolbar mToolBar = (Toolbar) findViewById(R.id.prefToolbar);
+        setSupportActionBar(mToolBar);
 
-        // Add the preferences
-        addPreferencesFromResource(R.xml.settings);
+        // Theme the toolbar
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayShowHomeEnabled(true);
 
-        // Removes the cache entries
-        deleteCache();
+        actionBar.setTitle(getString(R.string.menu_settings));
+        final int actionBarColor = ContextCompat.getColor(this, R.color.header_action_bar_color);
+        ColorDrawable actionBarBackground = new ColorDrawable(actionBarColor);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        	mToolBar.setBackground(actionBarBackground);
+        } else {
+        	mToolBar.setBackgroundDrawable(actionBarBackground);
+        }
 
         PreferenceUtils.getInstance(this).setOnSharedPreferenceChangeListener(this);
+        
+        // set the background on the root view
+        getWindow().getDecorView().getRootView().setBackgroundColor(
+        		ContextCompat.getColor(this, R.color.background_color));
+        if (savedInstanceState == null){
+            getSupportFragmentManager().beginTransaction()
+            .replace(R.id.activity_pref_content, new PreferenceFragment())
+            .commit(); 	
+        }
     }
 
+    
     /**
      * {@inheritDoc}
      */
@@ -75,43 +109,16 @@ public class SettingsActivity extends PreferenceActivity implements OnSharedPref
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * Removes all of the cache entries.
-     */
-    private void deleteCache() {
-        final Preference deleteCache = findPreference("delete_cache");
-        deleteCache.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-            @Override
-            public boolean onPreferenceClick(final Preference preference) {
-                new AlertDialog.Builder(SettingsActivity.this).setMessage(R.string.delete_warning)
-                    .setPositiveButton(android.R.string.ok, new OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            ImageFetcher.getInstance(SettingsActivity.this).clearCaches();
-                        }
-                    })
-                    .setNegativeButton(R.string.cancel, new OnClickListener() {
-                        @Override
-                        public void onClick(final DialogInterface dialog, final int which) {
-                            dialog.dismiss();
-                        }
-                    })
-                    .create().show();
-                return true;
-            }
-        });
-    }
-
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-             String key) {
-        if (key.equals(PreferenceUtils.SHOW_VISUALIZER) &&
-                sharedPreferences.getBoolean(key, false) && !PreferenceUtils.canRecordAudio(this)) {
-            PreferenceUtils.requestRecordAudio(this);
-        } if (key.equals(PreferenceUtils.SHAKE_TO_PLAY)) {
-            MusicUtils.setShakeToPlayEnabled(sharedPreferences.getBoolean(key, false));
-        } else if (key.equals(PreferenceUtils.SHOW_ALBUM_ART_ON_LOCKSCREEN)) {
-            MusicUtils.setShowAlbumArtOnLockscreen(sharedPreferences.getBoolean(key, true));
-        }
-    }
+            String key) {
+       if (key.equals(PreferenceUtils.SHOW_VISUALIZER) &&
+               sharedPreferences.getBoolean(key, false) && !PreferenceUtils.canRecordAudio(this)) {
+           PreferenceUtils.requestRecordAudio(this);
+       } if (key.equals(PreferenceUtils.SHAKE_TO_PLAY)) {
+           MusicUtils.setShakeToPlayEnabled(sharedPreferences.getBoolean(key, false));
+       } else if (key.equals(PreferenceUtils.SHOW_ALBUM_ART_ON_LOCKSCREEN)) {
+           MusicUtils.setShowAlbumArtOnLockscreen(sharedPreferences.getBoolean(key, true));
+       }
+   }
 }

@@ -23,9 +23,8 @@ import android.util.Log;
 import com.cyanogenmod.eleven.provider.PropertiesStore;
 import com.google.common.annotations.VisibleForTesting;
 
+import java.lang.reflect.Method;
 import java.util.Locale;
-
-import libcore.icu.ICU;
 
 public class LocaleSetManager {
     private static final String TAG = LocaleSetManager.class.getSimpleName();
@@ -57,9 +56,18 @@ public class LocaleSetManager {
         // if our icu version has changed, return true
         final String storedICUversion = PropertiesStore.getInstance(mContext)
                 .getProperty(PropertiesStore.DbProperties.ICU_VERSION);
-        if (!ICU.getIcuVersion().equals(storedICUversion)) {
+        // ICU.getIcuVersion()
+    	String icuVersion = null;
+    	try {
+    	    Class<?> clazz = Class.forName("libcore.icu.ICU");
+            Method m = clazz.getMethod("getIcuVersion", new Class[0]);
+            icuVersion = ((String)(m.invoke(clazz, new Object[0])));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        if (!icuVersion.equals(storedICUversion)) {
             Log.d(TAG, "ICU version has changed from: " + storedICUversion + " to "
-                    + ICU.getIcuVersion());
+                    + icuVersion);
             return true;
         }
 
@@ -74,7 +82,8 @@ public class LocaleSetManager {
     public void updateLocaleSet(LocaleSet localeSet) {
         Log.d(TAG, "Locale Changed from: " + mCurrentLocales + " to " + localeSet);
         mCurrentLocales = localeSet;
-        LocaleUtils.getInstance().setLocales(mCurrentLocales);
+        LocaleUtils.getInstance();
+        LocaleUtils.setLocales(mCurrentLocales);
     }
 
     /**

@@ -20,8 +20,8 @@
     android:versionName="3.0" >
 
     <uses-sdk
-        android:minSdkVersion="24"
-        android:targetSdkVersion="24" />
+        android:minSdkVersion="14"
+        android:targetSdkVersion="26" />
 
     <!-- Used for caching and creating new playlists -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -117,7 +117,8 @@
         <!-- Used to set options -->
         <activity
             android:name="com.cyanogenmod.eleven.ui.activities.SettingsActivity"
-            android:label="@string/menu_settings"/>
+            android:label="@string/menu_settings"
+            android:theme="@style/Eleven.Theme.ActionBar.Overlay" />
         <!-- Audio Preview -->
         <activity
             android:name=".ui.activities.preview.AudioPreviewActivity"

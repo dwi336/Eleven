@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -44,8 +45,8 @@ public class ViewPagerTabStrip extends LinearLayout {
 
         mSelectedUnderlineThickness =
                 res.getDimensionPixelSize(R.dimen.tab_selected_underline_height);
-        int underlineColor = res.getColor(R.color.tab_selected_underline_color);
-        int backgroundColor = res.getColor(R.color.header_action_bar_color);
+        int underlineColor = ContextCompat.getColor(context, R.color.tab_selected_underline_color);
+        int backgroundColor = ContextCompat.getColor(context, R.color.header_action_bar_color);
 
         mSelectedUnderlinePaint = new Paint();
         mSelectedUnderlinePaint.setColor(underlineColor);

@@ -16,12 +16,13 @@
 
 package com.cyanogenmod.eleven.locale;
 
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-
-import android.icu.text.Transliterator;
 
 /**
  * An object to convert Chinese character to its corresponding pinyin string.
@@ -33,8 +34,9 @@ public class HanziToPinyin {
     private static final String TAG = "HanziToPinyin";
 
     private static HanziToPinyin sInstance;
-    private Transliterator mPinyinTransliterator;
-    private Transliterator mAsciiTransliterator;
+    private Object mPinyinTransliterator; //ObjectType=Transliterator
+    private Object mAsciiTransliterator; //ObjectType=Transliterator
+    private Method transliterateMethod;
 
     public static class Token {
         /**
@@ -72,11 +74,29 @@ public class HanziToPinyin {
 
     private HanziToPinyin() {
         try {
-            mPinyinTransliterator = Transliterator.getInstance("Han-Latin/Names; Latin-Ascii; Any-Upper");
-            mAsciiTransliterator = Transliterator.getInstance("Latin-Ascii");
+            Class<?> clazz = null;
+            //mPinyinTransliterator = Transliterator.getInstance("Han-Latin/Names; Latin-Ascii; Any-Upper");
+            //mAsciiTransliterator = Transliterator.getInstance("Latin-Ascii");
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                clazz = Class.forName("android.icu.text.Transliterator");
+                Method m = clazz.getMethod("getInstance", new Class[] { String.class }); 
+                mPinyinTransliterator = m.invoke(clazz, new Object[] { new String("Han-Latin/Names; Latin-Ascii; Any-Upper") });
+                mAsciiTransliterator = m.invoke(clazz, new Object[] { new String("Latin-Ascii") });
+            //mPinyinTransliterator = new Transliterator("Han-Latin/Names; Latin-Ascii; Any-Upper");
+            //mAsciiTransliterator = new Transliterator("Latin-Ascii");
+            } else {
+            	clazz = Class.forName("libcore.icu.Transliterator");
+                Constructor<?> constructor = clazz.getConstructor(new Class[] { String.class }); 
+                mPinyinTransliterator = constructor.newInstance(new Object[] { new String("Han-Latin/Names; Latin-Ascii; Any-Upper") });
+                mAsciiTransliterator = constructor.newInstance(new Object[] { new String("Latin-Ascii") });
+            }
+            
+            transliterateMethod = clazz.getMethod("transliterate", new Class[] { String.class });
         } catch (RuntimeException e) {
             Log.w(TAG, "Han-Latin/Names transliterator data is missing,"
                     + " HanziToPinyin is disabled");
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -95,7 +115,7 @@ public class HanziToPinyin {
 
     private void tokenize(char character, Token token) {
         token.source = Character.toString(character);
-
+        
         // ASCII
         if (character < 128) {
             token.type = Token.LATIN;
@@ -106,13 +126,23 @@ public class HanziToPinyin {
         // Extended Latin. Transcode these to ASCII equivalents
         if (character < 0x250 || (0x1e00 <= character && character < 0x1eff)) {
             token.type = Token.LATIN;
+            //mAsciiTransliterator.transliterate(token.source)
+            try {
             token.target = mAsciiTransliterator == null ? token.source :
-                    mAsciiTransliterator.transliterate(token.source);
+            	    ((String)(transliterateMethod.invoke(mAsciiTransliterator, new Object[]{token.source})));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             return;
         }
 
         token.type = Token.PINYIN;
-        token.target = mPinyinTransliterator.transliterate(token.source);
+        //token.target = mPinyinTransliterator.transliterate(token.source);
+        try {
+            token.target = ((String)(transliterateMethod.invoke(mPinyinTransliterator, new Object[]{token.source})));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
         if (TextUtils.isEmpty(token.target) ||
                 TextUtils.equals(token.source, token.target)) {
             token.type = Token.UNKNOWN;
@@ -124,7 +154,14 @@ public class HanziToPinyin {
         if (!hasChineseTransliterator() || TextUtils.isEmpty(input)) {
             return null;
         }
-        return mPinyinTransliterator.transliterate(input);
+        //mPinyinTransliterator.transliterate(input)
+        String transliteration = null;
+        try {
+        	transliteration = ((String)(transliterateMethod.invoke(mPinyinTransliterator, new Object[]{input})));
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+        return transliteration;
     }
 
     /**

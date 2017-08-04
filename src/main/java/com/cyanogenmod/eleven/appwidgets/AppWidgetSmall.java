@@ -20,6 +20,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -27,7 +28,6 @@ import android.widget.RemoteViews;
 import com.cyanogenmod.eleven.MusicPlaybackService;
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.ui.activities.HomeActivity;
-import com.cyanogenmod.eleven.utils.ApolloUtils;
 
 /**
  * 4x1 App-Widget
@@ -54,6 +54,7 @@ public class AppWidgetSmall extends AppWidgetBase {
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
             final int[] appWidgetIds) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
         defaultAppWidget(context, appWidgetIds);
         final Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
         updateIntent.putExtra(MusicPlaybackService.CMDNAME, AppWidgetSmall.CMDAPPWIDGETUPDATE);
@@ -111,7 +112,10 @@ public class AppWidgetSmall extends AppWidgetBase {
      * Update all active widget instances by pushing changes
      */
     public void performUpdate(final MusicPlaybackService service, final int[] appWidgetIds) {
-        final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
+        int playButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_play : R.drawable.btn_playback_play_compat;
+        int pauseButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_pause : R.drawable.btn_playback_pause_compat; 
+        
+    	final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
                 R.layout.app_widget_small);
 
         final CharSequence trackName = service.getTrackName();
@@ -127,17 +131,17 @@ public class AppWidgetSmall extends AppWidgetBase {
             appWidgetView.setTextViewText(R.id.app_widget_small_line_two, artistName);
         }
         appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, bitmap);
-
+        
         // Set correct drawable for pause state
         final boolean isPlaying = service.isPlaying();
         if (isPlaying) {
-            appWidgetView.setImageViewResource(R.id.app_widget_small_play,
-                    R.drawable.btn_playback_pause);
+        	appWidgetView.setImageViewResource(R.id.app_widget_small_play,
+        			pauseButtonResId);
             appWidgetView.setContentDescription(R.id.app_widget_small_play,
                     service.getString(R.string.accessibility_pause));
         } else {
-            appWidgetView.setImageViewResource(R.id.app_widget_small_play,
-                    R.drawable.btn_playback_play);
+        	appWidgetView.setImageViewResource(R.id.app_widget_small_play,
+        			playButtonResId);
             appWidgetView.setContentDescription(R.id.app_widget_small_play,
                     service.getString(R.string.accessibility_play));
         }

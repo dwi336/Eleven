@@ -16,6 +16,7 @@
 
 package com.cyanogenmod.eleven.locale;
 
+import android.os.Build;
 import android.provider.ContactsContract.FullNameStyle;
 import android.provider.ContactsContract.PhoneticNameStyle;
 import android.text.TextUtils;
@@ -26,6 +27,8 @@ import com.cyanogenmod.eleven.locale.HanziToPinyin.Token;
 import com.google.common.annotations.VisibleForTesting;
 
 import java.lang.Character.UnicodeBlock;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,9 +36,13 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Set;
 
-import android.icu.text.AlphabeticIndex;
-import android.icu.text.AlphabeticIndex.ImmutableIndex;
-import android.icu.text.Transliterator;
+//import libcore.icu.AlphabeticIndex;
+//import libcore.icu.AlphabeticIndex.ImmutableIndex;
+//import libcore.icu.Transliterator;
+
+//import android.icu.text.AlphabeticIndex;
+//import android.icu.text.AlphabeticIndex.ImmutableIndex;
+//import android.icu.text.Transliterator;
 
 /**
  * This utility class provides specialized handling for locale specific
@@ -60,7 +67,7 @@ public class LocaleUtils {
     public static final Locale LOCALE_SERBIAN = new Locale("sr");
     public static final Locale LOCALE_UKRAINIAN = new Locale("uk");
     public static final Locale LOCALE_THAI = new Locale("th");
-
+   
     /**
      * This class is the default implementation and should be the base class
      * for other locales.
@@ -74,11 +81,11 @@ public class LocaleUtils {
         private static final String EMPTY_STRING = "";
         private static final String NUMBER_STRING = "#";
 
-        protected final ImmutableIndex mAlphabeticIndex;
+        protected AlphabeticIndexCompat mAlphabeticIndex; //ImmutableIndex
         private final int mAlphabeticIndexBucketCount;
         private final int mNumberBucketIndex;
         private final boolean mEnableSecondaryLocalePinyin;
-
+        
         public LocaleUtilsBase(LocaleSet locales) {
             // AlphabeticIndex.getBucketLabel() uses a binary search across
             // the entire label set so care should be taken about growing this
@@ -92,24 +99,9 @@ public class LocaleUtils {
             // Latin based alphabets. Ukrainian and Serbian are chosen for
             // Cyrillic because their alphabets are complementary supersets
             // of Russian.
-            final Locale secondaryLocale = locales.getSecondaryLocale();
             mEnableSecondaryLocalePinyin = locales.isSecondaryLocaleSimplifiedChinese();
-            AlphabeticIndex ai = new AlphabeticIndex(locales.getPrimaryLocale())
-                .setMaxLabelCount(300);
-            if (secondaryLocale != null) {
-                ai.addLabels(secondaryLocale);
-            }
-            mAlphabeticIndex = ai.addLabels(Locale.ENGLISH)
-                .addLabels(Locale.JAPANESE)
-                .addLabels(Locale.KOREAN)
-                .addLabels(LOCALE_THAI)
-                .addLabels(LOCALE_ARABIC)
-                .addLabels(LOCALE_HEBREW)
-                .addLabels(LOCALE_GREEK)
-                .addLabels(LOCALE_UKRAINIAN)
-                .addLabels(LOCALE_SERBIAN)
-                .buildImmutableIndex();
-            mAlphabeticIndexBucketCount = mAlphabeticIndex.getBucketCount();
+        	mAlphabeticIndex = new AlphabeticIndexCompat(locales);
+        	mAlphabeticIndexBucketCount = mAlphabeticIndex.getBucketCount();
             mNumberBucketIndex = mAlphabeticIndexBucketCount - 1;
         }
 
@@ -130,7 +122,7 @@ public class LocaleUtils {
             if (name == null) {
                 return -1;
             }
-            boolean prefixIsNumeric = false;
+        	boolean prefixIsNumeric = false;
             final int length = name.length();
             int offset = 0;
             while (offset < length) {
@@ -159,7 +151,8 @@ public class LocaleUtils {
             if (mEnableSecondaryLocalePinyin) {
                 name = HanziToPinyin.getInstance().transliterate(name);
             }
-            final int bucket = mAlphabeticIndex.getBucketIndex(name);
+            //final int bucket = mAlphabeticIndex.getBucketIndex(name);
+            int bucket = mAlphabeticIndex.getBucketIndex(name);
             if (bucket < 0) {
                 return -1;
             }
@@ -167,7 +160,7 @@ public class LocaleUtils {
                 return bucket + 1;
             }
             return bucket;
-        }
+        } 
 
         /**
          * Returns the number of buckets in use (one more than AlphabeticIndex
@@ -190,7 +183,9 @@ public class LocaleUtils {
             } else if (bucketIndex > mNumberBucketIndex) {
                 --bucketIndex;
             }
-            return mAlphabeticIndex.getBucket(bucketIndex).getLabel();
+            //return mAlphabeticIndex.getBucketLabel(bucketIndex);
+            //return (mAlphabeticIndex.getBucket(bucketIndex)).getLabel();
+            return mAlphabeticIndex.getBucketLabel(bucketIndex);
         }
 
         @SuppressWarnings("unused")
@@ -315,19 +310,31 @@ public class LocaleUtils {
         }
 
         private static boolean mInitializedTransliterator;
-        private static Transliterator mJapaneseTransliterator;
+        private static Object mJapaneseTransliterator;
 
-        private static Transliterator getJapaneseTransliterator() {
+        private static Object getJapaneseTransliterator() {
             synchronized(JapaneseContactUtils.class) {
                 if (!mInitializedTransliterator) {
                     mInitializedTransliterator = true;
-                    Transliterator t = null;
+                    Object t = null;
                     try {
-                        t = Transliterator.getInstance("Hiragana-Latin; Katakana-Latin;"
-                                + " Latin-Ascii");
-                    } catch (RuntimeException e) {
+                        //t = Transliterator.getInstance("Hiragana-Latin; Katakana-Latin;"
+                        //        + " Latin-Ascii");
+                        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+                            Class<?> clazz = Class.forName("android.icu.text.Transliterator");
+                            Method m = clazz.getMethod("getInstance", String.class);
+                            t = m.invoke(null,new Object[] {new String("Hiragana-Latin; Katakana-Latin; Latin-Ascii")});
+                        //t = new Transliterator("Hiragana-Latin; Katakana-Latin;"
+                        //        + " Latin-Ascii");
+                        } else {
+                            Class<?> clazz = Class.forName("libcore.icu.Transliterator");
+                            Constructor<?> constructor = clazz.getConstructor(new Class[] { String.class }); 
+                            t = constructor.newInstance(new Object[] { new String("Hiragana-Latin; Katakana-Latin; Latin-Ascii") });	
+                        }   
+                    } catch (Exception ex) {
                         Log.w(TAG, "Hiragana/Katakana-Latin transliterator data"
                                 + " is missing");
+                        throw new RuntimeException(ex);
                     }
                     mJapaneseTransliterator = t;
                 }
@@ -336,11 +343,20 @@ public class LocaleUtils {
         }
 
         public static Iterator<String> getRomajiNameLookupKeys(String name) {
-            final Transliterator t = getJapaneseTransliterator();
+            final Object t = getJapaneseTransliterator();
             if (t == null) {
                 return null;
             }
-            final String romajiName = t.transliterate(name);
+            String romajiName = null;
+            
+            try {
+                Class<?> clazz = t.getClass();
+                Method m = clazz.getMethod("transliterate", new Class[] { String.class } );
+                romajiName = (String)(m.invoke(t, new Object[] { name }));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+          
             if (TextUtils.isEmpty(romajiName) ||
                     TextUtils.equals(name, romajiName)) {
                 return null;

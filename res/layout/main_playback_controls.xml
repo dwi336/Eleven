@@ -65,7 +65,7 @@
                 android:layout_toLeftOf="@id/audio_player_current_time"
                 android:layout_centerVertical="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/btn_playback_previous" />
+                card_view:srcCompat="@drawable/btn_playback_previous" />
 
             <!-- divider -->
             <View
@@ -86,7 +86,7 @@
                 android:layout_marginLeft="@dimen/audio_player_controls_end_button_half_width"
                 android:contentDescription="@string/accessibility_shuffle"
                 android:scaleType="fitCenter"
-                android:src="@drawable/btn_playback_shuffle_all" />
+                card_view:srcCompat="@drawable/btn_playback_shuffle_all" />
         </RelativeLayout>
 
         <!-- This is the right side of the progress bar - it has the next
@@ -115,7 +115,7 @@
                 android:layout_toRightOf="@id/audio_player_total_time"
                 android:layout_centerVertical="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/btn_playback_next" />
+                card_view:srcCompat="@drawable/btn_playback_next" />
 
             <!-- divider -->
             <View
@@ -136,7 +136,7 @@
                 android:contentDescription="@string/accessibility_repeat"
                 android:focusable="true"
                 android:scaleType="fitCenter"
-                android:src="@drawable/btn_playback_repeat_all" />
+                card_view:srcCompat="@drawable/btn_playback_repeat_all" />
 
         </RelativeLayout>
 

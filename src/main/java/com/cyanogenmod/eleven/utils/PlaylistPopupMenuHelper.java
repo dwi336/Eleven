@@ -16,7 +16,8 @@
 package com.cyanogenmod.eleven.utils;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
+import android.view.ViewGroup;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -73,7 +74,9 @@ public abstract class PlaylistPopupMenuHelper extends PopupMenuHelper {
     @Override
     protected void onDeleteClicked() {
         // TODO: do this with a proper DialogFragment
-        buildDeleteDialog(getId(), mPlaylist.mPlaylistName).show();
+        AlertDialog dialog = buildDeleteDialog(getId(), mPlaylist.mPlaylistName);
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
     }
 
     @Override // FIXME: is this really the right thing?
@@ -89,7 +92,7 @@ public abstract class PlaylistPopupMenuHelper extends PopupMenuHelper {
      * @return A new {@link AlertDialog} used to delete playlists
      */
     private final AlertDialog buildDeleteDialog(final long playlistId, final String playlistName) {
-        return new AlertDialog.Builder(mActivity)
+        return new AlertDialog.Builder(mActivity, R.style.AppCompatAlertDialogStyle)
                 .setTitle(mActivity.getString(R.string.delete_dialog_title, playlistName))
                 .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
 

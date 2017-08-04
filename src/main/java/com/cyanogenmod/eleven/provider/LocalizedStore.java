@@ -34,11 +34,10 @@ import com.cyanogenmod.eleven.locale.LocaleSetManager;
 import com.cyanogenmod.eleven.locale.LocaleUtils;
 import com.cyanogenmod.eleven.utils.MusicUtils;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import libcore.icu.ICU;
 
 /**
  * Because sqlite localized collator isn't sufficient, we need to store more specialized logic
@@ -176,10 +175,19 @@ public class LocalizedStore {
 
             updateLocalizedStore(db, null);
 
+            // ICU.getIcuVersion()
+            String icuVersion = null;
+            try {
+                Class<?> clazz = Class.forName("libcore.icu.ICU");
+                Method m = clazz.getMethod("getIcuVersion", new Class[0]);
+                icuVersion = ((String)(m.invoke(clazz, new Object[0])));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
             // Update the ICU version used to generate the locale derived data
             // so we can tell when we need to rebuild with new ICU versions.
             PropertiesStore.getInstance(mContext).storeProperty(
-                    PropertiesStore.DbProperties.ICU_VERSION, ICU.getIcuVersion());
+                    PropertiesStore.DbProperties.ICU_VERSION, icuVersion);
             PropertiesStore.getInstance(mContext).storeProperty(PropertiesStore.DbProperties.LOCALE,
                     locales.toString());
 

@@ -16,6 +16,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     android:id="@+id/grp_transparent_wrapper"
     android:padding="0dp"
     android:background="@android:color/transparent"
@@ -49,7 +50,7 @@
                 android:layout_height="@dimen/preview_layout_seekbar_height"/>
 
             <ProgressBar
-                style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
+                style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
                 android:id="@+id/pb_loader"
                 android:indeterminate="true"
                 android:visibility="invisible"
@@ -73,7 +74,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:src="@drawable/btn_playback_play"/>
+                sothree:srcCompat="@drawable/btn_playback_play"/>
 
             <TextView
                 android:id="@+id/tv_title"

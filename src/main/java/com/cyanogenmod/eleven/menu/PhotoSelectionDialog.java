@@ -13,18 +13,18 @@
 
 package com.cyanogenmod.eleven.menu;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialogFragment;
+import android.view.ViewGroup;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 
 import com.cyanogenmod.eleven.Config;
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.ui.activities.HomeActivity;
-import com.cyanogenmod.eleven.utils.ApolloUtils;
 import com.cyanogenmod.eleven.utils.Lists;
 import com.cyanogenmod.eleven.utils.MusicUtils;
 
@@ -37,7 +37,7 @@ import java.util.ArrayList;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PhotoSelectionDialog extends DialogFragment {
+public class PhotoSelectionDialog extends AppCompatDialogFragment {
 
     private static final int NEW_PHOTO = 0;
 
@@ -95,7 +95,7 @@ public class PhotoSelectionDialog extends DialogFragment {
         final HomeActivity activity = (HomeActivity) getActivity();
         final ListAdapter adapter = new ArrayAdapter<String>(activity,
                 android.R.layout.select_dialog_item, mChoices);
-        return new AlertDialog.Builder(activity).setTitle(title)
+        Dialog dialog = new AlertDialog.Builder(activity, R.style.AppCompatAlertDialogStyle).setTitle(title)
                 .setAdapter(adapter, new DialogInterface.OnClickListener() {
 
                     @Override
@@ -112,6 +112,8 @@ public class PhotoSelectionDialog extends DialogFragment {
                         }
                     }
                 }).create();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        return dialog;
     }
 
     /**

@@ -144,29 +144,26 @@ public class HeaderBar extends LinearLayout {
     }
 
     public boolean onPopupMenuItemClick(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_shuffle_all:
-                // Shuffle all the songs
-                MusicUtils.shuffleAll(mFragment.getActivity());
-                return true;
-            case R.id.menu_settings:
-                // Settings
-                NavUtils.openSettings(mFragment.getActivity());
-                return true;
-            case R.id.menu_save_queue:
-                NowPlayingCursor queue = (NowPlayingCursor) QueueLoader
-                        .makeQueueCursor(mFragment.getActivity());
-                CreateNewPlaylist.getInstance(MusicUtils.getSongListForCursor(queue)).show(
-                        mFragment.getFragmentManager(), "CreatePlaylist");
-                queue.close();
-                return true;
-            case R.id.menu_clear_queue:
-                MusicUtils.clearQueue();
-                return true;
-            default:
-                break;
-        }
-
+    	int id = item.getItemId();
+    	if (id == R.id.menu_shuffle_all){
+            // Shuffle all the songs
+            MusicUtils.shuffleAll(mFragment.getActivity());
+            return true;	
+    	} else if (id == R.id.menu_settings){
+            // Settings
+            NavUtils.openSettings(mFragment.getActivity());
+            return true;
+    	} else if (id == R.id.menu_save_queue){
+            NowPlayingCursor queue = (NowPlayingCursor) QueueLoader
+                    .makeQueueCursor(mFragment.getActivity());
+            CreateNewPlaylist.getInstance(MusicUtils.getSongListForCursor(queue)).show(
+                    mFragment.getFragmentManager(), "CreatePlaylist");
+            queue.close();
+            return true;
+    	} else if (id == R.id.menu_clear_queue){
+            MusicUtils.clearQueue();
+            return true;
+    	}
         return false;
     }
 }

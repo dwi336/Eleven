@@ -123,6 +123,7 @@ public class ArtistDetailFragment extends FadingBarFragment implements IChildFra
         // since the artist image needs to be scaled to the image view bounds, we need to wait till the first layout
         // traversal to be able to get the image view dimensions in the helper method that scales the image
         mHero.getViewTreeObserver().addOnGlobalLayoutListener( new ViewTreeObserver.OnGlobalLayoutListener() {
+            @SuppressWarnings("deprecation")
             @Override
             public void onGlobalLayout() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {

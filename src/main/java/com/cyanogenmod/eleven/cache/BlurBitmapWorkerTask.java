@@ -103,7 +103,7 @@ public class BlurBitmapWorkerTask extends BitmapWorkerTask<String, Void, BlurBit
             if (input.getWidth() < MIN_BITMAP_SIZE || input.getHeight() < MIN_BITMAP_SIZE) {
                 float multiplier = Math.max(MIN_BITMAP_SIZE / (float)input.getWidth(),
                         MIN_BITMAP_SIZE / (float)input.getHeight());
-                input = input.createScaledBitmap(bitmap, (int)(input.getWidth() * multiplier),
+                input = Bitmap.createScaledBitmap(bitmap, (int)(input.getWidth() * multiplier),
                         (int)(input.getHeight() * multiplier), true);
                 // since we created a new bitmap, we can re-use the bitmap for our output
                 output = input;

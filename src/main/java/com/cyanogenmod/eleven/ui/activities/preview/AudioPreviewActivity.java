@@ -17,6 +17,7 @@
 package com.cyanogenmod.eleven.ui.activities.preview;
 
 import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.content.AsyncQueryHandler;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -34,7 +35,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore.Audio.Media;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -67,7 +67,7 @@ import java.lang.ref.WeakReference;
  * @see {@link OnAudioFocusChangeListener}
  * @see {@link OnSeekBarChangeListener}
  */
-public class AudioPreviewActivity extends Activity implements MediaPlayer.OnCompletionListener,
+public class AudioPreviewActivity extends AppCompatActivity implements MediaPlayer.OnCompletionListener,
         MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, OnClickListener,
         OnAudioFocusChangeListener, OnSeekBarChangeListener, OnTouchListener {
 
@@ -249,7 +249,7 @@ public class AudioPreviewActivity extends Activity implements MediaPlayer.OnComp
     }
 
     @Override
-    public Object onRetainNonConfigurationInstance() {
+    public Object onRetainCustomNonConfigurationInstance() {
         mPreviewPlayer.clearCallbackActivity();
         PreviewPlayer localPlayer = mPreviewPlayer;
         mPreviewPlayer = null;
@@ -538,21 +538,17 @@ public class AudioPreviewActivity extends Activity implements MediaPlayer.OnComp
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.ib_playpause:
-                if (mCurrentState == State.PREPARED || mCurrentState == State.PAUSED) {
-                    startPlayback();
-                } else {
-                    pausePlayback();
-                }
-                break;
-            case R.id.grp_transparent_wrapper:
-                stopPlaybackAndTeardown();
-                finish();
-                break;
-            default:
-                break;
-        }
+    	int id = v.getId();
+    	if (id==R.id.ib_playpause){
+            if (mCurrentState == State.PREPARED || mCurrentState == State.PAUSED) {
+                startPlayback();
+            } else {
+                pausePlayback();
+            }	
+    	} else if (id==R.id.grp_transparent_wrapper){
+            stopPlaybackAndTeardown();
+            finish();
+    	}
     }
 
     private boolean gainAudioFocus() {

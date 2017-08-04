@@ -82,16 +82,16 @@ public abstract class SmartPlaylistFragment extends BasicSongFragment
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.menu_shuffle_item:
-                playAll(-1, true);
-                return true;
-            case R.id.clear_list:
-                ConfirmDialog.show(
-                    this, CLEAR_REQUEST, getClearTitleId(), R.string.clear);
-                return true;
-            default:
-                if(mActionMenuHelper.onMenuItemClick(item)) { return true; }
+        int id = item.getItemId();
+        if (id == R.id.menu_shuffle_item) {
+            playAll(-1, true);
+            return true;
+        } else if (id == R.id.clear_list) {
+            ConfirmDialog.show(
+                this, CLEAR_REQUEST, getClearTitleId(), R.string.clear);
+            return true;
+        } else {
+            if(mActionMenuHelper.onMenuItemClick(item)) { return true; }
         }
         return super.onOptionsItemSelected(item);
     }

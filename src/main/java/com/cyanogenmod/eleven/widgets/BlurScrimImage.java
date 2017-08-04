@@ -20,6 +20,8 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -63,8 +65,7 @@ public class BlurScrimImage extends FrameLayout {
             return;
         }
 
-        Bitmap blurredBitmap = ((BitmapDrawable) getResources()
-                .getDrawable(R.drawable.default_artwork_blur)).getBitmap();
+        Bitmap blurredBitmap = ((BitmapDrawable) ContextCompat.getDrawable(getContext(), R.drawable.default_artwork_blur)).getBitmap();
 
         TransitionDrawable imageTransition = ImageWorker.createImageTransitionDrawable(getResources(),
                 mImageView.getDrawable(), blurredBitmap, ImageWorker.FADE_IN_TIME_SLOW, true, true);
@@ -82,9 +83,14 @@ public class BlurScrimImage extends FrameLayout {
      * @param imageTransition the transition for the imageview
      * @param paletteTransition the transition for the scrim overlay
      */
-    public void setTransitionDrawable(TransitionDrawable imageTransition,
+    @SuppressWarnings("deprecation")
+	public void setTransitionDrawable(TransitionDrawable imageTransition,
                                TransitionDrawable paletteTransition) {
-        mBlurScrim.setBackground(paletteTransition);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        	mBlurScrim.setBackground(paletteTransition);
+        } else {
+        	mBlurScrim.setBackgroundDrawable(paletteTransition);
+        }
         mImageView.setImageDrawable(imageTransition);
         mUsingDefaultBlur = false;
     }

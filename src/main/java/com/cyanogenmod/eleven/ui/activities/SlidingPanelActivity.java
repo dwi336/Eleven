@@ -239,6 +239,10 @@ public abstract class SlidingPanelActivity extends BaseActivity {
                 mSecondPanel.expandPanel();
                 mFirstPanel.expandPanel();
                 break;
+            case None:
+                break;
+            default:
+                break;
         }
     }
 

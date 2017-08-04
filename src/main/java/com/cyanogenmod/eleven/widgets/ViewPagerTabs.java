@@ -19,20 +19,23 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Outline;
+import android.os.Build;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.view.ViewOutlineProvider;
 import android.widget.FrameLayout;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.lang.reflect.Method;
+
 import com.cyanogenmod.eleven.R;
+import com.cyanogenmod.eleven.ui.fragments.ViewOutlineProviderCompat;
 
 /**
  * Lightweight implementation of ViewPager tabs. This looks similar to traditional actionBar tabs,
@@ -56,14 +59,27 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
     int mPrevSelected = -1;
     int mSidePadding;
 
-    private static final ViewOutlineProvider VIEW_BOUNDS_OUTLINE_PROVIDER =
-            new ViewOutlineProvider() {
-        @Override
-        public void getOutline(View view, Outline outline) {
-            outline.setRect(0, 0, view.getWidth(), view.getHeight());
+    private static final ViewOutlineProviderCompat VIEW_BOUNDS_OUTLINE_PROVIDER;
+    static {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            VIEW_BOUNDS_OUTLINE_PROVIDER = new ViewOutlineProviderCompat() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    //outline.setRect(0, 0, view.getWidth(), view.getHeight());
+                    try {
+                        Class<?> clazz = outline.getClass();
+                        Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
+                        m.invoke(outline, 0, 0, view.getWidth(), view.getHeight());
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            };
+        } else {
+            VIEW_BOUNDS_OUTLINE_PROVIDER = null;
         }
-    };
-
+    }
+    
     private static final int TAB_SIDE_PADDING_IN_DPS = 10;
 
     // TODO: This should use <declare-styleable> in the future
@@ -131,8 +147,19 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
                 new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
         a.recycle();
 
-        // enable shadow casting from view bounds
-        setOutlineProvider(VIEW_BOUNDS_OUTLINE_PROVIDER);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // enable shadow casting from view bounds
+            //setOutlineProvider(VIEW_BOUNDS_OUTLINE_PROVIDER);
+            try {       
+                Class<?> clazz1 = Class.forName("android.view.ViewOutlineProvider");
+                Object obj = new ViewOutlineProviderCompat.ViewOutlineProviderL(VIEW_BOUNDS_OUTLINE_PROVIDER);
+                Class<?> clazz2 = this.getClass();
+                Method m = clazz2.getMethod("setOutlineProvider", new Class[] { clazz1});
+                m.invoke(this, clazz1.cast(obj));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     public void setViewPager(ViewPager viewPager) {
@@ -150,7 +177,15 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
     }
 
     private void addTab(CharSequence tabTitle, final int position) {
-        final TextView textView = new TextView(getContext());
+        TextView textView = null;
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+        	textView = new TextView(getContext());
+        }
+        else{
+        	textView = (RobotoTextView) new RobotoTextView(getContext(),Roboto.ROBOTO_MEDIUM);
+        }
+        
         textView.setText(tabTitle);
         textView.setBackgroundResource(R.drawable.view_pager_tab_background);
         textView.setGravity(Gravity.CENTER);
@@ -221,3 +256,4 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
         return position;
     }
 }
+

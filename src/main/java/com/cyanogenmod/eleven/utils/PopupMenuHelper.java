@@ -16,20 +16,25 @@
 package com.cyanogenmod.eleven.utils;
 
 import android.app.Activity;
+import android.graphics.Typeface;
+import android.os.Build;
+import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.view.menu.MenuBuilder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.PopupMenu;
+import android.support.v7.widget.PopupMenu;
+import android.text.Spannable;
+import android.text.SpannableString;
 
-import com.android.internal.view.menu.ContextMenuBuilder;
-import com.android.internal.view.menu.MenuBuilder;
 import com.cyanogenmod.eleven.Config;
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.menu.CreateNewPlaylist;
 import com.cyanogenmod.eleven.menu.FragmentMenuItems;
 import com.cyanogenmod.eleven.menu.RenamePlaylist;
 import com.cyanogenmod.eleven.provider.RecentStore;
+import com.cyanogenmod.eleven.widgets.Roboto;
 
 import java.util.TreeSet;
 
@@ -77,6 +82,18 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
         if (mType != null) {
             // inflate the menu
             createPopupMenu(menu);
+            
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
+                Menu m = popupMenu.getMenu();
+                for (int i = 0; i < m.size(); i++) {
+                    MenuItem mi = m.getItem(i);                
+            	    Typeface font = Roboto.getTypeface(mActivity,Roboto.ROBOTO_LIGHT);
+                    SpannableString mNewTitle = new SpannableString(mi.getTitle());
+                    mNewTitle.setSpan(new CustomTypefaceSpan(font), 0 , mNewTitle.length(),  Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+                    mi.setTitle(mNewTitle);            
+                }
+            }
+            
             // show it
             popupMenu.show();
         }
@@ -315,7 +332,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
     /**
      * Simple helper function for adding an item to the menu
      */
-    public void addToMenu(final Menu menu, final int id, final int resourceId) {
+    public void addToMenu(final Menu menu, final int id, final int resourceId) {   	
         menu.add(getGroupId(), id, id /*as order*/, mActivity.getString(resourceId));
     }
 
@@ -349,7 +366,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                             // do nothing
                         }
                     });
-                    builder.showDialog(null, null);
+                    builder.show(null, null);
                     return true;
                 case FragmentMenuItems.NEW_PLAYLIST:
                     CreateNewPlaylist.getInstance(getIdList()).show(

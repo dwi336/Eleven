@@ -17,6 +17,7 @@
 
 <com.cyanogenmod.eleven.widgets.NoResultsContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     android:id="@+id/no_results_container"
     android:gravity="center_horizontal"
     android:layout_width="@dimen/no_results_width"
@@ -32,7 +33,7 @@
         android:layout_gravity="center_horizontal"
         android:paddingBottom="@dimen/white_note_padding_bottom"
         android:scaleType="centerInside"
-        android:src="@drawable/no_results" />
+        sothree:srcCompat="@drawable/no_results" />
 
     <LinearLayout
         android:layout_width="fill_parent"

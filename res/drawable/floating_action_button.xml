@@ -14,11 +14,74 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/grey">
-    <item android:id="@android:id/mask">
-        <shape android:shape="oval">
-            <solid android:color="@color/accent" android:background="?android:attr/selectableItemBackground" />
-        </shape>
-    </item>
-</ripple>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"> 
+    <item android:state_pressed="true"> 
+        <layer-list> 
+            <!-- Button Shadow --> 
+            <item android:top="2dp" android:right="1dp"> 
+                <layer-list> 
+                    <item> 
+                        <shape android:shape="oval"> 
+                            <solid android:color="#80000000"/> 
+                            <padding 
+                                android:bottom="3px" 
+                                android:left="3px" 
+                                android:right="2px" 
+                                android:top="2px" 
+                                /> 
+                        </shape> 
+                    </item> 
+                    <item> 
+                        <shape android:shape="oval"> 
+                            <solid android:color="#A6000000"/> 
+                            <padding 
+                                android:bottom="2px" 
+                                android:left="2px" 
+                                android:right="1px" 
+                                android:top="1px" 
+                                /> 
+                        </shape> 
+                    </item> 
+                </layer-list> 
+            </item> 
+
+            <!-- Pressed Button color --> 
+            <item> 
+                <shape android:shape="oval"> 
+                    <solid android:color="@color/grey"/> 
+                </shape> 
+            </item> 
+        </layer-list> 
+    </item> 
+
+    <item android:state_enabled="true"> 
+
+        <layer-list> 
+            <!-- Button shadow --> 
+            <item android:top="2dp" android:right="1dp"> 
+                <layer-list> 
+                    <item> 
+                        <shape android:shape="oval"> 
+                            <solid android:color="#80000000"/> 
+                            <padding 
+                                android:bottom="2px" 
+                                android:left="2px" 
+                                android:right="2px" 
+                                android:top="2px" 
+                                /> 
+                        </shape> 
+                    </item> 
+                </layer-list> 
+            </item> 
+
+            <!-- Default Button color --> 
+            <item> 
+                <shape android:shape="oval"> 
+                    <solid android:color="@color/accent"/> 
+                </shape> 
+            </item> 
+        </layer-list> 
+
+    </item> 
+
+</selector> 

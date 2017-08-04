@@ -626,6 +626,10 @@ public class SectionCreatorUtils {
                         return context.getString(R.string.page_songs);
                     case Playlist:
                         return context.getString(R.string.page_playlists);
+                    case Unknown:
+                        break;
+                    default:
+                        break;
                 }
 
                 return null;
@@ -665,6 +669,10 @@ public class SectionCreatorUtils {
                         return context.getString(R.string.footer_search_songs);
                     case Playlist:
                         return context.getString(R.string.footer_search_playlists);
+                    case Unknown:
+                        break;
+                    default:
+                        break;
                 }
 
                 return null;

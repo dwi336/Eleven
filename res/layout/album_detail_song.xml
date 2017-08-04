@@ -1,4 +1,6 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="70dp" >
 
@@ -15,7 +17,7 @@
             android:id="@+id/now_playing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/now_playing_icon"
+            sothree:srcCompat="@drawable/now_playing_icon"
             android:visibility="gone" />
 
         <com.cyanogenmod.eleven.widgets.PopupMenuButton
@@ -23,7 +25,7 @@
             android:layout_width="@dimen/overflow_width"
             android:layout_height="@dimen/overflow_height"
             android:gravity="center"
-            android:src="@drawable/menu_button" />
+            sothree:srcCompat="@drawable/menu_button" />
     </LinearLayout>
 
     <RelativeLayout

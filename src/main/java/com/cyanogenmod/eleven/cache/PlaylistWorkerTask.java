@@ -32,6 +32,7 @@ import com.cyanogenmod.eleven.loaders.SortedCursor;
 import com.cyanogenmod.eleven.provider.PlaylistArtworkStore;
 import com.cyanogenmod.eleven.provider.SongPlayCount;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -345,7 +346,14 @@ public class PlaylistWorkerTask extends BitmapWorkerTask<Void, Void, TransitionD
                 combinedCanvas.drawBitmap(loadedBitmaps.get(3), null,
                         new Rect(width / 2, height / 2, width, height), null);
 
-                combinedCanvas.release();
+                // combinedCanvas.release();
+            	try {
+            	    Class<?> clazz = combinedCanvas.getClass();
+                    Method m = clazz.getMethod("release", new Class[0]);
+                    m.invoke(combinedCanvas, new Object[0]);
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
                 combinedCanvas = null;
                 bitmap = combinedBitmap;
             }

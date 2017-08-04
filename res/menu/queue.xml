@@ -15,16 +15,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:sothree="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_save_queue"
-        android:showAsAction="never"
+        sothree:showAsAction="never"
         android:orderInCategory="50"
         android:title="@string/menu_save_queue"/>
     <item
         android:id="@+id/menu_clear_queue"
-        android:showAsAction="never"
+        sothree:showAsAction="never"
         android:orderInCategory="51"
         android:title="@string/menu_clear_queue"/>
 

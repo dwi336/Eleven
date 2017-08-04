@@ -136,6 +136,10 @@ public final class SummarySearchAdapter extends ArrayAdapter<SearchResult>
                 String songs = MusicUtils.makeLabel(getContext(), R.plurals.Nsongs, item.mSongCount);
                 holder.mLineTwo.get().setText(songs);
                 break;
+            case Unknown:
+                break;
+            default:
+                break;
         }
 
         return convertView;

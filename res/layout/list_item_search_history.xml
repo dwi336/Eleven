@@ -14,7 +14,9 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_short_height"
@@ -35,7 +37,7 @@
             android:layout_height="@dimen/list_item_image_height"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
-            android:src="@drawable/history_icon" />
+            sothree:srcCompat="@drawable/history_icon" />
 
         <TextView
             android:id="@+id/line_one"
@@ -52,5 +54,5 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:src="@drawable/inset_list_divider" />
+        sothree:srcCompat="@drawable/inset_list_divider" />
 </RelativeLayout>

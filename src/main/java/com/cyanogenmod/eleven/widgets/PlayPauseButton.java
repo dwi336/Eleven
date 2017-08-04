@@ -15,26 +15,26 @@ package com.cyanogenmod.eleven.widgets;
 
 import android.animation.Animator;
 import android.content.Context;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.ImageButton;
+import android.support.v7.widget.AppCompatImageButton;
 
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.utils.ApolloUtils;
 import com.cyanogenmod.eleven.utils.MusicUtils;
 
 /**
- * A custom {@link ImageButton} that represents the "play and pause" button.
+ * A custom {@link AppCompatImageButton} that represents the "play and pause" button.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PlayPauseButton extends ImageButton implements OnClickListener, OnLongClickListener {
+public class PlayPauseButton extends AppCompatImageButton implements OnClickListener, OnLongClickListener {
 
     /**
      * Play button theme resource
@@ -53,7 +53,11 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
     @SuppressWarnings("deprecation")
     public PlayPauseButton(final Context context, final AttributeSet attrs) {
         super(context, attrs);
-        setBackground(getResources().getDrawable(R.drawable.selectable_background));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            setBackground(ContextCompat.getDrawable(context, R.drawable.selectable_background));
+        } else {
+        	setBackgroundResource(R.drawable.selectable_background);
+        }
         // Control playback (play/pause)
         setOnClickListener(this);
         // Show the cheat sheet
@@ -66,17 +70,18 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
     @Override
     public void onClick(final View v) {
         MusicUtils.playOrPause();
-        int centerX = (v.getLeft() + v.getRight())  / 2;
-        int centerY = (v.getTop()  + v.getBottom()) / 2;
-        int startRadius = 0;
-        int endRadius = (int) Math.hypot(v.getWidth(), v.getHeight());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            int centerX = (v.getLeft() + v.getRight())  / 2;
+            int centerY = (v.getTop()  + v.getBottom()) / 2;
+            int startRadius = 0;
+            int endRadius = (int) Math.hypot(v.getWidth(), v.getHeight());
 
-        Animator anim = ViewAnimationUtils.createCircularReveal(
-                v, centerX, centerY, startRadius, endRadius);
+            Animator anim = ViewAnimationUtils.createCircularReveal(
+                    v, centerX, centerY, startRadius, endRadius);
 
-        anim.setDuration(800);
-        anim.start();
-
+            anim.setDuration(800);
+            anim.start();
+        }
         updateState();
     }
 
@@ -99,10 +104,10 @@ public class PlayPauseButton extends ImageButton implements OnClickListener, OnL
     public void updateState() {
         if (MusicUtils.isPlaying()) {
             setContentDescription(getResources().getString(R.string.accessibility_pause));
-            setImageDrawable(getResources().getDrawable(R.drawable.btn_playback_pause));
+            setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_pause));
         } else {
             setContentDescription(getResources().getString(R.string.accessibility_play));
-            setImageDrawable(getResources().getDrawable(R.drawable.btn_playback_play));
+            setImageDrawable(ContextCompat.getDrawable(getContext(), R.drawable.btn_playback_play));
         }
     }
 

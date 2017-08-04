@@ -19,8 +19,10 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.ui.fragments.AlbumFragment;
@@ -175,7 +177,7 @@ public final class PreferenceUtils {
      */
     public final int getDefaultThemeColor(final Context context) {
         return mPreferences.getInt(DEFAULT_THEME_COLOR,
-                context.getResources().getColor(R.color.blue));
+        		ContextCompat.getColor(context, R.color.blue));
     }
 
     /**
@@ -340,8 +342,8 @@ public final class PreferenceUtils {
     }
 
     public static boolean canRecordAudio(Activity activity) {
-        return activity.checkSelfPermission(permission.RECORD_AUDIO) ==
-                PackageManager.PERMISSION_GRANTED;
+    	return (ContextCompat.checkSelfPermission(activity,permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_GRANTED);
     }
 
     public static void requestRecordAudio(Activity activity) {

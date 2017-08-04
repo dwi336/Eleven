@@ -13,15 +13,16 @@
 
 package com.cyanogenmod.eleven.menu;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
+import android.support.v7.app.AppCompatDialogFragment;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,7 +35,7 @@ import com.cyanogenmod.eleven.utils.MusicUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public abstract class BasePlaylistDialog extends DialogFragment {
+public abstract class BasePlaylistDialog extends AppCompatDialogFragment {
 
     /* The actual dialog */
     protected AlertDialog mPlaylistDialog;
@@ -57,7 +58,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(final Bundle savedInstanceState) {
         // Initialize the alert dialog
-        mPlaylistDialog = new AlertDialog.Builder(getActivity()).create();
+        mPlaylistDialog = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle).create();
         // Initialize the edit text
         mPlaylist = new EditText(getActivity());
         // To show the "done" button on the soft keyboard
@@ -107,6 +108,7 @@ public abstract class BasePlaylistDialog extends DialogFragment {
         mPlaylistDialog.getWindow().setSoftInputMode(
                 WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
         mPlaylistDialog.show();
+        mPlaylistDialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         return mPlaylistDialog;
     }
 

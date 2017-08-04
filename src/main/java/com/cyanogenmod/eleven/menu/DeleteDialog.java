@@ -13,12 +13,13 @@
 
 package com.cyanogenmod.eleven.menu;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatDialogFragment;
+import android.view.ViewGroup;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 
 import com.cyanogenmod.eleven.Config;
 import com.cyanogenmod.eleven.R;
@@ -33,7 +34,7 @@ import com.cyanogenmod.eleven.utils.MusicUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class DeleteDialog extends DialogFragment {
+public class DeleteDialog extends AppCompatDialogFragment {
 
     public interface DeleteDialogCallback {
         public void onDelete(long[] id);
@@ -88,7 +89,7 @@ public class DeleteDialog extends DialogFragment {
         // Initialize the image cache
         mFetcher = ApolloUtils.getImageFetcher(getActivity());
         // Build the dialog
-        return new AlertDialog.Builder(getActivity()).setTitle(dialogTitle)
+        Dialog dialog = new AlertDialog.Builder(getActivity(), R.style.AppCompatAlertDialogStyle).setTitle(dialogTitle)
                 .setMessage(R.string.cannot_be_undone)
                 .setPositiveButton(delete, new OnClickListener() {
 
@@ -110,5 +111,7 @@ public class DeleteDialog extends DialogFragment {
                         dialog.dismiss();
                     }
                 }).create();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        return dialog;
     }
 }

@@ -20,12 +20,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.widget.RemoteViews;
 
 import com.cyanogenmod.eleven.MusicPlaybackService;
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.ui.activities.HomeActivity;
-import com.cyanogenmod.eleven.utils.ApolloUtils;
 
 /**
  * 4x2 App-Widget
@@ -108,7 +108,9 @@ public class AppWidgetLarge extends AppWidgetBase {
      * Update all active widget instances by pushing changes
      */
     public void performUpdate(final MusicPlaybackService service, final int[] appWidgetIds) {
-        final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
+        int playButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_play : R.drawable.btn_playback_play_compat;
+        int pauseButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_pause : R.drawable.btn_playback_pause_compat;
+    	final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
                 R.layout.app_widget_large);
 
         final CharSequence trackName = service.getTrackName();
@@ -125,13 +127,13 @@ public class AppWidgetLarge extends AppWidgetBase {
         // Set correct drawable for pause state
         final boolean isPlaying = service.isPlaying();
         if (isPlaying) {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_play,
-                    R.drawable.btn_playback_pause);
+        	appWidgetView.setImageViewResource(R.id.app_widget_large_play,
+        			pauseButtonResId);
             appWidgetView.setContentDescription(R.id.app_widget_large_play,
                     service.getString(R.string.accessibility_pause));
         } else {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_play,
-                    R.drawable.btn_playback_play);
+        	appWidgetView.setImageViewResource(R.id.app_widget_large_play,
+        			playButtonResId);
             appWidgetView.setContentDescription(R.id.app_widget_large_play,
                     service.getString(R.string.accessibility_play));
         }

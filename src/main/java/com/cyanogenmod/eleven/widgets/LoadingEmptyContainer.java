@@ -16,10 +16,13 @@
 package com.cyanogenmod.eleven.widgets;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import java.lang.reflect.Method;
 
 import com.cyanogenmod.eleven.R;
 
@@ -34,7 +37,8 @@ public class LoadingEmptyContainer extends FrameLayout {
 
     private Handler mHandler;
     private Runnable mShowLoadingRunnable;
-
+	private boolean hasCallbacks;
+	
     public LoadingEmptyContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
 
@@ -46,6 +50,7 @@ public class LoadingEmptyContainer extends FrameLayout {
                 getNoResultsContainer().setVisibility(View.INVISIBLE);
             }
         };
+        hasCallbacks = false;
     }
 
     @Override
@@ -63,14 +68,25 @@ public class LoadingEmptyContainer extends FrameLayout {
     public void showLoading() {
         hideAll();
 
-        if (!mHandler.hasCallbacks(mShowLoadingRunnable)) {
+       	//mHandler.hasCallbacks(mShowLoadingRunnable)
+    	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+    	    try {
+    	        Class<?> clazz = mHandler.getClass();
+                Method m = clazz.getMethod("hasCallbacks", Runnable.class);
+                hasCallbacks = ((Boolean)(m.invoke(mHandler, new Object[] {mShowLoadingRunnable}))).booleanValue();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+    	}
+        if (!hasCallbacks) {
             mHandler.postDelayed(mShowLoadingRunnable, LOADING_DELAY);
+            hasCallbacks = true;
         }
     }
 
     public void showNoResults() {
         mHandler.removeCallbacks(mShowLoadingRunnable);
-
+        hasCallbacks = false;
         findViewById(R.id.progressbar).setVisibility(View.INVISIBLE);
         getNoResultsContainer().setVisibility(View.VISIBLE);
     }

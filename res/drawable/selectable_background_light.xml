@@ -13,5 +13,13 @@
      limitations under the License.
 -->
 
-<ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/primary" />
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pressed -->
+    <item android:state_pressed="true" android:drawable="@color/primary_pressed" />
+    <!-- Selected -->
+    <item android:state_selected="true" android:drawable="@android:color/transparent" />
+    <!-- Focus -->
+    <item android:state_focused="true" android:drawable="@color/primary_focused" />
+    <!-- Default -->
+    <item android:drawable="@android:color/transparent"/>
+</selector>

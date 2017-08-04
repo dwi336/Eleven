@@ -17,6 +17,7 @@ package com.cyanogenmod.eleven.ui.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,7 +62,7 @@ public abstract class BaseFragment extends Fragment implements MusicStateListene
         // The View for the fragment's UI
         mRootView = (ViewGroup) inflater.inflate(getLayoutToInflate(), null);
         // set the background color
-        mRootView.setBackgroundColor(getResources().getColor(R.color.background_color));
+        mRootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.background_color));
         // eat any touches that fall through to the root so they aren't
         // passed on to fragments "behind" the current one.
         mRootView.setOnTouchListener(new View.OnTouchListener() {

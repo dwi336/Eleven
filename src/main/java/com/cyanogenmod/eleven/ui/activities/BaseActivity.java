@@ -15,7 +15,8 @@ package com.cyanogenmod.eleven.ui.activities;
 
 import static com.cyanogenmod.eleven.utils.MusicUtils.mService;
 
-import android.app.ActionBar;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,9 +26,11 @@ import android.content.ServiceConnection;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.AppCompatDelegate;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -35,7 +38,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
+import android.support.v7.widget.Toolbar;
 
 import com.cyanogenmod.eleven.IElevenService;
 import com.cyanogenmod.eleven.MusicPlaybackService;
@@ -54,14 +57,14 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
- * A base {@link FragmentActivity} used to update the bottom bar and
+ * A base {@link AppCompatActivity} used to update the bottom bar and
  * bind to Apollo's service.
  * <p>
  * {@link SlidingPanelActivity} extends from this skeleton.
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public abstract class BaseActivity extends FragmentActivity implements ServiceConnection,
+public abstract class BaseActivity extends AppCompatActivity implements ServiceConnection,
         MusicStateListener, ICacheListener {
 
     /**
@@ -136,13 +139,13 @@ public abstract class BaseActivity extends FragmentActivity implements ServiceCo
         setContentView(setContentView());
 
         mToolBar = (Toolbar) findViewById(R.id.toolbar);
-        setActionBar(mToolBar);
+        setSupportActionBar(mToolBar);
 
         setActionBarTitle(getString(R.string.app_name));
 
         // set the background on the root view
         getWindow().getDecorView().getRootView().setBackgroundColor(
-                getResources().getColor(R.color.background_color));
+        		ContextCompat.getColor(this, R.color.background_color));
         // Initialze the bottom action bar
         initBottomActionBar();
 
@@ -190,19 +193,15 @@ public abstract class BaseActivity extends FragmentActivity implements ServiceCo
      */
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_settings:
-                // Settings
-                NavUtils.openSettings(this);
-                return true;
-
-            case R.id.menu_search:
-                NavUtils.openSearch(BaseActivity.this, "");
-                return true;
-
-            default:
-                break;
-        }
+    	int id = item.getItemId();
+    	if (id == R.id.menu_settings){
+            // Settings
+            NavUtils.openSettings(this);
+            return true;
+    	} else if (id == R.id.menu_search){
+            NavUtils.openSearch(BaseActivity.this, "");
+            return true;
+    	}
         return super.onOptionsItemSelected(item);
     }
 
@@ -280,18 +279,23 @@ public abstract class BaseActivity extends FragmentActivity implements ServiceCo
         setupActionBar(getString(resId));
     }
 
-    public void setupActionBar(String title) {
+    @SuppressWarnings("deprecation")
+	public void setupActionBar(String title) {
         setActionBarTitle(title);
 
         if (mActionBarBackground == null) {
-            final int actionBarColor = getResources().getColor(R.color.header_action_bar_color);
+            final int actionBarColor = ContextCompat.getColor(this, R.color.header_action_bar_color);
             mActionBarBackground = new ColorDrawable(actionBarColor);
-            mToolBar.setBackgroundDrawable(mActionBarBackground);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            	mToolBar.setBackground(mActionBarBackground);
+            } else {
+            	mToolBar.setBackgroundDrawable(mActionBarBackground);
+            }
         }
     }
 
     public void setActionBarTitle(String title) {
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setTitle(title);
     }
 
@@ -302,7 +306,8 @@ public abstract class BaseActivity extends FragmentActivity implements ServiceCo
     public void setActionBarElevation(boolean isElevated) {
         float targetElevation = isElevated
                 ? getResources().getDimension(R.dimen.action_bar_elevation) : 0;
-        mToolBar.setElevation(targetElevation);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setElevation(targetElevation);
     }
 
     public void setFragmentPadding(boolean enablePadding) {

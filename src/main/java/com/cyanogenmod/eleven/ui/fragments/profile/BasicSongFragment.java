@@ -18,6 +18,7 @@ import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -145,7 +146,7 @@ public abstract class BasicSongFragment extends Fragment implements
         // The View for the fragment's UI
         mRootView = (ViewGroup) inflater.inflate(R.layout.list_base, null);
         // set the background on the root view
-        mRootView.setBackgroundColor(getResources().getColor(R.color.background_color));
+        mRootView.setBackgroundColor(ContextCompat.getColor(getContext(), R.color.background_color));
         // Initialize the list
         mListView = (ListView) mRootView.findViewById(R.id.list_base);
         // Set the data behind the list

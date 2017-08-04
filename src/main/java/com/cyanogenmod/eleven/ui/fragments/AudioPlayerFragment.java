@@ -15,6 +15,7 @@
 */
 package com.cyanogenmod.eleven.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -23,12 +24,14 @@ import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.graphics.Outline;
 import android.media.AudioManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.PowerManager;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.Spanned;
@@ -41,7 +44,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewOutlineProvider;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -71,6 +73,7 @@ import com.cyanogenmod.eleven.widgets.ShuffleButton;
 import com.cyanogenmod.eleven.widgets.VisualizerView;
 
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Method;
 
 import static com.cyanogenmod.eleven.utils.MusicUtils.mService;
 
@@ -229,7 +232,13 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
         // Listen for lyrics text for the audio track
         filter.addAction(MusicPlaybackService.NEW_LYRICS);
         // Listen for power save mode changed
-        filter.addAction(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+            try {
+                filter.addAction((String)PowerManager.class.getField("ACTION_POWER_SAVE_MODE_CHANGED").get(null));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
         // Register the intent filters
         getActivity().registerReceiver(mPlaybackStatus, filter);
         // Refresh the current time
@@ -277,17 +286,50 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
         View headerBar = mRootView.findViewById(R.id.audio_player_header);
         final int bottomActionBarHeight =
                 getResources().getDimensionPixelSize(R.dimen.bottom_action_bar_height);
-
-        headerBar.setOutlineProvider(new ViewOutlineProvider() {
-            @Override
-            public void getOutline(View view, Outline outline) {
-                // since we only want the top and bottom shadows, pad the horizontal width
-                // to hide the shadows. Can't seem to find a better way to do this
-                int padWidth = (int)(0.2f * view.getWidth());
-                outline.setRect(-padWidth, -bottomActionBarHeight, view.getWidth() + padWidth,
-                        view.getHeight());
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            /*
+            headerBar.setOutlineProvider(new MyViewOutlineProvider() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    // since we only want the top and bottom shadows, pad the horizontal width
+                    // to hide the shadows. Can't seem to find a better way to do this
+                    int padWidth = (int)(0.2f * view.getWidth());
+                    outline.setRect(-padWidth, -bottomActionBarHeight, view.getWidth() + padWidth,
+                            view.getHeight());
             }
-        });
+            });
+            */
+        	
+        	ViewOutlineProviderCompat myProvider = new ViewOutlineProviderCompat() {
+                @Override
+                public void getOutline(View view, Outline outline) {
+                    // since we only want the top and bottom shadows, pad the horizontal width
+                    // to hide the shadows. Can't seem to find a better way to do this
+                    int padWidth = (int)(0.2f * view.getWidth());
+                    try {
+                        //outline.setRect(-padWidth, -bottomActionBarHeight, view.getWidth() + padWidth,
+                        //view.getHeight());
+                        Class<?> clazz = outline.getClass();
+                        Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
+                        m.invoke(outline, -padWidth, -bottomActionBarHeight, view.getWidth() + padWidth, view.getHeight());
+                    } catch (Exception ex) {
+                        throw new RuntimeException(ex);
+                    }
+                }
+            };
+
+            try {       
+                Class<?> clazz1 = Class.forName("android.view.ViewOutlineProvider");
+                Object obj = new ViewOutlineProviderCompat.ViewOutlineProviderL(myProvider);
+                Class<?> clazz2 = headerBar.getClass();
+                Method m = clazz2.getMethod("setOutlineProvider", new Class[] { clazz1});
+                m.invoke(headerBar, clazz1.cast(obj));
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+
+        }
 
         // Title text
         mSongTitle = (TextView) mRootView.findViewById(R.id.header_bar_song_title);
@@ -350,7 +392,7 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
 
         // Album art view pager
         mAlbumArtViewPager = (ViewPager)mRootView.findViewById(R.id.audio_player_album_art_viewpager);
-        mAlbumArtViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+        mAlbumArtViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
             @Override
             public void onPageSelected(int position) {
                 super.onPageSelected(position);
@@ -393,7 +435,7 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
     }
 
     private void setupNoResultsContainer(NoResultsContainer empty) {
-        int color = getResources().getColor(R.color.no_results_light);
+        int color = ContextCompat.getColor(getContext(), R.color.no_results_light);
         empty.setTextColor(color);
         empty.setMainText(R.string.empty_queue_main);
         empty.setSecondaryText(R.string.empty_queue_secondary);
@@ -626,44 +668,43 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
     }
 
     public boolean onPopupMenuItemClick(final MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_shuffle_all:
-                // Shuffle all the songs
-                MusicUtils.shuffleAll(getActivity());
-                return true;
-            case R.id.menu_audio_player_ringtone:
-                // Set the current track as a ringtone
-                MusicUtils.setRingtone(getActivity(), MusicUtils.getCurrentAudioId());
-                return true;
-            case R.id.menu_audio_player_equalizer:
-                // Sound effects
-                NavUtils.openEffectsPanel(getActivity(), HomeActivity.EQUALIZER);
-                return true;
-            case R.id.menu_settings:
-                // Settings
-                NavUtils.openSettings(getActivity());
-                return true;
-            case R.id.menu_audio_player_more_by_artist:
-                NavUtils.openArtistProfile(getActivity(), MusicUtils.getArtistName());
-                return true;
-            case R.id.menu_audio_player_delete:
-                // Delete current song
-                DeleteDialog.newInstance(MusicUtils.getTrackName(), new long[]{
-                        MusicUtils.getCurrentAudioId()
-                }, null).show(getActivity().getSupportFragmentManager(), "DeleteDialog");
-                return true;
-            case R.id.menu_save_queue:
-                NowPlayingCursor queue = (NowPlayingCursor) QueueLoader
-                        .makeQueueCursor(getActivity());
-                CreateNewPlaylist.getInstance(MusicUtils.getSongListForCursor(queue)).show(
-                        getFragmentManager(), "CreatePlaylist");
-                queue.close();
-                return true;
-            case R.id.menu_clear_queue:
-                MusicUtils.clearQueue();
-                return true;
-            default:
-                break;
+        int id = item.getItemId();
+        if (id == R.id.menu_shuffle_all) {
+            // Shuffle all the songs
+            MusicUtils.shuffleAll(getActivity());
+            return true;
+        } else if (id == R.id.menu_audio_player_ringtone) {
+            // Set the current track as a ringtone
+            MusicUtils.setRingtone(getActivity(), MusicUtils.getCurrentAudioId());
+            return true;
+        } else if (id == R.id.menu_audio_player_equalizer) {
+            // Sound effects
+            NavUtils.openEffectsPanel(getActivity(), HomeActivity.EQUALIZER);
+            return true;
+        } else if (id == R.id.menu_settings) {
+            // Settings
+            NavUtils.openSettings(getActivity());
+            return true;
+        } else if (id == R.id.menu_audio_player_more_by_artist) {
+            NavUtils.openArtistProfile(getActivity(), MusicUtils.getArtistName());
+            return true;
+        } else if (id == R.id.menu_audio_player_delete) {
+            // Delete current song
+            DeleteDialog.newInstance(MusicUtils.getTrackName(), new long[]{
+                    MusicUtils.getCurrentAudioId()
+            }, null).show(getActivity().getSupportFragmentManager(), "DeleteDialog");
+            return true;
+        } else if (id == R.id.menu_save_queue) {
+            NowPlayingCursor queue = (NowPlayingCursor) QueueLoader
+                    .makeQueueCursor(getActivity());
+            CreateNewPlaylist.getInstance(MusicUtils.getSongListForCursor(queue)).show(
+                    getFragmentManager(), "CreatePlaylist");
+            queue.close();
+            return true;
+        } else if (id == R.id.menu_clear_queue) {
+            MusicUtils.clearQueue();
+            return true;
+        } else {
         }
 
         return false;
@@ -698,13 +739,21 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
         return super.onContextItemSelected(item);
     }
 
+    @SuppressLint("InlinedApi")
+    @SuppressWarnings("deprecation")
     public void onLyrics(String lyrics) {
         if (TextUtils.isEmpty(lyrics)
                 || !PreferenceUtils.getInstance(getActivity()).getShowLyrics()) {
             mLyricsText.animate().alpha(0).setDuration(200);
         } else {
             lyrics = lyrics.replace("\n", "<br/>");
-            Spanned span = Html.fromHtml(lyrics);
+            Spanned span;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                span = Html.fromHtml(lyrics,Html.FROM_HTML_MODE_LEGACY);
+            } else {
+                span = Html.fromHtml(lyrics);
+            }
+               
             mLyricsText.setText(span);
 
             mLyricsText.animate().alpha(1).setDuration(200);
@@ -713,7 +762,7 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
 
     public void setVisualizerVisible(boolean visible) {
         if (visible && PreferenceUtils.getInstance(getActivity()).getShowVisualizer()) {
-            if (PreferenceUtils.canRecordAudio(getActivity())) {
+            if ( (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) || (PreferenceUtils.canRecordAudio(getActivity())) ) {
                 mVisualizerView.setVisible(true);
             } else {
                 PreferenceUtils.requestRecordAudio(getActivity());
@@ -724,8 +773,19 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
     }
 
     public void updateVisualizerPowerSaveMode() {
-        PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
-        mVisualizerView.setPowerSaveMode(pm.isPowerSaveMode());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            PowerManager pm = (PowerManager) getActivity().getSystemService(Context.POWER_SERVICE);
+
+            //mVisualizerView.setPowerSaveMode(pm.isPowerSaveMode());
+            try {
+            	Class<?> clazz = pm.getClass();
+                Method m = clazz.getMethod("isPowerSaveMode",  new Class[] {} );
+                boolean powersavemode = ((Boolean)(m.invoke(pm, new Object[] {}))).booleanValue();
+                mVisualizerView.setPowerSaveMode(powersavemode);
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     public void setVisualizerColor(int color) {
@@ -806,7 +866,8 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
                 audioPlayerFragment.createAndSetAdapter();
             } else if (action.equals(MusicPlaybackService.NEW_LYRICS)) {
                 audioPlayerFragment.onLyrics(intent.getStringExtra("lyrics"));
-            } else if (action.equals(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)) {
+            } else if ( (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) &&            		
+                action.equals(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)) {
                 audioPlayerFragment.updateVisualizerPowerSaveMode();
             }
         }

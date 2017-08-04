@@ -15,6 +15,7 @@ package com.cyanogenmod.eleven.adapters;
 
 import android.app.Activity;
 import android.content.Context;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ import com.cyanogenmod.eleven.widgets.IPopupMenuCallback;
 /**
  * This {@link ArrayAdapter} is used to display all of the artists on a user's
  * device for {@link ArtistFragment}.
- *
+ * 
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 /**
@@ -73,7 +74,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> implements BasicAdapter,
 
     /**
      * Constructor of <code>ArtistAdapter</code>
-     *
+     * 
      * @param context The {@link Context} to use.
      * @param layoutId The resource Id of the view to inflate.
      */
@@ -84,7 +85,7 @@ public class ArtistAdapter extends ArrayAdapter<Artist> implements BasicAdapter,
         // Initialize the cache & image fetcher
         mImageFetcher = ApolloUtils.getImageFetcher(context);
         // Cache the transparent overlay
-        mOverlay = context.getResources().getColor(R.color.list_item_background);
+        mOverlay = ContextCompat.getColor(context, R.color.list_item_background);
     }
 
     /**

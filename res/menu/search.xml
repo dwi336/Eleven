@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
   Copyright (C) 2012 Andrew Neal
-
+ 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -14,14 +14,15 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+      xmlns:sothree="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/menu_search"
-        android:actionViewClass="android.widget.SearchView"
+        sothree:actionViewClass="android.support.v7.widget.SearchView"
         android:icon="@drawable/ic_action_search"
         android:orderInCategory="1"
-        android:showAsAction="ifRoom|collapseActionView"
+        sothree:showAsAction="ifRoom|collapseActionView"
         android:title="@string/menu_search"/>
 
 </menu>

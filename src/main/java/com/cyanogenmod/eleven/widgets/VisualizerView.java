@@ -15,6 +15,7 @@
 */
 package com.cyanogenmod.eleven.widgets;
 
+import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -23,10 +24,13 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.media.audiofx.Visualizer;
 import android.os.AsyncTask;
+import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.cyanogenmod.eleven.R;
+import com.cyanogenmod.eleven.utils.MusicUtils;
 
 public class VisualizerView extends View {
     private Paint mPaint;
@@ -34,13 +38,14 @@ public class VisualizerView extends View {
     private ObjectAnimator mVisualizerColorAnimator;
 
     private ValueAnimator[] mValueAnimators = new ValueAnimator[32];
+    
     private float[] mFFTPoints = new float[128];
 
     private boolean mVisible = false;
     private boolean mPlaying = false;
     private boolean mPowerSaveMode = false;
     private int mColor;
-
+    
     private Visualizer.OnDataCaptureListener mVisualizerListener =
             new Visualizer.OnDataCaptureListener() {
         byte rfk, ifk;
@@ -138,8 +143,8 @@ public class VisualizerView extends View {
         }
     }
 
-    public void initialize(Context context) {
-        mColor = context.getResources().getColor(R.color.visualizer_fill_color);
+	public void initialize(Context context) {
+		mColor = ContextCompat.getColor(context, R.color.visualizer_fill_color);
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
@@ -162,9 +167,9 @@ public class VisualizerView extends View {
             public void onAnimationUpdate(ValueAnimator animation) {
                 postInvalidate();
             }
-        });
+        });	
     }
-
+    
     public void setVisible(boolean visible) {
         if (mVisible != visible) {
             mVisible = visible;
@@ -196,12 +201,19 @@ public class VisualizerView extends View {
                 if (mVisualizerColorAnimator != null) {
                     mVisualizerColorAnimator.cancel();
                 }
-
-                mVisualizerColorAnimator = ObjectAnimator.ofArgb(mPaint, "color",
-                        mPaint.getColor(), mColor);
-                mVisualizerColorAnimator.setStartDelay(600);
-                mVisualizerColorAnimator.setDuration(1200);
-                mVisualizerColorAnimator.start();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    mVisualizerColorAnimator = ObjectAnimator.ofArgb(mPaint, "color",
+                            mPaint.getColor(), mColor);
+                    mVisualizerColorAnimator.setStartDelay(600);
+                    mVisualizerColorAnimator.setDuration(1200);
+                    mVisualizerColorAnimator.start();
+                }else if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB){
+                	mVisualizerColorAnimator=ObjectAnimator.ofObject(mPaint,"color",new ArgbEvaluator(),
+                            mPaint.getColor(),mColor);
+                    mVisualizerColorAnimator.setStartDelay(600);
+                    mVisualizerColorAnimator.setDuration(1200);
+                    mVisualizerColorAnimator.start();
+                }
             } else {
                 mPaint.setColor(mColor);
             }

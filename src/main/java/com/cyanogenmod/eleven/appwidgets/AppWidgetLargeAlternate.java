@@ -20,12 +20,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.widget.RemoteViews;
 
 import com.cyanogenmod.eleven.MusicPlaybackService;
 import com.cyanogenmod.eleven.R;
 import com.cyanogenmod.eleven.ui.activities.HomeActivity;
-import com.cyanogenmod.eleven.utils.ApolloUtils;
 import com.cyanogenmod.eleven.widgets.RepeatButton;
 import com.cyanogenmod.eleven.widgets.ShuffleButton;
 
@@ -113,6 +113,11 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
      * Update all active widget instances by pushing changes
      */
     public void performUpdate(final MusicPlaybackService service, final int[] appWidgetIds) {
+    	int playButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_play : R.drawable.btn_playback_play_compat;
+        int pauseButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_pause : R.drawable.btn_playback_pause_compat;
+        int repeatAllButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_repeat_all : R.drawable.btn_playback_repeat_all_compat;
+        int repeatOneButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_repeat_one : R.drawable.btn_playback_repeat_one_compat;
+        int shuffleAllButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_shuffle_all : R.drawable.btn_playback_shuffle_all_compat;
         final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
                 R.layout.app_widget_large_alternate);
 
@@ -130,13 +135,13 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         // Set correct drawable for pause state
         final boolean isPlaying = service.isPlaying();
         if (isPlaying) {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_play,
-                    R.drawable.btn_playback_pause);
+        	appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_play,
+        			pauseButtonResId);
             appWidgetView.setContentDescription(R.id.app_widget_large_alternate_play,
                     service.getString(R.string.accessibility_pause));
         } else {
-            appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_play,
-                    R.drawable.btn_playback_play);
+        	appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_play,
+        			playButtonResId);
             appWidgetView.setContentDescription(R.id.app_widget_large_alternate_play,
                     service.getString(R.string.accessibility_play));
         }
@@ -145,19 +150,19 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         switch (service.getRepeatMode()) {
             case MusicPlaybackService.REPEAT_ALL:
                 appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat,
-                        R.drawable.btn_playback_repeat_all);
+                		repeatAllButtonResId);
                 appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setAlpha",
                         (int)(RepeatButton.ACTIVE_ALPHA * 255));
                 break;
             case MusicPlaybackService.REPEAT_CURRENT:
                 appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat,
-                        R.drawable.btn_playback_repeat_one);
+                		repeatOneButtonResId);
                 appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setAlpha",
                         (int)(RepeatButton.ACTIVE_ALPHA * 255));
                 break;
             default:
                 appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_repeat,
-                        R.drawable.btn_playback_repeat_all);
+                		repeatAllButtonResId);
                 appWidgetView.setInt(R.id.app_widget_large_alternate_repeat, "setAlpha",
                         (int)(RepeatButton.INACTIVE_ALPHA * 255));
                 break;
@@ -167,7 +172,7 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         switch (service.getShuffleMode()) {
             case MusicPlaybackService.SHUFFLE_NONE:
                 appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle,
-                        R.drawable.btn_playback_shuffle_all);
+                		shuffleAllButtonResId);
                 appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setAlpha",
                         (int)(ShuffleButton.INACTIVE_ALPHA * 255));
                 break;
@@ -175,7 +180,7 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
             case MusicPlaybackService.SHUFFLE_NORMAL:
             default:
                 appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_shuffle,
-                        R.drawable.btn_playback_shuffle_all);
+                		shuffleAllButtonResId);
                 appWidgetView.setInt(R.id.app_widget_large_alternate_shuffle, "setAlpha",
                         (int)(ShuffleButton.ACTIVE_ALPHA * 255));
                 break;
