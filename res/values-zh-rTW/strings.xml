@@ -47,7 +47,7 @@
   <string name="menu_clear_list">清除清單</string>
   <string name="menu_clear_recents">清除最近</string>
   <string name="menu_clear_queue">清除佇列</string>
-  <string name="menu_save_queue">將佇列保存到播放清單</string>
+  <string name="menu_save_queue">將佇列儲存至播放清單</string>
   <string name="menu_equalizer">等化器</string>
   <!-- Playlist items -->
   <string name="add_to_playlist">新增至播放清單</string>
@@ -132,7 +132,7 @@
   <string name="settings_show_lyrics_summary">有 srt 檔的樂曲</string>
   <string name="settings_shake_to_play">搖動播放</string>
   <string name="settings_shake_to_play_summary">搖動您的裝置即可播放下一首樂曲</string>
-  <string name="settings_lockscreen_album_art">鎖定畫面專輯封面</string>
+  <string name="settings_lockscreen_album_art">鎖定畫面時的專輯封面</string>
   <string name="settings_lockscreen_album_art_summary">鎖定畫面背景替換為專輯封面</string>
   <!-- App widget -->
   <string name="app_widget_small">音樂：4 \u00d7 1</string>

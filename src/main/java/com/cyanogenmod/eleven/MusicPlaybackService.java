@@ -666,7 +666,10 @@ public class MusicPlaybackService extends Service {
 
         mShowAlbumArtOnLockscreen = mPreferences.getBoolean(
                 PreferenceUtils.SHOW_ALBUM_ART_ON_LOCKSCREEN, true);
-        setShakeToPlayEnabled(mPreferences.getBoolean(PreferenceUtils.SHAKE_TO_PLAY, false));
+         setShakeToPlayEnabled(mPreferences.getBoolean(PreferenceUtils.SHAKE_TO_PLAY, false));
+
+        mRepeatMode = mPreferences.getInt("repeatmode", REPEAT_NONE);
+        mShuffleMode = mPreferences.getInt("shufflemode", SHUFFLE_NONE);
 
         registerExternalStorageListener();
 
@@ -848,7 +851,7 @@ public class MusicPlaybackService extends Service {
             MediaButtonIntentReceiver.completeWakefulIntent(intent);
         }
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
     private void releaseServiceUiAndStop() {
@@ -3492,6 +3495,9 @@ public class MusicPlaybackService extends Service {
             switch (what) {
                 case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
                     final MusicPlaybackService service = mService.get();
+                    if (service == null) {
+                        return false;
+                    }
                     final TrackErrorInfo errorInfo = new TrackErrorInfo(service.getAudioId(),
                             service.getTrackName());
 
