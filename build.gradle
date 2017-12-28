@@ -1,9 +1,10 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.0.1'
     }
 }
 
@@ -15,23 +16,20 @@ repositories {
 }
 
 android {
-	compileSdkVersion 26
-	buildToolsVersion "26.0.1"
-	
-	defaultConfig {
-	    applicationId "com.cyanogenmod.eleven"
-        targetSdkVersion 26
-        renderscriptTargetApi 26
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+
+    defaultConfig {
+        applicationId "com.cyanogenmod.eleven"
+        targetSdkVersion 27
+        renderscriptTargetApi 27
         renderscriptSupportModeEnabled true
         versionCode 3
         versionName "3.0"
 
-        jackOptions {
-            enabled true
-        }
         vectorDrawables.useSupportLibrary = true  
     }
-    
+
     signingConfigs {
         release {
             storeFile file("/home/didi/eclipse/DevStore")
@@ -40,12 +38,12 @@ android {
             keyPassword "1234567890"
         }
     }
-    
+
     compileOptions {
         sourceCompatibility "1.8"
         targetCompatibility "1.8"
     }
-	
+
     buildTypes {
         release {
             minifyEnabled false
@@ -53,47 +51,48 @@ android {
             signingConfig signingConfigs.release
         }
     }
-	
-	lintOptions {
+
+    lintOptions {
         // Android Support Libraries has different Versions because of use of RenderScript
         disable 'GradleCompatible'
         disable 'ExtraTranslation', 'MissingTranslation', 'MissingQuantity'
         disable 'ProtectedPermissions'
+        disable 'AppLinkUrlError', 'StringFormatInvalid'
     }
-	
-	sourceSets {
-		main {
-			manifest {
-				srcFile 'AndroidManifest.xml'
-			}
-			java {
-				srcDir 'src'
-			}
-			res {
-				srcDir 'res'
-			}
-			assets {
-				srcDir 'assets'
-			}
-			resources {
-				srcDir 'src'
-			}
-			aidl {
-				srcDir 'src'
-			}
-		}
-	}
 
-	dependencies {
-        compile "com.android.support:appcompat-v7:26.0.0"
-        compile "com.android.support:palette-v7:26.0.0"
-        compile "com.android.support:recyclerview-v7:26.0.0"
-        compile "com.android.support:support-v4:26.0.0"
-        compile "com.android.support:cardview-v7:26.0.0"
-        compile "com.android.support:preference-v7:26.0.0"
-        compile "com.android.support:gridlayout-v7:26.0.0"
-        compile "com.android.support:support-vector-drawable:26.0.0"
-        compile "com.google.guava:guava:20.0"
-        compile fileTree(include: ['*.jar'], dir: 'libs')
+    sourceSets {
+        main {
+            manifest {
+                srcFile 'AndroidManifest.xml'
+            }
+            java {
+                srcDir 'src'
+            }
+            res {
+                srcDir 'res'
+            }
+            assets {
+                srcDir 'assets'
+            }
+            resources {
+                srcDir 'src'
+            }
+            aidl {
+                srcDir 'src'
+            }
+        }
+    }
+
+    dependencies {
+        implementation "com.android.support:appcompat-v7:27.0.2"
+        implementation "com.android.support:palette-v7:27.0.2"
+        implementation "com.android.support:recyclerview-v7:27.0.2"
+        implementation "com.android.support:support-v4:27.0.2"
+        implementation "com.android.support:cardview-v7:27.0.2"
+        implementation "com.android.support:preference-v7:27.0.2"
+        implementation "com.android.support:gridlayout-v7:27.0.2"
+        implementation "com.android.support:support-vector-drawable:27.0.2"
+        implementation "com.google.guava:guava:20.0"
+        implementation fileTree(include: ['*.jar'], dir: 'libs')
     }
 }

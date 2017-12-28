@@ -82,7 +82,7 @@ public class LetterTileDrawable extends Drawable {
             sVibrantDarkColors = res.obtainTypedArray(R.array.letter_tile_vibrant_dark_colors);
             sDefaultColor = ContextCompat.getColor(context, R.color.letter_tile_default_color);
             sTileFontColor = ContextCompat.getColor(context, R.color.letter_tile_font_color);
-            sLetterToTileRatio = res.getFraction(R.dimen.letter_to_tile_ratio, 1, 1);
+            sLetterToTileRatio = res.getFraction(R.fraction.letter_to_tile_ratio, 1, 1);
             DEFAULT_ARTIST = BitmapFactory.decodeResource(res, R.drawable.ic_artist);
             DEFAULT_ARTIST_LARGE = BitmapFactory.decodeResource(res, R.drawable.ic_artist_lg);
             DEFAULT_ALBUM = BitmapFactory.decodeResource(res, R.drawable.ic_album);

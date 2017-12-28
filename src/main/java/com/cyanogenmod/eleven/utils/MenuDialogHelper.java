@@ -54,20 +54,20 @@ class MenuDialogHelper implements DialogInterface.OnKeyListener,
         // Many references to mMenu, create local reference
         final MenuBuilder menu = mMenu;
         // Get the builder for the dialog
-        final AlertDialog.Builder builder = new AlertDialog.Builder(menu.getContext());
-        mPresenter = new ListMenuPresenter(builder.getContext(),
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MenuBuilderHelper.getContext(menu));
+        mPresenter = ListMenuPresenterHelper.createInstance(builder.getContext(),
                 R.layout.abc_list_menu_item_layout);
-        mPresenter.setCallback(this);
-        mMenu.addMenuPresenter(mPresenter);
-        builder.setAdapter(mPresenter.getAdapter(), this);
+        ListMenuPresenterHelper.setCallback(mPresenter, this);
+        MenuBuilderHelper.addMenuPresenter(mMenu,mPresenter);
+        builder.setAdapter(ListMenuPresenterHelper.getAdapter(mPresenter), this);
         // Set the title
-        final View headerView = menu.getHeaderView();
+        final View headerView = MenuBuilderHelper.getHeaderView(menu);
         if (headerView != null) {
             // Menu's client has given a custom header view, use it
             builder.setCustomTitle(headerView);
         } else {
             // Otherwise use the (text) title and icon
-            builder.setIcon(menu.getHeaderIcon()).setTitle(menu.getHeaderTitle());
+            builder.setIcon(MenuBuilderHelper.getHeaderIcon(menu)).setTitle(MenuBuilderHelper.getHeaderTitle(menu));
         }
         // Set the key listener
         builder.setOnKeyListener(this);
@@ -104,7 +104,7 @@ class MenuDialogHelper implements DialogInterface.OnKeyListener,
                     if (decor != null) {
                         KeyEvent.DispatcherState ds = decor.getKeyDispatcherState();
                         if (ds != null && ds.isTracking(event)) {
-                            mMenu.close(true);
+                            MenuBuilderHelper.close(mMenu,true);
                             dialog.dismiss();
                             return true;
                         }
@@ -113,7 +113,7 @@ class MenuDialogHelper implements DialogInterface.OnKeyListener,
             }
         }
         // Menu shortcut matching
-        return mMenu.performShortcut(keyCode, event, 0);
+        return MenuBuilderHelper.performShortcut(mMenu, keyCode, event, 0);
     }
     public void setPresenterCallback(MenuPresenter.Callback cb) {
         mPresenterCallback = cb;
@@ -130,7 +130,7 @@ class MenuDialogHelper implements DialogInterface.OnKeyListener,
     }
     @Override
     public void onDismiss(DialogInterface dialog) {
-        mPresenter.onCloseMenu(mMenu, true);
+        ListMenuPresenterHelper.onCloseMenu(mPresenter, mMenu, true);
     }
     @Override
     public void onCloseMenu(MenuBuilder menu, boolean allMenusAreClosing) {
@@ -149,6 +149,6 @@ class MenuDialogHelper implements DialogInterface.OnKeyListener,
         return false;
     }
     public void onClick(DialogInterface dialog, int which) {
-        mMenu.performItemAction((MenuItemImpl) mPresenter.getAdapter().getItem(which), 0);
+        MenuBuilderHelper.performItemAction(mMenu,(MenuItemImpl) ListMenuPresenterHelper.getAdapter(mPresenter).getItem(which), 0);
     }
 }

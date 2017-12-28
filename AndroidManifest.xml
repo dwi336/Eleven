@@ -21,7 +21,7 @@
 
     <uses-sdk
         android:minSdkVersion="14"
-        android:targetSdkVersion="26" />
+        android:targetSdkVersion="27" />
 
     <!-- Used for caching and creating new playlists -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

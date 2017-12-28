@@ -20,7 +20,7 @@ import android.view.KeyEvent;
 
 public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
     private static final boolean DEBUG = false;
-    private static final String TAG = "MediaButtonIntentReceiver";
+    private static final String TAG = "MediaButtonIntentRecei";
 
     /**
      * {@inheritDoc}

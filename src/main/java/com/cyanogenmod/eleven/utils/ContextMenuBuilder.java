@@ -16,14 +16,21 @@ package com.cyanogenmod.eleven.utils;
  * limitations under the License.
  */
 
+import java.util.ArrayList;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.IBinder;
 import android.util.EventLog;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 
 import android.support.v7.view.menu.MenuBuilder;
+import android.support.v7.view.menu.MenuItemImpl;
 
 
 /**
@@ -40,30 +47,172 @@ import android.support.v7.view.menu.MenuBuilder;
  * call {@link #show(View, IBinder)} which will populate the menu
  * with a view's context menu items and show the context menu.
  */
-public class ContextMenuBuilder extends MenuBuilder implements ContextMenu {
-    
+public class ContextMenuBuilder implements ContextMenu {
+
+    MenuBuilder menuBuilder = null;
+
     public ContextMenuBuilder(Context context) {
-        super(context);
+    	menuBuilder = MenuBuilderHelper.createInstance(context);
     }
 
+    public void setCallback(MenuBuilder.Callback cb) {
+    	MenuBuilderHelper.setCallback(menuBuilder, cb);
+    }
+    
     public ContextMenu setHeaderIcon(Drawable icon) {
-        return (ContextMenu) super.setHeaderIconInt(icon);
+    	MenuBuilderHelper.setHeaderIconInt(menuBuilder, icon);
+        return (ContextMenu) this;
     }
 
     public ContextMenu setHeaderIcon(int iconRes) {
-        return (ContextMenu) super.setHeaderIconInt(iconRes);
+    	MenuBuilderHelper.setHeaderIconInt(menuBuilder, iconRes);
+        return (ContextMenu) this;
     }
 
     public ContextMenu setHeaderTitle(CharSequence title) {
-        return (ContextMenu) super.setHeaderTitleInt(title);
+    	MenuBuilderHelper.setHeaderTitleInt(menuBuilder, title);
+        return (ContextMenu) this;
     }
 
     public ContextMenu setHeaderTitle(int titleRes) {
-        return (ContextMenu) super.setHeaderTitleInt(titleRes);
+    	MenuBuilderHelper.setHeaderTitleInt(menuBuilder, titleRes);
+        return (ContextMenu) this;
     }
 
     public ContextMenu setHeaderView(View view) {
-        return (ContextMenu) super.setHeaderViewInt(view);
+    	MenuBuilderHelper.setHeaderViewInt(menuBuilder, view);
+        return (ContextMenu) this;
+    }
+   
+    public ArrayList<MenuItemImpl> getVisibleItems() {
+        return MenuBuilderHelper.getVisibleItems(menuBuilder);
+    }
+    
+    
+    @Override
+    public MenuItem add(CharSequence title) {
+        return MenuBuilderHelper.add(menuBuilder, title);
+    }
+
+    @Override
+    public MenuItem add(int titleRes) {
+        return MenuBuilderHelper.add(menuBuilder, titleRes);
+    }
+
+    @Override
+    public MenuItem add(int groupId, int itemId, int order, CharSequence title) {
+        return MenuBuilderHelper.add(menuBuilder, groupId, itemId, order, title);
+    }
+
+    @Override
+    public MenuItem add(int groupId, int itemId, int order, int titleRes) {
+        return MenuBuilderHelper.add(menuBuilder, groupId, itemId, order, titleRes);
+    }
+
+    @Override
+    public int addIntentOptions(int groupId, int itemId, int order, ComponentName caller, Intent[] specifics,
+            Intent intent, int flags, MenuItem[] outSpecificItems) {
+        return MenuBuilderHelper.addIntentOptions(menuBuilder, groupId, itemId, order, caller, specifics, intent, flags, outSpecificItems);
+    }
+
+    @Override
+    public SubMenu addSubMenu(CharSequence title) {
+        return MenuBuilderHelper.addSubMenu(menuBuilder, title);
+    }
+
+    @Override
+    public SubMenu addSubMenu(int titleRes) {
+        return MenuBuilderHelper.addSubMenu(menuBuilder, titleRes);
+    }
+
+    @Override
+    public SubMenu addSubMenu(int groupId, int itemId, int order, CharSequence title) {
+        return MenuBuilderHelper.addSubMenu(menuBuilder, groupId, itemId, order, title);
+    }
+
+    @Override
+    public SubMenu addSubMenu(int groupId, int itemId, int order, int titleRes) {
+        return MenuBuilderHelper.addSubMenu(menuBuilder, groupId, itemId, order, titleRes);
+    }
+
+    @Override
+    public void clear() {
+        MenuBuilderHelper.clear(menuBuilder);
+    }
+
+    @Override
+    public void close() {
+        MenuBuilderHelper.close(menuBuilder);
+    }
+
+    @Override
+    public MenuItem findItem(int id) {
+        return MenuBuilderHelper.findItem(menuBuilder, id);
+    }
+
+    @Override
+    public MenuItem getItem(int index) {
+        return MenuBuilderHelper.getItem(menuBuilder, index);
+    }
+
+    @Override
+    public boolean hasVisibleItems() {
+        return MenuBuilderHelper.hasVisibleItems(menuBuilder);
+    }
+
+    @Override
+    public boolean isShortcutKey(int keyCode, KeyEvent event) {
+        return MenuBuilderHelper.isShortcutKey(menuBuilder, keyCode, event);
+    }
+
+    @Override
+    public boolean performIdentifierAction(int id, int flags) {
+        return MenuBuilderHelper.performIdentifierAction(menuBuilder, id, flags);
+    }
+
+    @Override
+    public boolean performShortcut(int keyCode, KeyEvent event, int flags) {
+        return MenuBuilderHelper.performShortcut(menuBuilder, keyCode, event, flags);
+    }
+
+    @Override
+    public void removeGroup(int groupId) {
+        MenuBuilderHelper.removeGroup(menuBuilder, groupId);
+    }
+
+    @Override
+    public void removeItem(int id) {
+        MenuBuilderHelper.removeItem(menuBuilder, id);
+    }
+
+    @Override
+    public void setGroupCheckable(int group, boolean checkable, boolean exclusive) {
+        MenuBuilderHelper.setGroupCheckable(menuBuilder, group, checkable, exclusive);
+    }
+
+    @Override
+    public void setGroupEnabled(int group, boolean enabled) {
+        MenuBuilderHelper.setGroupEnabled(menuBuilder, group, enabled);
+    }
+
+    @Override
+    public void setGroupVisible(int group, boolean visible) {
+        MenuBuilderHelper.setGroupVisible(menuBuilder, group, visible);
+    }
+
+    @Override
+    public void setQwertyMode(boolean isQwerty) {
+        MenuBuilderHelper.setQwertyMode(menuBuilder, isQwerty);
+    }
+
+    @Override
+    public int size() {
+        return MenuBuilderHelper.size(menuBuilder);
+    }
+
+    @Override
+    public void clearHeader() {
+        MenuBuilderHelper.clearHeader(menuBuilder);
     }
 
     /**
@@ -87,7 +236,7 @@ public class ContextMenuBuilder extends MenuBuilder implements ContextMenu {
         if (getVisibleItems().size() > 0) {
             EventLog.writeEvent(50001, 1);
             
-            MenuDialogHelper helper = new MenuDialogHelper(this); 
+            MenuDialogHelper helper = new MenuDialogHelper(this.menuBuilder); 
             helper.show(token);
             
             return helper;

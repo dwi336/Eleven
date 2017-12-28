@@ -22,6 +22,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 
 import com.cyanogenmod.eleven.R;
@@ -327,7 +328,7 @@ public final class PreferenceUtils {
 
     /** @parm lastAddedMillis timestamp in millis used as a cutoff for last added playlist */
     public void setLastAddedCutoff(long lastAddedMillis) {
-        mPreferences.edit().putLong(LAST_ADDED_CUTOFF, lastAddedMillis).commit();
+        mPreferences.edit().putLong(LAST_ADDED_CUTOFF, lastAddedMillis).apply();
     }
 
     public long getLastAddedCutoff() {
@@ -347,7 +348,7 @@ public final class PreferenceUtils {
     }
 
     public static void requestRecordAudio(Activity activity) {
-        activity.requestPermissions(
+    	ActivityCompat.requestPermissions(activity,
                 new String[] {permission.RECORD_AUDIO},
                 PERMISSION_REQUEST_RECORD_AUDIO);
     }

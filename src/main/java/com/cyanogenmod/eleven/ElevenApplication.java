@@ -36,6 +36,7 @@ public class ElevenApplication extends Application {
      */
     @Override
     public void onCreate() {
+        super.onCreate();
         // Enable strict mode logging
         enableStrictMode();
         // Turn off logging for jaudiotagger.

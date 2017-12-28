@@ -3,11 +3,11 @@ package com.cyanogenmod.eleven.widgets;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.util.AttributeSet;
-import android.widget.TextView;
+import android.support.v7.widget.AppCompatTextView;
 
 import com.cyanogenmod.eleven.R;
 
-public class RobotoTextView extends TextView {
+public class RobotoTextView extends AppCompatTextView {
 
     public RobotoTextView(Context context) {
         super(context);

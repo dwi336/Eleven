@@ -30,6 +30,7 @@ import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -85,6 +86,24 @@ public class AudioPreviewActivity extends AppCompatActivity implements MediaPlay
             Media.ARTIST
     };
 
+    private static int MEDIA_ERROR_IO;
+    private static int MEDIA_ERROR_TIMED_OUT;
+    
+    static {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                Class<?> clazz = Class.forName("android.media.MediaPlayer");
+                MEDIA_ERROR_IO = ((Integer)clazz.getField("MEDIA_ERROR_IO").get(null)).intValue();
+                MEDIA_ERROR_TIMED_OUT = ((Integer)clazz.getField("MEDIA_ERROR_TIMED_OUT").get(null)).intValue();
+            } else {
+                MEDIA_ERROR_IO = -1004;
+                MEDIA_ERROR_TIMED_OUT = -110;
+            }
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+    
     // Seeking flag
     private boolean mIsSeeking = false;
     private boolean mWasPlaying = false;
@@ -205,7 +224,7 @@ public class AudioPreviewActivity extends AppCompatActivity implements MediaPlay
                 mPreviewPlayer.setDataSourceAndPrepare(mPreviewSong.URI);
             } catch (IOException e) {
                 Logger.loge(TAG, e.getMessage());
-                onError(mPreviewPlayer, MediaPlayer.MEDIA_ERROR_IO, 0);
+                onError(mPreviewPlayer, AudioPreviewActivity.MEDIA_ERROR_IO, 0);
                 return;
             }
         } else {
@@ -480,31 +499,24 @@ public class AudioPreviewActivity extends AppCompatActivity implements MediaPlay
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        switch (what) {
-            case MediaPlayer.MEDIA_ERROR_SERVER_DIED:
-                Toast.makeText(this, "Server has died!", Toast.LENGTH_SHORT).show();
-                break;
-            case MediaPlayer.MEDIA_ERROR_IO:
-                Toast.makeText(this, "I/O error!", Toast.LENGTH_SHORT).show();
-                break;
-            case MediaPlayer.MEDIA_ERROR_MALFORMED:
-                Toast.makeText(this, "Malformed media!", Toast.LENGTH_SHORT).show();
-                break;
-            case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-                Toast.makeText(this, "Not valid for progressive playback!", Toast.LENGTH_SHORT)
+        if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+            Toast.makeText(this, "Server has died!", Toast.LENGTH_SHORT).show();
+        } else if (what == AudioPreviewActivity.MEDIA_ERROR_IO) {
+            Toast.makeText(this, "I/O error!", Toast.LENGTH_SHORT).show();
+        } else if (what == MediaPlayer.MEDIA_ERROR_MALFORMED) {
+            Toast.makeText(this, "Malformed media!", Toast.LENGTH_SHORT).show();
+        } else if (what == MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK) {
+            Toast.makeText(this, "Not valid for progressive playback!", Toast.LENGTH_SHORT)
                         .show();
-                break;
-            case MediaPlayer.MEDIA_ERROR_TIMED_OUT:
-                Toast.makeText(this, "Media server timed out!", Toast.LENGTH_SHORT).show();
-                break;
-            case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
-                Toast.makeText(this, "Media is unsupported!", Toast.LENGTH_SHORT).show();
-                break;
-            case MediaPlayer.MEDIA_ERROR_UNKNOWN:
-            default:
-                Toast.makeText(this, "An unkown error has occurred: " + what, Toast.LENGTH_LONG)
+        } else if (what == AudioPreviewActivity.MEDIA_ERROR_TIMED_OUT) {
+            Toast.makeText(this, "Media server timed out!", Toast.LENGTH_SHORT).show();
+        } else if (what == MediaPlayer.MEDIA_ERROR_UNSUPPORTED) {
+            Toast.makeText(this, "Media is unsupported!", Toast.LENGTH_SHORT).show();
+        } else {
+            // MediaPlayer.MEDIA_ERROR_UNKNOWN
+            // default
+            Toast.makeText(this, "An unkown error has occurred: " + what, Toast.LENGTH_LONG)
                         .show();
-                break;
         }
         stopPlaybackAndTeardown();
         finish();
@@ -575,7 +587,7 @@ public class AudioPreviewActivity extends AppCompatActivity implements MediaPlay
                     startProgressUpdates();
                 } else {
                     Logger.loge(TAG, "Failed to gain audio focus!");
-                    onError(mPreviewPlayer, MediaPlayer.MEDIA_ERROR_TIMED_OUT, 0);
+                    onError(mPreviewPlayer, AudioPreviewActivity.MEDIA_ERROR_TIMED_OUT, 0);
                 }
             } else {
                 Logger.loge(TAG, "Not prepared!");

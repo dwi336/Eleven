@@ -112,13 +112,15 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
             String key) {
-       if (key.equals(PreferenceUtils.SHOW_VISUALIZER) &&
+        if (key.equals(PreferenceUtils.SHOW_VISUALIZER) &&
                sharedPreferences.getBoolean(key, false) && !PreferenceUtils.canRecordAudio(this)) {
-           PreferenceUtils.requestRecordAudio(this);
-       } if (key.equals(PreferenceUtils.SHAKE_TO_PLAY)) {
-           MusicUtils.setShakeToPlayEnabled(sharedPreferences.getBoolean(key, false));
-       } else if (key.equals(PreferenceUtils.SHOW_ALBUM_ART_ON_LOCKSCREEN)) {
-           MusicUtils.setShowAlbumArtOnLockscreen(sharedPreferences.getBoolean(key, true));
-       }
-   }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                PreferenceUtils.requestRecordAudio(this);    		   
+            }
+        } if (key.equals(PreferenceUtils.SHAKE_TO_PLAY)) {
+            MusicUtils.setShakeToPlayEnabled(sharedPreferences.getBoolean(key, false));
+        } else if (key.equals(PreferenceUtils.SHOW_ALBUM_ART_ON_LOCKSCREEN)) {
+            MusicUtils.setShowAlbumArtOnLockscreen(sharedPreferences.getBoolean(key, true));
+        }
+    }
 }

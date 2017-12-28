@@ -37,6 +37,7 @@ public class LayoutSuppressingImageView extends AppCompatImageView {
      */
     @Override
     public void requestLayout() {
+    	super.requestLayout();
         forceLayout();
     }
 

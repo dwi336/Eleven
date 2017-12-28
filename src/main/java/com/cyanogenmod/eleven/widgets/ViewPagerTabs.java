@@ -21,6 +21,7 @@ import android.content.res.TypedArray;
 import android.graphics.Outline;
 import android.os.Build;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -250,7 +251,7 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
     }
 
     private int getRtlPosition(int position) {
-        if (getLayoutDirection() == View.LAYOUT_DIRECTION_RTL) {
+        if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL) {
             return mTabStrip.getChildCount() - 1 - position;
         }
         return position;

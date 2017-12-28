@@ -18,7 +18,6 @@ package com.cyanogenmod.eleven.utils;
 import android.app.Activity;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.os.IBinder;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.view.menu.MenuBuilder;
 import android.view.Menu;
@@ -36,6 +35,9 @@ import com.cyanogenmod.eleven.menu.RenamePlaylist;
 import com.cyanogenmod.eleven.provider.RecentStore;
 import com.cyanogenmod.eleven.widgets.Roboto;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 import java.util.TreeSet;
 
 /**
@@ -87,7 +89,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                 Menu m = popupMenu.getMenu();
                 for (int i = 0; i < m.size(); i++) {
                     MenuItem mi = m.getItem(i);                
-            	    Typeface font = Roboto.getTypeface(mActivity,Roboto.ROBOTO_LIGHT);
+                    Typeface font = Roboto.getTypeface(mActivity,Roboto.ROBOTO_LIGHT);
                     SpannableString mNewTitle = new SpannableString(mi.getTitle());
                     mNewTitle.setSpan(new CustomTypefaceSpan(font), 0 , mNewTitle.length(),  Spannable.SPAN_INCLUSIVE_INCLUSIVE);
                     mi.setTitle(mNewTitle);            
@@ -332,7 +334,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
     /**
      * Simple helper function for adding an item to the menu
      */
-    public void addToMenu(final Menu menu, final int id, final int resourceId) {   	
+    public void addToMenu(final Menu menu, final int id, final int resourceId) {       
         menu.add(getGroupId(), id, id /*as order*/, mActivity.getString(resourceId));
     }
 
@@ -355,17 +357,24 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                     ContextMenuBuilder builder = new ContextMenuBuilder(mActivity);
                     MusicUtils.makePlaylistMenu(mActivity, getGroupId(), builder);
                     builder.setHeaderTitle(R.string.add_to_playlist);
-                    builder.setCallback(new MenuBuilder.Callback() {
+                    
+                    builder.setCallback((MenuBuilder.Callback) Proxy.newProxyInstance(
+                    		MenuBuilder.Callback.class.getClassLoader(),
+                                new Class[] { MenuBuilder.Callback.class },
+                                new InvocationHandler() {
                         @Override
-                        public boolean onMenuItemSelected(MenuBuilder menu, MenuItem item) {
-                            return onMenuItemClick(item);
+                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                            if(method.getName().equals("onMenuItemSelected")){
+                                Object obj = args[1];
+                                if (obj instanceof MenuItem) {
+                                    MenuItem item = (MenuItem) obj;
+                                    return onMenuItemClick(item);
+                                }
+                                return false;
+                            }
+                            return false;
                         }
-
-                        @Override
-                        public void onMenuModeChange(MenuBuilder menu) {
-                            // do nothing
-                        }
-                    });
+                    }));
                     builder.show(null, null);
                     return true;
                 case FragmentMenuItems.NEW_PLAYLIST:

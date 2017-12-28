@@ -9,7 +9,7 @@
   <setting name="setup-tab">
     <setting name="setup">
       <setting name="custom-gradle-executor"/>
-      <setting name="current-directory" value="/home/didi/workspace/Eleven3"/>
+      <setting name="current-directory" value="/home/didi/workspace/Eleven"/>
       <setting name="log-level" value="INFO"/>
       <setting name="stack-trace-level" value="ALWAYS_FULL"/>
     </setting>

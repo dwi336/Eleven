@@ -60,6 +60,7 @@ public class SquareView extends ViewGroup {
      */
     @Override
     public void requestLayout() {
+    	super.requestLayout();
         forceLayout();
     }
 }

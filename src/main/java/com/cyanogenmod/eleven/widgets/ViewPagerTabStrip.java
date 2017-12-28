@@ -21,6 +21,7 @@ import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -97,6 +98,6 @@ public class ViewPagerTabStrip extends LinearLayout {
     }
 
     private boolean isRtl() {
-        return getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        return ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL;
     }
 }
