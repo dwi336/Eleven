@@ -18,8 +18,10 @@ import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.media.app.NotificationCompat.MediaStyle;
 import android.app.NotificationManager;
+import android.app.NotificationChannel;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -99,6 +101,7 @@ import java.util.TreeSet;
 public class MusicPlaybackService extends Service {
     private static final String TAG = "MusicPlaybackService";
     private static final boolean D = false;
+    public static final String CHANNEL_ID = "eleven_channel_01";
 
     /**
      * Indicates that the music has paused or resumed
@@ -617,6 +620,7 @@ public class MusicPlaybackService extends Service {
     public void onCreate() {
         if (D) Log.d(TAG, "Creating service");
         super.onCreate();
+	createNotificationChannel();
 
         if ( (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) && (ContextCompat.checkSelfPermission(this,permission.READ_EXTERNAL_STORAGE) !=
                 PackageManager.PERMISSION_GRANTED) ) {
@@ -772,6 +776,16 @@ public class MusicPlaybackService extends Service {
         mSession.setFlags(MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
                 | MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS);
     }
+    private void createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >=25) {
+            CharSequence name = "Eleven";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, name, importance);
+            manager.createNotificationChannel(mChannel);
+        }
+    }
+
 
     /**
      * {@inheritDoc}
@@ -1656,7 +1670,7 @@ public class MusicPlaybackService extends Service {
             mNotificationPostTime = System.currentTimeMillis();
         }
 
-        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
                     .setSmallIcon(R.drawable.ic_notification)
                     .setLargeIcon(artwork.getBitmap())
                     .setContentIntent(clickIntent)
