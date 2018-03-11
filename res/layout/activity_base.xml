@@ -14,7 +14,7 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<com.cyanogenmod.eleven.slidinguppanel.SlidingUpPanelLayout
+<org.lineageos.eleven.slidinguppanel.SlidingUpPanelLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sothree="http://schemas.android.com/apk/res-auto"
     android:id="@+id/sliding_layout"
@@ -47,7 +47,7 @@
 
     </FrameLayout>
 
-    <com.cyanogenmod.eleven.slidinguppanel.SlidingUpPanelLayout
+    <org.lineageos.eleven.slidinguppanel.SlidingUpPanelLayout
         android:id="@+id/sliding_layout2"
         android:background="@color/activity_base_background_color"
         android:layout_width="match_parent"
@@ -78,7 +78,7 @@
 
                 <fragment
                     android:id="@+id/audioPlayerFragment"
-                    class="com.cyanogenmod.eleven.ui.fragments.AudioPlayerFragment"
+                    class="org.lineageos.eleven.ui.fragments.AudioPlayerFragment"
                     android:layout_width="match_parent"
                     android:layout_height="0dip"
                     android:layout_weight="1" />
@@ -110,10 +110,10 @@
 
             <fragment
                 android:id="@+id/queueFragment"
-                class="com.cyanogenmod.eleven.ui.fragments.QueueFragment"
+                class="org.lineageos.eleven.ui.fragments.QueueFragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dip"
                 android:layout_weight="1" />
         </LinearLayout>
-    </com.cyanogenmod.eleven.slidinguppanel.SlidingUpPanelLayout>
-</com.cyanogenmod.eleven.slidinguppanel.SlidingUpPanelLayout>
+    </org.lineageos.eleven.slidinguppanel.SlidingUpPanelLayout>
+</org.lineageos.eleven.slidinguppanel.SlidingUpPanelLayout>

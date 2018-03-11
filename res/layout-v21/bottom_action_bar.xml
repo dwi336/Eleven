@@ -28,7 +28,7 @@
     android:background="@android:color/transparent"
     tools:ignore="ContentDescription" >
 
-    <com.cyanogenmod.eleven.widgets.SquareImageView
+    <org.lineageos.eleven.widgets.SquareImageView
         android:id="@+id/bottom_action_bar_album_art"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
