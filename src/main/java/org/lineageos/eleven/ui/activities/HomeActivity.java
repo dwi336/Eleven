@@ -342,19 +342,21 @@ public class HomeActivity extends SlidingPanelActivity implements
             if (resultCode == RESULT_OK) {
                 MusicUtils.removeFromCache(this, mKey);
                 final Uri selectedImage = data.getData();
-
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
+                // Workaround for Issue #6 "App not able to change the image"
+                // Prevents race condition while AlbumAdapter load default image
+                // and store it in the ImageCache. If an image already exists
+                // for an Album, no new Image can be stored.
+                // new Thread(new Runnable() {
+                //     @Override
+                //     public void run() {
                         Bitmap bitmap = ImageFetcher.decodeSampledBitmapFromUri(getContentResolver(),
                                 selectedImage);
-
                         ImageFetcher imageFetcher = ElevenUtils.getImageFetcher(HomeActivity.this);
                         imageFetcher.addBitmapToCache(mKey, bitmap);
 
                         MusicUtils.refresh();
-                    }
-                }).start();
+                //     }
+                // }).start();
             }
         }
     }
