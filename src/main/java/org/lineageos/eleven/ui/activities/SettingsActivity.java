@@ -47,9 +47,6 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
         getDelegate().onCreate(savedInstanceState);
         super.onCreate(savedInstanceState);
 
-        // Fade it in
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-
         // Calculate ActionBar height
         TypedValue value = new TypedValue();
         int height = 0;

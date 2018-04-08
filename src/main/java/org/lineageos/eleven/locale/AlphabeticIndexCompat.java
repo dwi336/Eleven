@@ -51,7 +51,7 @@ public class AlphabeticIndexCompat {
 	        if (s.isEmpty()) {
 	            return UNKNOWN_BUCKET_INDEX;
 	        }
-	        int index = BUCKETS.indexOf(s.substring(0, 1).toUpperCase());
+	        int index = BUCKETS.indexOf(s.substring(0, 1).toUpperCase(Locale.US));
 	        if (index != -1) {
 	            return index;
 	        }

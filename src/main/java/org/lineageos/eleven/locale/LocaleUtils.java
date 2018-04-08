@@ -432,7 +432,7 @@ public class LocaleUtils {
         }
     }
 
-    private static final String JAPANESE_LANGUAGE = Locale.JAPANESE.getLanguage().toLowerCase();
+    private static final String JAPANESE_LANGUAGE = Locale.JAPANESE.getLanguage().toLowerCase(Locale.US);
     private static LocaleUtils sSingleton;
 
     private final LocaleSet mLocales;

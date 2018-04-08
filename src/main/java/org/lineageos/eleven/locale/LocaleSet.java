@@ -25,9 +25,9 @@ import java.lang.reflect.Method;
 import java.util.Locale;
 
 public class LocaleSet {
-    private static final String CHINESE_LANGUAGE = Locale.CHINESE.getLanguage().toLowerCase();
-    private static final String JAPANESE_LANGUAGE = Locale.JAPANESE.getLanguage().toLowerCase();
-    private static final String KOREAN_LANGUAGE = Locale.KOREAN.getLanguage().toLowerCase();
+    private static final String CHINESE_LANGUAGE = Locale.CHINESE.getLanguage().toLowerCase(Locale.US);
+    private static final String JAPANESE_LANGUAGE = Locale.JAPANESE.getLanguage().toLowerCase(Locale.US);
+    private static final String KOREAN_LANGUAGE = Locale.KOREAN.getLanguage().toLowerCase(Locale.US);
 
     private static class LocaleWrapper {
         private final Locale mLocale;
@@ -43,7 +43,7 @@ public class LocaleSet {
         public LocaleWrapper(Locale locale) {
             mLocale = locale;
             if (mLocale != null) {
-                mLanguage = mLocale.getLanguage().toLowerCase();
+                mLanguage = mLocale.getLanguage().toLowerCase(Locale.US);
                 mLocaleIsCJK = isLanguageCJK(mLanguage);
             } else {
                 mLanguage = null;

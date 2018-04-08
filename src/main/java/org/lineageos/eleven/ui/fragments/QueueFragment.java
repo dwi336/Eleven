@@ -215,7 +215,7 @@ public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
             final Bundle savedInstanceState) {
         // The View for the fragment's UI
-        mRootView = (ViewGroup)inflater.inflate(R.layout.list_base, null);
+        mRootView = (ViewGroup)inflater.inflate(R.layout.list_base, container, true);
         // Initialize the list
         mListView = (DragSortListView)mRootView.findViewById(R.id.list_base);
         // Set the data behind the list

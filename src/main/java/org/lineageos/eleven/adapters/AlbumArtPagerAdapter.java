@@ -177,7 +177,7 @@ public class AlbumArtPagerAdapter extends FragmentStatePagerAdapter {
 
         @Override
         public View onCreateView(final LayoutInflater inflater, final ViewGroup container, final Bundle savedInstanceState) {
-            mRootView = inflater.inflate(R.layout.album_art_fragment, null);
+            mRootView = inflater.inflate(R.layout.album_art_fragment, container, false);
             return mRootView;
         }
 

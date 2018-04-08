@@ -260,9 +260,6 @@ public class SearchActivity extends AppCompatActivity implements
             }
         };
 
-        // Fade it in
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-
         // Control the media volume
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 

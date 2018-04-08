@@ -112,7 +112,7 @@ public class PlaylistFragment extends MusicBrowserFragment implements
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
             final Bundle savedInstanceState) {
         // The View for the fragment's UI
-        final ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.list_base, null);
+        final ViewGroup rootView = (ViewGroup)inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list
         mListView = (ListView)rootView.findViewById(R.id.list_base);
         // Set the data behind the grid

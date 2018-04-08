@@ -180,7 +180,7 @@ public class AudioPlayerFragment extends Fragment implements ServiceConnection {
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         // The View for the fragment's UI
-        mRootView = (ViewGroup) inflater.inflate(R.layout.activity_player_fragment, null);
+        mRootView = (ViewGroup) inflater.inflate(R.layout.activity_player_fragment, container, true);
 
         // Header title values
         initHeaderBar();
