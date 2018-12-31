@@ -38,7 +38,7 @@
 #keep all classes that might be used in XML layouts
 -keep public class * extends android.view.View
 -keep public class * extends android.app.Fragment
--keep public class * extends android.support.v4.Fragment
+-keep public class * extends androidx.fragment.app.Fragment
 
 #keep all classes
 -keep public class *{
@@ -74,4 +74,4 @@
 -dontwarn **CompatHoneycomb
 -dontwarn org.htmlcleaner.*
 -dontwarn org.jaudiotagger.**
-#-keep class android.support.v4.** { *; }
+#-keep class androidx.fragment.app.Fragment.** { *; }

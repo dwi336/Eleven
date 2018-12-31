@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="app/src/main/java"/>
 	<classpathentry kind="src" path="gen"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8/"/>
 	<classpathentry kind="con" path="org.eclipse.buildship.core.gradleclasspathcontainer"/>
 	<classpathentry kind="con" path="org.eclipse.andmore.ANDROID_FRAMEWORK"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.andmore.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.andmore.DEPENDENCIES"/>
-	<classpathentry kind="lib" path="/home/didi/Android/Sdk/tools/lib/guava-20.0.jar"/>
-	<classpathentry kind="output" path="bin/classes"/>
+	<classpathentry kind="lib" path="/home/didi/Android/Sdk/build-tools/28.0.3/renderscript/lib/renderscript-v8.jar"/>
+	<classpathentry kind="lib" path="libs/guava-24.1-jre.jar"/>
+	<classpathentry kind="output" path="bin/default"/>
 </classpath>
