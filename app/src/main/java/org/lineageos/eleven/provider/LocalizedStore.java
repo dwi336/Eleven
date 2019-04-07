@@ -19,6 +19,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Message;
@@ -34,7 +35,6 @@ import org.lineageos.eleven.locale.LocaleSetManager;
 import org.lineageos.eleven.locale.LocaleUtils;
 import org.lineageos.eleven.utils.MusicUtils;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -175,19 +175,12 @@ public class LocalizedStore {
 
             updateLocalizedStore(db, null);
 
-            // ICU.getIcuVersion()
-            String icuVersion = null;
-            try {
-                Class<?> clazz = Class.forName("libcore.icu.ICU");
-                Method m = clazz.getMethod("getIcuVersion", new Class[0]);
-                icuVersion = ((String)(m.invoke(clazz, new Object[0])));
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
             // Update the ICU version used to generate the locale derived data
             // so we can tell when we need to rebuild with new ICU versions.
+            // But assume that ICU versions are only able to change on Android version upgrades and
+            // use SDK INT as identifier.
             PropertiesStore.getInstance(mContext).storeProperty(
-                    PropertiesStore.DbProperties.ICU_VERSION, icuVersion);
+                    PropertiesStore.DbProperties.ICU_VERSION, String.valueOf(Build.VERSION.SDK_INT));
             PropertiesStore.getInstance(mContext).storeProperty(PropertiesStore.DbProperties.LOCALE,
                     locales.toString());
 
@@ -407,7 +400,7 @@ public class LocalizedStore {
 
             if (c != null && c.moveToFirst()) {
                 sortData.ids = new long[c.getCount()];
-                sortData.bucketLabels = new ArrayList<String>(c.getCount());
+                sortData.bucketLabels = new ArrayList<>(c.getCount());
                 do {
                     sortData.ids[c.getPosition()] = c.getLong(0);
                     sortData.bucketLabels.add(c.getString(1));

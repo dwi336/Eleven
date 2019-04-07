@@ -21,7 +21,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 // Because of androidx.renderscript issue https://issuetracker.google.com/u/0/issues/119582492
@@ -29,7 +28,6 @@ import android.widget.ImageView;
 import android.support.v8.renderscript.RenderScript;
 //import androidx.renderscript.RenderScript;
 
-import org.lineageos.eleven.R;
 import org.lineageos.eleven.provider.PlaylistArtworkStore;
 import org.lineageos.eleven.utils.ElevenUtils;
 import org.lineageos.eleven.utils.ImageUtils;
@@ -372,7 +370,7 @@ public abstract class ImageWorker {
          * Constructor of <code>AsyncDrawable</code>
          */
         public AsyncTaskContainer(final BitmapWorkerTask bitmapWorkerTask) {
-            mBitmapWorkerTaskReference = new WeakReference<BitmapWorkerTask>(bitmapWorkerTask);
+            mBitmapWorkerTaskReference = new WeakReference<>(bitmapWorkerTask);
             mKey = bitmapWorkerTask.mKey;
         }
 

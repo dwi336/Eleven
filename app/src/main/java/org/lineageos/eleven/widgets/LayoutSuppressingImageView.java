@@ -11,6 +11,7 @@
 
 package org.lineageos.eleven.widgets;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
 import androidx.appcompat.widget.AppCompatImageView;
@@ -34,6 +35,7 @@ public class LayoutSuppressingImageView extends AppCompatImageView {
     /**
      * {@inheritDoc}
      */
+    @SuppressLint("MissingSuperCall")
     @Override
     public void requestLayout() {
     	super.requestLayout();

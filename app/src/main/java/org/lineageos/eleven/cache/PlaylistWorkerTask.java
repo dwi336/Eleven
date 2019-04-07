@@ -25,14 +25,12 @@ import android.graphics.drawable.TransitionDrawable;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 
-import org.lineageos.eleven.R;
 import org.lineageos.eleven.cache.ImageWorker.ImageType;
 import org.lineageos.eleven.loaders.PlaylistSongLoader;
 import org.lineageos.eleven.loaders.SortedCursor;
 import org.lineageos.eleven.provider.PlaylistArtworkStore;
 import org.lineageos.eleven.provider.SongPlayCount;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -277,7 +275,7 @@ public class PlaylistWorkerTask extends BitmapWorkerTask<Void, Void, TransitionD
             return null;
         }
 
-        ArrayList<Bitmap> loadedBitmaps = new ArrayList<Bitmap>(MAX_NUM_BITMAPS_TO_LOAD);
+        ArrayList<Bitmap> loadedBitmaps = new ArrayList<>(MAX_NUM_BITMAPS_TO_LOAD);
 
         final int artistIdx = sortedCursor.getColumnIndex(MediaStore.Audio.AudioColumns.ARTIST);
         final int albumIdIdx = sortedCursor.getColumnIndex(MediaStore.Audio.AudioColumns.ALBUM_ID);
@@ -289,7 +287,7 @@ public class PlaylistWorkerTask extends BitmapWorkerTask<Void, Void, TransitionD
         long albumId = -1;
 
         // create a hashset of the keys so we don't load images from the same album multiple times
-        HashSet<String> keys = new HashSet<String>(sortedCursor.getCount());
+        HashSet<String> keys = new HashSet<>(sortedCursor.getCount());
 
         do {
             if (isCancelled()) {
@@ -346,14 +344,6 @@ public class PlaylistWorkerTask extends BitmapWorkerTask<Void, Void, TransitionD
                 combinedCanvas.drawBitmap(loadedBitmaps.get(3), null,
                         new Rect(width / 2, height / 2, width, height), null);
 
-                // combinedCanvas.release();
-            	try {
-            	    Class<?> clazz = combinedCanvas.getClass();
-                    Method m = clazz.getMethod("release", new Class[0]);
-                    m.invoke(combinedCanvas, new Object[0]);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
                 combinedCanvas = null;
                 bitmap = combinedBitmap;
             }

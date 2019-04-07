@@ -67,7 +67,7 @@ public class BitmapWithColors {
 
     private static final int CACHE_SIZE_MAX = 20;
     private static final LruCache<Integer, BitmapColors> sCachedColors =
-            new LruCache<Integer, BitmapColors>(CACHE_SIZE_MAX);
+            new LruCache<>(CACHE_SIZE_MAX);
 
     private Bitmap mBitmap;
     private int mBitmapKey;

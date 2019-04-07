@@ -27,6 +27,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
+import org.lineageos.eleven.BuildConstants;
 import org.lineageos.eleven.MusicPlaybackService;
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.cache.ICacheListener;
@@ -50,7 +51,7 @@ public class AlbumArtPagerAdapter extends FragmentStatePagerAdapter {
     private static final int MAX_ALBUM_ARTIST_SIZE = 10;
 
     // This helps with flickering and jumping and reloading the same tracks
-    private final static LinkedList<AlbumArtistDetails> sCacheAlbumArtistDetails = new LinkedList<AlbumArtistDetails>();
+    private final static LinkedList<AlbumArtistDetails> sCacheAlbumArtistDetails = new LinkedList<>();
 
     /**
      * Adds the album artist details to the cache
@@ -152,7 +153,8 @@ public class AlbumArtPagerAdapter extends FragmentStatePagerAdapter {
      * and handles loading the album art for a given audio id
      */
     public static class AlbumArtFragment extends Fragment implements ICacheListener {
-        private static final String ID = "org.lineageos.eleven.adapters.AlbumArtPagerAdapter.AlbumArtFragment.ID";
+        private static final String ID = BuildConstants.PACKAGE_NAME +
+                ".adapters.AlbumArtPagerAdapter.AlbumArtFragment.ID";
 
         private View mRootView;
         private AlbumArtistLoader mTask;

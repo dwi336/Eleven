@@ -16,6 +16,7 @@
 package org.lineageos.eleven.utils;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Build;
 import android.view.Menu;
@@ -23,7 +24,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.text.Spannable;
 import android.text.SpannableString;
-import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentManager;
 
@@ -35,9 +36,7 @@ import org.lineageos.eleven.menu.RenamePlaylist;
 import org.lineageos.eleven.provider.RecentStore;
 import org.lineageos.eleven.widgets.Roboto;
 
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -182,7 +181,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
      * @param menu Menu to use for adding to
      */
     public void createPopupMenu(final Menu menu) {
-        TreeSet<Integer> menuItems = new TreeSet<Integer>();
+        TreeSet<Integer> menuItems = new TreeSet<>();
 
         // get the default items and add them
         int[] defaultItems = getIdsForType(mType);
@@ -334,7 +333,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
     /**
      * Simple helper function for adding an item to the menu
      */
-    public void addToMenu(final Menu menu, final int id, final int resourceId) {       
+    public void addToMenu(final Menu menu, final int id, final int resourceId) {
         menu.add(getGroupId(), id, id /*as order*/, mActivity.getString(resourceId));
     }
 
@@ -354,28 +353,23 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                     MusicUtils.addToQueue(mActivity, getIdList(), getSourceId(), getSourceType());
                     return true;
                 case FragmentMenuItems.ADD_TO_PLAYLIST:
-                    ContextMenuBuilder builder = new ContextMenuBuilder(mActivity);
-                    MusicUtils.makePlaylistMenu(mActivity, getGroupId(), builder);
-                    builder.setHeaderTitle(R.string.add_to_playlist);
-
-                    builder.setCallback((MenuBuilder.Callback) Proxy.newProxyInstance(
-                    		MenuBuilder.Callback.class.getClassLoader(),
-                                new Class[] { MenuBuilder.Callback.class },
-                                new InvocationHandler() {
-                        @Override
-                        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-                            if(method.getName().equals("onMenuItemSelected")){
-                                Object obj = args[1];
-                                if (obj instanceof MenuItem) {
-                                    MenuItem item = (MenuItem) obj;
-                                    return onMenuItemClick(item);
-                                }
-                                return false;
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
+                    builder.setTitle(R.string.add_to_playlist);
+                    final List<String> menuItemList = MusicUtils.makePlaylist(mActivity);
+                    builder.setItems(menuItemList.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                        @Override public void onClick(DialogInterface dialog, int which) {
+                            if (which == 0) {
+                                CreateNewPlaylist.getInstance(getIdList()).show(
+                                        mFragmentManager, "CreatePlaylist");
+                                return;
                             }
-                            return false;
+
+                            final String name = menuItemList.get(which);
+                            final long playListId = MusicUtils.getIdForPlaylist(mActivity, name);
+                            MusicUtils.addToPlaylist(mActivity, getIdList(), playListId);
                         }
-                    }));
-                    builder.show(null, null);
+                    });
+                    builder.show();
                     return true;
                 case FragmentMenuItems.NEW_PLAYLIST:
                     CreateNewPlaylist.getInstance(getIdList()).show(

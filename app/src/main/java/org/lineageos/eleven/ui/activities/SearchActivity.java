@@ -95,6 +95,11 @@ public class SearchActivity extends AppCompatActivity implements
         OnScrollListener, OnQueryTextListener, OnItemClickListener, ServiceConnection,
         OnTouchListener {
     /**
+     * Intent extra for identifying the search type to filter for
+     */
+    public static String EXTRA_SEARCH_MODE = "search_mode";
+
+    /**
      * Loading delay of 500ms so we don't flash the screen too much when loading new searches
      */
     private static int LOADING_DELAY = 500;
@@ -197,8 +202,6 @@ public class SearchActivity extends AppCompatActivity implements
      */
     private PopupMenuHelper mPopupMenuHelper;
 
-    private boolean hasCallbacks;
-
     /**
      * {@inheritDoc}
      */
@@ -274,7 +277,7 @@ public class SearchActivity extends AppCompatActivity implements
 
         // Initialize the adapter
         SummarySearchAdapter adapter = new SummarySearchAdapter(this);
-        mAdapter = new SectionAdapter<SearchResult, SummarySearchAdapter>(this, adapter);
+        mAdapter = new SectionAdapter<>(this, adapter);
         // Set the prefix
         mAdapter.getUnderlyingAdapter().setPrefix(mFilterString);
         mAdapter.setupHeaderParameters(R.layout.list_search_header, false);
@@ -302,7 +305,6 @@ public class SearchActivity extends AppCompatActivity implements
                 setState(VisibleState.Loading);
             }
         };
-        hasCallbacks = false;
 
         // Theme the action bar
         final ActionBar actionBar = getSupportActionBar();
@@ -316,12 +318,7 @@ public class SearchActivity extends AppCompatActivity implements
             mTopLevelSearch = false;
 
             // get the search type to filter by
-            int type;
-            try {
-            	type = getIntent().getIntExtra((String)SearchManager.class.getField("SEARCH_MODE").get(null), -1);
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            int type = getIntent().getIntExtra(SearchActivity.EXTRA_SEARCH_MODE, -1);
             if (type >= 0 && type < ResultType.values().length) {
                 mSearchType = ResultType.values()[type];
             }
@@ -412,7 +409,7 @@ public class SearchActivity extends AppCompatActivity implements
             comparator = SectionCreatorUtils.createSearchResultComparison(this);
         }
 
-        return new SectionCreator<SearchResult>(this,
+        return new SectionCreator<>(this,
                 new SummarySearchLoader(this, mFilterString, mSearchType),
                 comparator);
     }
@@ -572,20 +569,8 @@ public class SearchActivity extends AppCompatActivity implements
      */
     public void setLoading() {
         if (mCurrentState != VisibleState.Loading) {
-            //mHandler.hasCallbacks(mLoadingRunnable
-        	if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                try {
-                    Class<?> clazz = mHandler.getClass();
-                    Method m = clazz.getMethod("hasCallbacks", Runnable.class);
-                    hasCallbacks = ((Boolean)(m.invoke(mHandler, new Object[] {mLoadingRunnable}))).booleanValue();
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
-        	}
-            if (!hasCallbacks) {
-                mHandler.postDelayed(mLoadingRunnable, LOADING_DELAY);
-                hasCallbacks = true;
-            }
+            mHandler.removeCallbacks(mLoadingRunnable);
+            mHandler.postDelayed(mLoadingRunnable, LOADING_DELAY);
         }
     }
 
@@ -597,7 +582,6 @@ public class SearchActivity extends AppCompatActivity implements
         // remove any delayed runnables.  This has to be before mCurrentState == state
         // in case the state doesn't change but we've created a loading runnable
         mHandler.removeCallbacks(mLoadingRunnable);
-        hasCallbacks = false;
 
         // if we are already looking at view already, just quit
         if (mCurrentState == state) {
@@ -676,11 +660,7 @@ public class SearchActivity extends AppCompatActivity implements
             SearchResult item = mAdapter.getTItem(position - 1);
             Intent intent = new Intent(this, SearchActivity.class);
             intent.putExtra(SearchManager.QUERY, mFilterString);
-            try {
-                intent.putExtra((String)SearchManager.class.getField("SEARCH_MODE").get(null), item.mType.ordinal());
-            } catch (Exception ex) {
-                throw new RuntimeException(ex);
-            }
+            intent.putExtra(SearchActivity.EXTRA_SEARCH_MODE, item.mType.ordinal());
             startActivity(intent);
         } else {
             SearchResult item = mAdapter.getTItem(position);
@@ -791,7 +771,7 @@ public class SearchActivity extends AppCompatActivity implements
          * @return the results for that search
          */
         protected List<SearchResult> runSearchForType() {
-            ArrayList<SearchResult> results = new ArrayList<SearchResult>();
+            ArrayList<SearchResult> results = new ArrayList<>();
             Cursor cursor = null;
             try {
                 if (mSearchType == ResultType.Playlist) {
@@ -837,7 +817,7 @@ public class SearchActivity extends AppCompatActivity implements
          * @return the results for that search
          */
         public List<SearchResult> runGenericSearch() {
-            ArrayList<SearchResult> results = new ArrayList<SearchResult>();
+            ArrayList<SearchResult> results = new ArrayList<>();
             // number of types to query for
             final int numTypes = ResultType.getNumTypes();
 
@@ -933,14 +913,12 @@ public class SearchActivity extends AppCompatActivity implements
                 keywords[i] = "%" + keywords[i] + "%";
             }
 
-            String where = "";
-
-            // make the where clause
+            final StringBuilder where = new StringBuilder();
             for (int i = 0; i < keywords.length; i++) {
                 if (i == 0) {
-                    where = "name LIKE ?";
+                    where.append("name LIKE ?");
                 } else {
-                    where += " AND name LIKE ?";
+                    where.append(" AND name LIKE ?");
                 }
             }
 
@@ -951,7 +929,7 @@ public class SearchActivity extends AppCompatActivity implements
                             BaseColumns._ID,
                         /* 1 */
                             MediaStore.Audio.PlaylistsColumns.NAME
-                    }, where, keywords, MediaStore.Audio.Playlists.DEFAULT_SORT_ORDER);
+                    }, where.toString(), keywords, MediaStore.Audio.Playlists.DEFAULT_SORT_ORDER);
         }
     }
 
@@ -966,7 +944,7 @@ public class SearchActivity extends AppCompatActivity implements
         @Override
         public ArrayAdapter<String> loadInBackground() {
             ArrayList<String> strings = SearchHistory.getInstance(getContext()).getRecentSearches();
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+            ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(),
                     R.layout.list_item_search_history, R.id.line_one);
             adapter.addAll(strings);
             return adapter;
@@ -996,7 +974,7 @@ public class SearchActivity extends AppCompatActivity implements
 
         @Override
         public void onLoaderReset(Loader<ArrayAdapter<String>> cursorAdapterLoader) {
-            ((ArrayAdapter<?>)mSearchHistoryListView.getAdapter()).clear();
+            ((ArrayAdapter)mSearchHistoryListView.getAdapter()).clear();
         }
     }
 

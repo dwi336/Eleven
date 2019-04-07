@@ -345,9 +345,7 @@ public class HomeActivity extends SlidingPanelActivity implements
                 // Prevents race condition while AlbumAdapter load default image
                 // and store it in the ImageCache. If an image already exists
                 // for an Album, no new Image can be stored.
-                // new Thread(new Runnable() {
-                //     @Override
-                //     public void run() {
+                // new Thread(() -> {
                         Bitmap bitmap = ImageFetcher.decodeSampledBitmapFromUri(getContentResolver(),
                                 selectedImage);
                         ImageFetcher imageFetcher = ElevenUtils.getImageFetcher(HomeActivity.this);
@@ -528,7 +526,7 @@ public class HomeActivity extends SlidingPanelActivity implements
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.READ_EXTERNAL_STORAGE
         };
-        ArrayList<String> permissionList = new ArrayList<String>();
+        ArrayList<String> permissionList = new ArrayList<>();
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(this,permission) != PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(permission);

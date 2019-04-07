@@ -26,7 +26,6 @@ import android.widget.RemoteViews;
 import org.lineageos.eleven.MusicPlaybackService;
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.ui.activities.HomeActivity;
-import org.lineageos.eleven.utils.ElevenUtils;
 
 /**
  * 4x2 App-Widget

@@ -31,8 +31,6 @@ import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import androidx.core.content.ContextCompat;
 
-import junit.framework.Assert;
-
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.cache.ImageWorker.ImageType;
 import org.lineageos.eleven.utils.BitmapWithColors;
@@ -76,8 +74,8 @@ public class LetterTileDrawable extends Drawable {
     private ImageType mImageType;
 
     private static synchronized void initializeStaticVariables(final Context context) {
-        Resources res = context.getResources();
         if (sColors == null) {
+            final Resources res = context.getResources();
             sColors = res.obtainTypedArray(R.array.letter_tile_colors);
             sVibrantDarkColors = res.obtainTypedArray(R.array.letter_tile_vibrant_dark_colors);
             sDefaultColor = ContextCompat.getColor(context, R.color.letter_tile_default_color);
@@ -131,7 +129,7 @@ public class LetterTileDrawable extends Drawable {
         final int minDimension = Math.min(bounds.width(), bounds.height());
 
         if (mIsCircle) {
-            canvas.drawCircle(bounds.centerX(), bounds.centerY(), minDimension / 2, sPaint);
+            canvas.drawCircle(bounds.centerX(), bounds.centerY(), (float) minDimension / 2, sPaint);
         } else {
             canvas.drawRect(bounds, sPaint);
         }
@@ -158,7 +156,7 @@ public class LetterTileDrawable extends Drawable {
             // Draw the letter in the canvas, vertically shifted up or down by the user-defined
             // offset
             canvas.drawText(sChars, 0, numChars, bounds.centerX(),
-                    bounds.centerY() + mOffset * bounds.height() + sRect.height() / 2,
+                    bounds.centerY() + mOffset * bounds.height() + (float) sRect.height() / 2,
                     sPaint);
         } else {
             // Draw the default image if there is no letter/digit to be drawn
@@ -280,7 +278,6 @@ public class LetterTileDrawable extends Drawable {
      * The default is 0.0f.
      */
     public void setOffset(float offset) {
-        Assert.assertTrue(offset >= -0.5f && offset <= 0.5f);
         mOffset = offset;
     }
 
@@ -359,7 +356,7 @@ public class LetterTileDrawable extends Drawable {
         final int minDimension = Math.min(bounds.width(), bounds.height());
 
         if (isCircle) {
-            canvas.drawCircle(bounds.centerX(), bounds.centerY(), minDimension / 2, paint);
+            canvas.drawCircle(bounds.centerX(), bounds.centerY(), (float) minDimension / 2, paint);
         } else {
             canvas.drawRect(bounds, paint);
         }

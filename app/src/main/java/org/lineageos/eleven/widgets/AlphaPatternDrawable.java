@@ -64,7 +64,7 @@ public class AlphaPatternDrawable extends Drawable {
      */
     @Override
     public int getOpacity() {
-        return PixelFormat.UNKNOWN;
+        return PixelFormat.OPAQUE;
     }
 
     /**
@@ -93,8 +93,8 @@ public class AlphaPatternDrawable extends Drawable {
         final int mHeight = bounds.height();
         final int mWidth = bounds.width();
 
-        numRectanglesHorizontal = (int)Math.ceil((mWidth / mRectangleSize));
-        numRectanglesVertical = (int)Math.ceil(mHeight / mRectangleSize);
+        numRectanglesHorizontal = (int) Math.ceil(((double) mWidth / mRectangleSize));
+        numRectanglesVertical = (int) Math.ceil((double) mHeight / mRectangleSize);
 
         generatePatternBitmap();
     }

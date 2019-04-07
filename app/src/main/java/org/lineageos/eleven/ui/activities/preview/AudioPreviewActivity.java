@@ -722,7 +722,7 @@ public class AudioPreviewActivity extends AppCompatActivity implements MediaPlay
             if (activity == null) {
                 throw new IllegalArgumentException("'activity' cannot be null!");
             }
-            mActivityReference = new WeakReference<AudioPreviewActivity>(activity);
+            mActivityReference = new WeakReference<>(activity);
             setOnErrorListener(activity);
             setOnCompletionListener(activity);
         }

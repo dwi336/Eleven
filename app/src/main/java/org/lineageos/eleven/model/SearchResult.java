@@ -26,7 +26,7 @@ import java.util.Comparator;
 public class SearchResult {
     private static final String TAG = SearchResult.class.getSimpleName();
 
-    public static final Comparator<SearchResult> COMPARATOR = new Comparator<SearchResult>() {
+    public static final Comparator COMPARATOR = new Comparator<SearchResult>() {
         @Override
         public int compare(final SearchResult lhs, final SearchResult rhs) {
             return lhs.mType.ordinal() - rhs.mType.ordinal();

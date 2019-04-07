@@ -17,13 +17,13 @@
 package org.lineageos.eleven.locale;
 
 import android.content.Context;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
+import androidx.annotation.VisibleForTesting;
 
 import org.lineageos.eleven.provider.PropertiesStore;
-import com.google.common.annotations.VisibleForTesting;
 
-import java.lang.reflect.Method;
 import java.util.Locale;
 
 public class LocaleSetManager {
@@ -56,18 +56,9 @@ public class LocaleSetManager {
         // if our icu version has changed, return true
         final String storedICUversion = PropertiesStore.getInstance(mContext)
                 .getProperty(PropertiesStore.DbProperties.ICU_VERSION);
-        // ICU.getIcuVersion()
-    	String icuVersion = null;
-    	try {
-    	    Class<?> clazz = Class.forName("libcore.icu.ICU");
-            Method m = clazz.getMethod("getIcuVersion", new Class[0]);
-            icuVersion = ((String)(m.invoke(clazz, new Object[0])));
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-        if (!icuVersion.equals(storedICUversion)) {
+        if (!String.valueOf(Build.VERSION.SDK_INT).equals(storedICUversion)) {
             Log.d(TAG, "ICU version has changed from: " + storedICUversion + " to "
-                    + icuVersion);
+                    + String.valueOf(Build.VERSION.SDK_INT));
             return true;
         }
 
@@ -82,8 +73,7 @@ public class LocaleSetManager {
     public void updateLocaleSet(LocaleSet localeSet) {
         Log.d(TAG, "Locale Changed from: " + mCurrentLocales + " to " + localeSet);
         mCurrentLocales = localeSet;
-        LocaleUtils.getInstance();
-        LocaleUtils.setLocales(mCurrentLocales);
+        LocaleUtils.getInstance().setLocales(mCurrentLocales);
     }
 
     /**

@@ -22,7 +22,7 @@ import androidx.legacy.content.WakefulBroadcastReceiver;
 
 public class MediaButtonIntentReceiver extends WakefulBroadcastReceiver {
     private static final boolean DEBUG = false;
-    private static final String TAG = "MediaButtonIntentRecei";
+    private static final String TAG = "MediaButtonIntentReceiv";
 
     /**
      * {@inheritDoc}

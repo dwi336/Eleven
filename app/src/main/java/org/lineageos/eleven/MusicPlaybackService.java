@@ -17,8 +17,8 @@ import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.appwidget.AppWidgetManager;
@@ -61,8 +61,10 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.LongSparseArray;
 import android.view.KeyEvent;
+import androidx.annotation.NonNull;
 import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.os.BuildCompat;
 import androidx.media.app.NotificationCompat.MediaStyle;
 
 import org.lineageos.eleven.Config.IdType;
@@ -104,96 +106,96 @@ public class MusicPlaybackService extends Service {
     /**
      * Indicates that the music has paused or resumed
      */
-    public static final String PLAYSTATE_CHANGED = "org.lineageos.eleven.playstatechanged";
+    public static final String PLAYSTATE_CHANGED = BuildConstants.PACKAGE_NAME + ".playstatechanged";
 
     /**
      * Indicates that music playback position within
      * a title was changed
      */
-    public static final String POSITION_CHANGED = "org.lineageos.eleven.positionchanged";
+    public static final String POSITION_CHANGED = BuildConstants.PACKAGE_NAME + ".positionchanged";
 
     /**
      * Indicates the meta data has changed in some way, like a track change
      */
-    public static final String META_CHANGED = "org.lineageos.eleven.metachanged";
+    public static final String META_CHANGED = BuildConstants.PACKAGE_NAME + ".metachanged";
 
     /**
      * Indicates the queue has been updated
      */
-    public static final String QUEUE_CHANGED = "org.lineageos.eleven.queuechanged";
+    public static final String QUEUE_CHANGED = BuildConstants.PACKAGE_NAME + ".queuechanged";
 
     /**
      * Indicates the queue has been updated
      */
-    public static final String PLAYLIST_CHANGED = "org.lineageos.eleven.playlistchanged";
+    public static final String PLAYLIST_CHANGED = BuildConstants.PACKAGE_NAME + ".playlistchanged";
 
     /**
      * Indicates the repeat mode changed
      */
-    public static final String REPEATMODE_CHANGED = "org.lineageos.eleven.repeatmodechanged";
+    public static final String REPEATMODE_CHANGED = BuildConstants.PACKAGE_NAME + ".repeatmodechanged";
 
     /**
      * Indicates the shuffle mode changed
      */
-    public static final String SHUFFLEMODE_CHANGED = "org.lineageos.eleven.shufflemodechanged";
+    public static final String SHUFFLEMODE_CHANGED = BuildConstants.PACKAGE_NAME + ".shufflemodechanged";
 
     /**
      * Indicates the track fails to play
      */
-    public static final String TRACK_ERROR = "org.lineageos.eleven.trackerror";
+    public static final String TRACK_ERROR = BuildConstants.PACKAGE_NAME + ".trackerror";
 
     /**
      * For backwards compatibility reasons, also provide sticky
      * broadcasts under the music package
      */
-    public static final String ELEVEN_PACKAGE_NAME = "org.lineageos.eleven";
+    public static final String ELEVEN_PACKAGE_NAME = BuildConstants.PACKAGE_NAME;
     public static final String MUSIC_PACKAGE_NAME = "com.android.music";
 
     /**
      * Called to indicate a general service commmand. Used in
      * {@link MediaButtonIntentReceiver}
      */
-    public static final String SERVICECMD = "org.lineageos.eleven.musicservicecommand";
+    public static final String SERVICECMD = BuildConstants.PACKAGE_NAME + ".musicservicecommand";
 
     /**
      * Called to go toggle between pausing and playing the music
      */
-    public static final String TOGGLEPAUSE_ACTION = "org.lineageos.eleven.togglepause";
+    public static final String TOGGLEPAUSE_ACTION = BuildConstants.PACKAGE_NAME + ".togglepause";
 
     /**
      * Called to go to pause the playback
      */
-    public static final String PAUSE_ACTION = "org.lineageos.eleven.pause";
+    public static final String PAUSE_ACTION = BuildConstants.PACKAGE_NAME + ".pause";
 
     /**
      * Called to go to stop the playback
      */
-    public static final String STOP_ACTION = "org.lineageos.eleven.stop";
+    public static final String STOP_ACTION = BuildConstants.PACKAGE_NAME + ".stop";
 
     /**
      * Called to go to the previous track or the beginning of the track if partway through the track
      */
-    public static final String PREVIOUS_ACTION = "org.lineageos.eleven.previous";
+    public static final String PREVIOUS_ACTION = BuildConstants.PACKAGE_NAME + ".previous";
 
     /**
      * Called to go to the previous track regardless of how far in the current track the playback is
      */
-    public static final String PREVIOUS_FORCE_ACTION = "org.lineageos.eleven.previous.force";
+    public static final String PREVIOUS_FORCE_ACTION = BuildConstants.PACKAGE_NAME + ".previous.force";
 
     /**
      * Called to go to the next track
      */
-    public static final String NEXT_ACTION = "org.lineageos.eleven.next";
+    public static final String NEXT_ACTION = BuildConstants.PACKAGE_NAME + ".next";
 
     /**
      * Called to change the repeat mode
      */
-    public static final String REPEAT_ACTION = "org.lineageos.eleven.repeat";
+    public static final String REPEAT_ACTION = BuildConstants.PACKAGE_NAME + ".repeat";
 
     /**
      * Called to change the shuffle mode
      */
-    public static final String SHUFFLE_ACTION = "org.lineageos.eleven.shuffle";
+    public static final String SHUFFLE_ACTION = BuildConstants.PACKAGE_NAME + ".shuffle";
 
     public static final String FROM_MEDIA_BUTTON = "frommediabutton";
 
@@ -203,22 +205,22 @@ public class MusicPlaybackService extends Service {
      * Used to easily notify a list that it should refresh. i.e. A playlist
      * changes
      */
-    public static final String REFRESH = "org.lineageos.eleven.refresh";
+    public static final String REFRESH = BuildConstants.PACKAGE_NAME + ".refresh";
 
     /**
      * Used by the alarm intent to shutdown the service after being idle
      */
-    private static final String SHUTDOWN = "org.lineageos.eleven.shutdown";
+    private static final String SHUTDOWN = BuildConstants.PACKAGE_NAME + ".shutdown";
 
     /**
      * Called to notify of a timed text
      */
-    public static final String NEW_LYRICS = "org.lineageos.eleven.lyrics";
+    public static final String NEW_LYRICS = BuildConstants.PACKAGE_NAME + ".lyrics";
 
     /**
      * Called to update the remote control client
      */
-    public static final String UPDATE_LOCKSCREEN = "org.lineageos.eleven.updatelockscreen";
+    public static final String UPDATE_LOCKSCREEN = BuildConstants.PACKAGE_NAME + ".updatelockscreen";
 
     public static final String CMDNAME = "command";
 
@@ -340,6 +342,8 @@ public class MusicPlaybackService extends Service {
      * TODO: Comeback and rewrite/fix all the whole queue code bugs after demo
      */
     public static final int MAX_HISTORY_SIZE = 1000;
+
+    private static final String ACTION_AUDIO_PLAYER = BuildConstants.PACKAGE_NAME + ".AUDIO_PLAYER";
 
     private static final String CHANNEL_NAME = "eleven_playback";
 
@@ -498,7 +502,7 @@ public class MusicPlaybackService extends Service {
 
     private String mLyrics;
 
-    private ArrayList<MusicPlaybackTrack> mPlaylist = new ArrayList<MusicPlaybackTrack>(100);
+    private ArrayList<MusicPlaybackTrack> mPlaylist = new ArrayList<>(100);
 
     private long[] mAutoShuffleList = null;
 
@@ -751,7 +755,7 @@ public class MusicPlaybackService extends Service {
                 setQueuePosition((int) id);
             }
             @Override
-            public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+            public boolean onMediaButtonEvent(@NonNull Intent mediaButtonIntent) {
                 if (Intent.ACTION_MEDIA_BUTTON.equals(mediaButtonIntent.getAction())) {
                     KeyEvent ke = mediaButtonIntent.getParcelableExtra(Intent.EXTRA_KEY_EVENT);
                     if (ke != null && ke.getKeyCode() == KeyEvent.KEYCODE_HEADSETHOOK) {
@@ -916,7 +920,7 @@ public class MusicPlaybackService extends Service {
         // Make sure we don't indefinitely hold the wake lock under any circumstances
         mHeadsetHookWakeLock.acquire(10000);
 
-        Message msg = mPlayerHandler.obtainMessage(HEADSET_HOOK_EVENT, Long.valueOf(timestamp));
+        Message msg = mPlayerHandler.obtainMessage(HEADSET_HOOK_EVENT, timestamp);
         msg.sendToTarget();
     }
 
@@ -1155,7 +1159,7 @@ public class MusicPlaybackService extends Service {
             position = mPlaylist.size();
         }
 
-        final ArrayList<MusicPlaybackTrack> arrayList = new ArrayList<MusicPlaybackTrack>(addlen);
+        final ArrayList<MusicPlaybackTrack> arrayList = new ArrayList<>(addlen);
         for (int i = 0; i < list.length; i++) {
             arrayList.add(new MusicPlaybackTrack(list[i], sourceId, sourceType, i));
         }
@@ -1332,7 +1336,7 @@ public class MusicPlaybackService extends Service {
             // has been played
             final int numHistory = mHistory.size();
             for (int i = 0; i < numHistory; i++) {
-                final int idx = mHistory.get(i).intValue();
+                final int idx = mHistory.get(i);
                 if (idx >= 0 && idx < numTracks) {
                     trackNumPlays[idx]++;
                 }
@@ -1347,12 +1351,12 @@ public class MusicPlaybackService extends Service {
             // how many tracks share that count
             int minNumPlays = Integer.MAX_VALUE;
             int numTracksWithMinNumPlays = 0;
-            for (int i = 0; i < trackNumPlays.length; i++) {
+            for (final int trackNumPlay : trackNumPlays) {
                 // if we found a new track that has less number of plays, reset the counters
-                if (trackNumPlays[i] < minNumPlays) {
-                    minNumPlays = trackNumPlays[i];
+                if (trackNumPlay < minNumPlays) {
+                    minNumPlays = trackNumPlay;
                     numTracksWithMinNumPlays = 1;
-                } else if (trackNumPlays[i] == minNumPlays) {
+                } else if (trackNumPlay == minNumPlays) {
                     // increment this track shares the # of tracks
                     numTracksWithMinNumPlays++;
                 }
@@ -1532,26 +1536,30 @@ public class MusicPlaybackService extends Service {
         musicIntent.setAction(what.replace(ELEVEN_PACKAGE_NAME, MUSIC_PACKAGE_NAME));
         sendStickyBroadcast(musicIntent);
 
-        if (what.equals(META_CHANGED)) {
-            // Add the track to the recently played list.
-            mRecentsCache.addSongId(getAudioId());
+        switch (what) {
+            case META_CHANGED:
+                // Add the track to the recently played list.
+                mRecentsCache.addSongId(getAudioId());
 
-            mSongPlayCountCache.bumpSongCount(getAudioId());
-        } else if (what.equals(QUEUE_CHANGED)) {
-            saveQueue(true);
-            if (isPlaying()) {
-                // if we are in shuffle mode and our next track is still valid,
-                // try to re-use the track
-                // We need to reimplement the queue to prevent hacky solutions like this
-                if (mNextPlayPos >= 0 && mNextPlayPos < mPlaylist.size()
-                        && getShuffleMode() != SHUFFLE_NONE) {
-                    setNextTrack(mNextPlayPos);
-                } else {
-                    setNextTrack();
+                mSongPlayCountCache.bumpSongCount(getAudioId());
+                break;
+            case QUEUE_CHANGED:
+                saveQueue(true);
+                if (isPlaying()) {
+                    // if we are in shuffle mode and our next track is still valid,
+                    // try to re-use the track
+                    // We need to reimplement the queue to prevent hacky solutions like this
+                    if (mNextPlayPos >= 0 && mNextPlayPos < mPlaylist.size()
+                            && getShuffleMode() != SHUFFLE_NONE) {
+                        setNextTrack(mNextPlayPos);
+                    } else {
+                        setNextTrack();
+                    }
                 }
-            }
-        } else {
-            saveQueue(false);
+                break;
+            default:
+                saveQueue(false);
+                break;
         }
 
         if (what.equals(PLAYSTATE_CHANGED)) {
@@ -1644,7 +1652,7 @@ public class MusicPlaybackService extends Service {
                 .setMediaSession(mSession.getSessionToken())
                 .setShowActionsInCompactView(0, 1, 2);
 
-        Intent nowPlayingIntent = new Intent("org.lineageos.eleven.AUDIO_PLAYER")
+        Intent nowPlayingIntent = new Intent(ACTION_AUDIO_PLAYER)
                 .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         PendingIntent clickIntent = PendingIntent.getActivity(this, 0, nowPlayingIntent, 0);
         BitmapWithColors artwork = getAlbumArt(false);
@@ -1674,8 +1682,7 @@ public class MusicPlaybackService extends Service {
 
         builder.setColor(artwork.getVibrantDarkColor());
 
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (BuildCompat.isAtLeastO()) {
             NotificationChannel channel = mNotificationManager
                     .getNotificationChannel(CHANNEL_NAME);
 
@@ -2657,7 +2664,7 @@ public class MusicPlaybackService extends Service {
                 if (removeFromHistory) {
                     mHistory.remove(histsize - 1);
                 }
-                return pos.intValue();
+                return pos;
             } else {
                 if (mPlayPos > 0) {
                     return mPlayPos - 1;
@@ -3014,7 +3021,7 @@ public class MusicPlaybackService extends Service {
          */
         public MusicPlayerHandler(final MusicPlaybackService service, final Looper looper) {
             super(looper);
-            mService = new WeakReference<MusicPlaybackService>(service);
+            mService = new WeakReference<>(service);
         }
 
         /**
@@ -3146,9 +3153,9 @@ public class MusicPlaybackService extends Service {
 
     private static final class Shuffler {
 
-        private final LinkedList<Integer> mHistoryOfNumbers = new LinkedList<Integer>();
+        private final LinkedList<Integer> mHistoryOfNumbers = new LinkedList<>();
 
-        private final TreeSet<Integer> mPreviousNumbers = new TreeSet<Integer>();
+        private final TreeSet<Integer> mPreviousNumbers = new TreeSet<>();
 
         private final Random mRandom = new Random();
 
@@ -3169,8 +3176,7 @@ public class MusicPlaybackService extends Service {
             int next;
             do {
                 next = mRandom.nextInt(interval);
-            } while (next == mPrevious && interval > 1
-                    && !mPreviousNumbers.contains(Integer.valueOf(next)));
+            } while (next == mPrevious && interval > 1 && !mPreviousNumbers.contains(next));
             mPrevious = next;
             mHistoryOfNumbers.add(mPrevious);
             mPreviousNumbers.add(mPrevious);
@@ -3268,7 +3274,7 @@ public class MusicPlaybackService extends Service {
          * Constructor of <code>MultiPlayer</code>
          */
         public MultiPlayer(final MusicPlaybackService service) {
-            mService = new WeakReference<MusicPlaybackService>(service);
+            mService = new WeakReference<>(service);
             mSrtManager = new SrtManager() {
                 @Override
                 public void onTimedText(String text) {
@@ -3451,7 +3457,12 @@ public class MusicPlaybackService extends Service {
          * @return The duration in milliseconds
          */
         public long duration() {
-            return mCurrentMediaPlayer.getDuration();
+            try {
+                return mCurrentMediaPlayer.getDuration();
+            } catch (IllegalStateException exc) {
+                Log.e(TAG, "Could not get duration", exc);
+            }
+            return 0L;
         }
 
         /**
@@ -3460,7 +3471,12 @@ public class MusicPlaybackService extends Service {
          * @return The current position in milliseconds
          */
         public long position() {
-            return mCurrentMediaPlayer.getCurrentPosition();
+            try {
+                return mCurrentMediaPlayer.getCurrentPosition();
+            } catch (IllegalStateException exc) {
+                Log.e(TAG, "Could not get current position", exc);
+            }
+            return 0L;
         }
 
         /**
@@ -3552,7 +3568,7 @@ public class MusicPlaybackService extends Service {
         private final WeakReference<MusicPlaybackService> mService;
 
         private ServiceStub(final MusicPlaybackService service) {
-            mService = new WeakReference<MusicPlaybackService>(service);
+            mService = new WeakReference<>(service);
         }
 
         /**
