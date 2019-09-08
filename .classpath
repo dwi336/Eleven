@@ -8,6 +8,6 @@
 	<classpathentry exported="true" kind="con" path="org.eclipse.andmore.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.andmore.DEPENDENCIES"/>
 	<classpathentry kind="lib" path="/home/didi/Android/Sdk/build-tools/28.0.3/renderscript/lib/renderscript-v8.jar"/>
-<classpathentry kind="lib" path="libs/guava-24.1-jre.jar"/>
+	<classpathentry kind="lib" path="libs/guava-24.1-jre.jar"/>
 	<classpathentry kind="output" path="bin/default"/>
 </classpath>

@@ -1544,7 +1544,6 @@ public final class MusicUtils {
      */
     public static List<String> makePlaylist(final Context context) {
         final List<String> menuItemMap = new ArrayList<>();
-        menuItemMap.add(context.getString(R.string.new_playlist));
 
         Cursor cursor = null;
         try {
@@ -1567,6 +1566,9 @@ public final class MusicUtils {
 
         // sort the list but ignore case
         Collections.sort(menuItemMap, new IgnoreCaseComparator());
+        // add new_playlist to the top of the sorted list
+        menuItemMap.add(0, context.getString(R.string.new_playlist));
+
         return menuItemMap;
     }
 
