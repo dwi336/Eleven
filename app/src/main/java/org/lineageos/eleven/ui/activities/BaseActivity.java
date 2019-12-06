@@ -13,8 +13,6 @@
 
 package org.lineageos.eleven.ui.activities;
 
-import static org.lineageos.eleven.utils.MusicUtils.mService;
-
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -34,6 +32,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -54,6 +53,8 @@ import org.lineageos.eleven.widgets.PlayPauseProgressButton;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+
+import static org.lineageos.eleven.utils.MusicUtils.mService;
 
 /**
  * A base {@link AppCompatActivity} used to update the bottom bar and

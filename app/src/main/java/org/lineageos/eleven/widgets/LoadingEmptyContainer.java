@@ -70,6 +70,7 @@ public class LoadingEmptyContainer extends FrameLayout {
 
     public void showNoResults() {
         mHandler.removeCallbacks(mShowLoadingRunnable);
+
         findViewById(R.id.progressbar).setVisibility(View.INVISIBLE);
         getNoResultsContainer().setVisibility(View.VISIBLE);
     }

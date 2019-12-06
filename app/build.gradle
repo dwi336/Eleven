@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
 
     defaultConfig {
         applicationId "org.lineageos.eleven"
@@ -17,7 +16,7 @@ android {
 
     signingConfigs {
         release {
-            storeFile file("/home/didi/eclipse/DevStore")
+            storeFile file("${System.properties['user.home']}/eclipse/DevStore")
             storePassword "test123"
             keyAlias "TestKey"
             keyPassword "1234567890"

@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.core.content.ContextCompat;
+
 import androidx.fragment.app.Fragment;
 
 import org.lineageos.eleven.MusicStateListener;

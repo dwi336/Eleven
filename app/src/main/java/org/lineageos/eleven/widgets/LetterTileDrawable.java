@@ -29,6 +29,7 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
+
 import androidx.core.content.ContextCompat;
 
 import org.lineageos.eleven.R;

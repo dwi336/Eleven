@@ -19,6 +19,7 @@
 package org.lineageos.eleven.model;
 
 import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 
 import java.util.Comparator;

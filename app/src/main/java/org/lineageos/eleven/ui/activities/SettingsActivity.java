@@ -35,12 +35,12 @@ import org.lineageos.eleven.utils.PreferenceUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
+@SuppressWarnings("deprecation")
 public class SettingsActivity extends AppCompatActivity implements OnSharedPreferenceChangeListener{
 
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("deprecation")
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         getDelegate().installViewFactory();
@@ -111,7 +111,7 @@ public class SettingsActivity extends AppCompatActivity implements OnSharedPrefe
         if (key.equals(PreferenceUtils.SHOW_VISUALIZER) &&
                 sharedPreferences.getBoolean(key, false) && !PreferenceUtils.canRecordAudio(this)) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                PreferenceUtils.requestRecordAudio(this);    		   
+                PreferenceUtils.requestRecordAudio(this);
             }
         } else if (key.equals(PreferenceUtils.SHAKE_TO_PLAY)) {
             MusicUtils.setShakeToPlayEnabled(sharedPreferences.getBoolean(key, false));

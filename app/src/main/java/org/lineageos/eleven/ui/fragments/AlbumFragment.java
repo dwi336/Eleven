@@ -23,7 +23,8 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
+
+import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import org.lineageos.eleven.MusicStateListener;
@@ -51,7 +52,7 @@ import org.lineageos.eleven.widgets.LoadingEmptyContainer;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class AlbumFragment extends MusicBrowserFragment implements
-        LoaderCallbacks<SectionListContainer<Album>>, OnScrollListener,
+        LoaderManager.LoaderCallbacks<SectionListContainer<Album>>, OnScrollListener,
         OnItemClickListener, MusicStateListener {
 
     /**

@@ -143,22 +143,27 @@ public final class ElevenUtils {
         final ConnectivityManager connectivityManager = (ConnectivityManager)context
                 .getSystemService(Context.CONNECTIVITY_SERVICE);
 
-        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
-        // Internet connection
-        if (activeNetwork != null) { 
-            /* Wi-Fi connection */
-            if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
+        /* Wi-Fi connection */
+        final NetworkInfo wifiNetwork = connectivityManager
+                .getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiNetwork != null) {
+            state = wifiNetwork.isConnectedOrConnecting();
+        }
+
+        /* Mobile data connection */
+        final NetworkInfo mbobileNetwork = connectivityManager
+                .getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (mbobileNetwork != null) {
+            if (!onlyOnWifi) {
+                state = mbobileNetwork.isConnectedOrConnecting();
+            }
+        }
+
+        /* Other networks */
+        final NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        if (activeNetwork != null) {
+            if (!onlyOnWifi) {
                 state = activeNetwork.isConnectedOrConnecting();
-            /* Mobile data connection */
-            } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                if (!onlyOnWifi) {
-                    state = activeNetwork.isConnectedOrConnecting();
-                }
-            /* Other networks */
-            } else {
-                if (!onlyOnWifi) {
-                    state = activeNetwork.isConnectedOrConnecting();
-                }
             }
         }
 

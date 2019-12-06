@@ -21,6 +21,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.loader.content.Loader;
 
 import org.lineageos.eleven.Config;

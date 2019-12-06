@@ -15,6 +15,7 @@ package org.lineageos.eleven.ui.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
+
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 

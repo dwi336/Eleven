@@ -18,8 +18,9 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.DialogFragment;
 
 import org.lineageos.eleven.Config;
 import org.lineageos.eleven.R;
@@ -34,7 +35,7 @@ import org.lineageos.eleven.utils.MusicUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class DeleteDialog extends AppCompatDialogFragment {
+public class DeleteDialog extends DialogFragment {
 
     public interface DeleteDialogCallback {
         public void onDelete(long[] id);

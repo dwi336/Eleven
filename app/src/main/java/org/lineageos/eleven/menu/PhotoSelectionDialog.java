@@ -19,8 +19,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
+
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.DialogFragment;
 
 import org.lineageos.eleven.Config;
 import org.lineageos.eleven.R;
@@ -37,7 +38,7 @@ import java.util.ArrayList;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class PhotoSelectionDialog extends AppCompatDialogFragment {
+public class PhotoSelectionDialog extends DialogFragment {
 
     private static final int NEW_PHOTO = 0;
 

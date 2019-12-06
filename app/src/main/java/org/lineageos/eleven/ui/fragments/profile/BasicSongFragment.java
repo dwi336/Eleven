@@ -22,10 +22,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.Loader;
 
 import org.lineageos.eleven.Config;
@@ -53,7 +53,8 @@ import java.util.TreeSet;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public abstract class BasicSongFragment extends Fragment implements
-        LoaderCallbacks<SectionListContainer<Song>>, OnItemClickListener, MusicStateListener {
+        LoaderManager.LoaderCallbacks<SectionListContainer<Song>>,
+        OnItemClickListener, MusicStateListener {
 
     /**
      * Fragment UI

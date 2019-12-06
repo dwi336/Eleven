@@ -24,8 +24,9 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.DialogFragment;
 
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.utils.MusicUtils;
@@ -35,7 +36,7 @@ import org.lineageos.eleven.utils.MusicUtils;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public abstract class BasePlaylistDialog extends AppCompatDialogFragment {
+public abstract class BasePlaylistDialog extends DialogFragment {
 
     /* The actual dialog */
     protected AlertDialog mPlaylistDialog;

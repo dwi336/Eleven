@@ -22,7 +22,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
+
+import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,7 +42,7 @@ import java.util.List;
 
 public class ArtistDetailAlbumAdapter
 extends RecyclerView.Adapter<ArtistDetailAlbumAdapter.ViewHolder>
-implements LoaderCallbacks<List<Album>>, IPopupMenuCallback {
+implements LoaderManager.LoaderCallbacks<List<Album>>, IPopupMenuCallback {
     private static final int TYPE_FIRST = 1;
     private static final int TYPE_MIDDLE = 2;
     private static final int TYPE_LAST = 3;

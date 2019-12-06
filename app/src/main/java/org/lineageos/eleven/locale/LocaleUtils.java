@@ -17,6 +17,7 @@
 package org.lineageos.eleven.locale;
 
 import android.util.Log;
+
 import androidx.annotation.VisibleForTesting;
 
 import java.util.ArrayList;

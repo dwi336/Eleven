@@ -29,9 +29,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import org.lineageos.eleven.Config;
@@ -66,7 +67,7 @@ import java.util.TreeSet;
  *
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
-public class QueueFragment extends Fragment implements LoaderCallbacks<List<Song>>,
+public class QueueFragment extends Fragment implements LoaderManager.LoaderCallbacks<List<Song>>,
         OnItemClickListener, DropListener, RemoveListener, DragScrollProfile, ServiceConnection {
 
     /**

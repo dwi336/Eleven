@@ -18,6 +18,7 @@ package org.lineageos.eleven.locale;
 
 import android.os.Build;
 import android.text.TextUtils;
+
 import androidx.annotation.VisibleForTesting;
 
 import java.lang.reflect.Method;

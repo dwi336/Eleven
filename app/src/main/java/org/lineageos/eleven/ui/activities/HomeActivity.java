@@ -32,6 +32,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
+
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -128,6 +129,7 @@ public class HomeActivity extends SlidingPanelActivity implements
         }
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
+
 
         // if we are resuming from a saved instance state
         if (mSavedInstanceState != null) {

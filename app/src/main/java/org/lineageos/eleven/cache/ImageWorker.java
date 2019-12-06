@@ -23,6 +23,7 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.view.View;
 import android.widget.ImageView;
+
 // Because of androidx.renderscript issue https://issuetracker.google.com/u/0/issues/119582492
 // Using android.support.v8.Renderscript-Libraries instead of androidx.renderscript
 import android.support.v8.renderscript.RenderScript;

@@ -20,11 +20,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
-import android.os.PowerManager;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -41,13 +39,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.SearchView.OnQueryTextListener;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.MenuItemCompat;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import org.lineageos.eleven.Config;
@@ -91,7 +89,7 @@ import static org.lineageos.eleven.utils.MusicUtils.mService;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class SearchActivity extends AppCompatActivity implements
-        LoaderCallbacks<SectionListContainer<SearchResult>>,
+        LoaderManager.LoaderCallbacks<SectionListContainer<SearchResult>>,
         OnScrollListener, OnQueryTextListener, OnItemClickListener, ServiceConnection,
         OnTouchListener {
     /**
@@ -954,7 +952,7 @@ public class SearchActivity extends AppCompatActivity implements
     /**
      * This handles the Loader callbacks for the search history
      */
-    public class SearchHistoryCallback implements LoaderCallbacks<ArrayAdapter<String>> {
+    public class SearchHistoryCallback implements LoaderManager.LoaderCallbacks<ArrayAdapter<String>> {
         @Override
         public Loader<ArrayAdapter<String>> onCreateLoader(int i, Bundle bundle) {
             // prep the loader in case the query takes a long time

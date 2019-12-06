@@ -21,14 +21,15 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.view.ViewGroup;
+
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatDialogFragment;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import org.lineageos.eleven.R;
 
 /** Dialog to confirm a non-reversible action */
-public class ConfirmDialog extends AppCompatDialogFragment {
+public class ConfirmDialog extends DialogFragment {
     private static final String TITLE_ID = "titleId";
     private static final String OK_ID = "okId";
 

@@ -25,9 +25,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
+import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import org.lineageos.eleven.Config.SmartPlaylistType;
@@ -56,7 +57,7 @@ import java.util.List;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public class PlaylistFragment extends MusicBrowserFragment implements
-        LoaderCallbacks<List<Playlist>>,
+        LoaderManager.LoaderCallbacks<List<Playlist>>,
         OnItemClickListener, MusicStateListener {
 
     /**
@@ -108,7 +109,7 @@ public class PlaylistFragment extends MusicBrowserFragment implements
 
     @Override
     public View onCreateView(@NonNull final LayoutInflater inflater, final ViewGroup container,
-            final Bundle savedInstanceState) {
+                             final Bundle savedInstanceState) {
         // The View for the fragment's UI
         final ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.list_base, container, false);
         // Initialize the list

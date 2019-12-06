@@ -19,6 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Looper;
 import android.util.LruCache;
+
 import androidx.palette.graphics.Palette;
 
 public class BitmapWithColors {

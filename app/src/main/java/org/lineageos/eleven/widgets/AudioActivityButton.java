@@ -14,8 +14,10 @@
 * limitations under the License.
 */
 package org.lineageos.eleven.widgets;
+
 import android.content.Context;
 import android.util.AttributeSet;
+
 import androidx.fragment.app.FragmentActivity;
 
 import org.lineageos.eleven.ui.activities.SlidingPanelActivity;

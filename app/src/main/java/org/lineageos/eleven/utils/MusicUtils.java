@@ -45,6 +45,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
+
 import androidx.annotation.WorkerThread;
 
 import org.lineageos.eleven.Config.IdType;
@@ -1250,7 +1251,7 @@ public final class MusicUtils {
         try {
             mService.enqueue(list, MusicPlaybackService.LAST, sourceId, sourceType.mId);
             final String message = makeLabel(context, R.plurals.NNNtrackstoqueue, list.length);
-            Toast.makeText((Activity) context, message, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
         } catch (final RemoteException exc) {
             Log.e(TAG, "addToQueue(...)", exc);
         }

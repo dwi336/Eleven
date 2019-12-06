@@ -6,13 +6,13 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.fragment.app.FragmentActivity;
 import androidx.loader.app.LoaderManager;
-import androidx.loader.app.LoaderManager.LoaderCallbacks;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
-public class GenreFetcher implements LoaderCallbacks<Cursor> {
+public class GenreFetcher implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final String[] GENRE_PROJECTION = new String[] { MediaStore.Audio.Genres.NAME };
 
     private Context mContext;

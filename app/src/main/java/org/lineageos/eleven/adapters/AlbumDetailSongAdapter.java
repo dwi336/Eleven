@@ -20,6 +20,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
+
 import androidx.loader.content.Loader;
 
 import org.lineageos.eleven.Config;
