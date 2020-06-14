@@ -124,11 +124,8 @@ public class PlaylistWorkerTask extends BitmapWorkerTask<Void, Void, TransitionD
         }
 
         // otherwise re-run the logic to get the bitmap
-        Cursor sortedCursor = null;
-
-        try {
+        try (Cursor sortedCursor = getTopSongsForPlaylist()) {
             // get the top songs for our playlist
-            sortedCursor = getTopSongsForPlaylist();
 
             if (isCancelled()) {
                 return null;
@@ -156,10 +153,6 @@ public class PlaylistWorkerTask extends BitmapWorkerTask<Void, Void, TransitionD
                 bitmap = loadTopArtist(sortedCursor);
             } else {
                 bitmap = loadTopSongs(sortedCursor);
-            }
-        } finally {
-            if (sortedCursor != null) {
-                sortedCursor.close();
             }
         }
 

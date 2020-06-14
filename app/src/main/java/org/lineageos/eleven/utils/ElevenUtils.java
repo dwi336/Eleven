@@ -1,14 +1,19 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Licensed under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Copyright (C) 2018-2020 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.lineageos.eleven.utils;
@@ -24,6 +29,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.BaseColumns;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -32,6 +38,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.widget.Toast;
+import androidx.core.content.ContextCompat;
 
 import org.lineageos.eleven.cache.ImageCache;
 import org.lineageos.eleven.cache.ImageFetcher;
@@ -140,9 +147,7 @@ public final class ElevenUtils {
         final boolean onlyOnWifi = PreferenceUtils.getInstance(context).onlyOnWifi();
 
         /* Monitor network connections */
-        final ConnectivityManager connectivityManager = (ConnectivityManager)context
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-
+        final ConnectivityManager connectivityManager = ContextCompat.getSystemService(context, ConnectivityManager.class);
         /* Wi-Fi connection */
         final NetworkInfo wifiNetwork = connectivityManager
                 .getNetworkInfo(ConnectivityManager.TYPE_WIFI);

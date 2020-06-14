@@ -1,14 +1,19 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Licensed under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Copyright (C) 2018-2020 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.lineageos.eleven.utils;
@@ -19,7 +24,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.preference.PreferenceManager;
 
@@ -85,11 +89,11 @@ public final class PreferenceUtils {
     // show visualizer flag
     public static final String SHOW_VISUALIZER = "music_visualization";
 
+    // use blur throughout the UI
+    public static final String USE_BLUR = "use_blur";
+
     // shake to play flag
     public static final String SHAKE_TO_PLAY = "shake_to_play";
-
-    // show/hide album art on lockscreen
-    public static final String SHOW_ALBUM_ART_ON_LOCKSCREEN = "lockscreen_album_art";
 
     private static final int PERMISSION_REQUEST_RECORD_AUDIO = 1;
 
@@ -143,6 +147,15 @@ public final class PreferenceUtils {
     public void setOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener){
         mPreferences.registerOnSharedPreferenceChangeListener(listener);
     }
+
+    /**
+     * Set the listener for preference change
+     * @param listener
+     */
+    public void removeOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener){
+        mPreferences.unregisterOnSharedPreferenceChangeListener(listener);
+    }
+
 
     /**
      * Returns the last page the user was on when the app was exited.
@@ -358,11 +371,11 @@ public final class PreferenceUtils {
         return mPreferences.getBoolean(SHOW_VISUALIZER, false);
     }
 
-    public boolean getShakeToPlay() {
-        return mPreferences.getBoolean(SHAKE_TO_PLAY, false);
+    public boolean getUseBlur() {
+        return mPreferences.getBoolean(USE_BLUR, false);
     }
 
-    public boolean getShowAlbumArtOnLockscreen() {
-        return mPreferences.getBoolean(SHOW_ALBUM_ART_ON_LOCKSCREEN, true);
+    public boolean getShakeToPlay() {
+        return mPreferences.getBoolean(SHAKE_TO_PLAY, false);
     }
 }

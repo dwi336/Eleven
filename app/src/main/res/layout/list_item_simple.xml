@@ -17,7 +17,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height"
@@ -67,7 +67,7 @@
             android:layout_height="@dimen/overflow_height"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            sothree:srcCompat="@drawable/menu_button" />
+            app:srcCompat="@drawable/menu_button" />
     </RelativeLayout>
 
     <ImageView
@@ -75,5 +75,5 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        sothree:srcCompat="@drawable/inset_list_divider" />
+        app:srcCompat="@drawable/inset_list_divider" />
 </RelativeLayout>

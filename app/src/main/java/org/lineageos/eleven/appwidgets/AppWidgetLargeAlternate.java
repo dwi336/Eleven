@@ -113,11 +113,13 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
      * Update all active widget instances by pushing changes
      */
     public void performUpdate(final MusicPlaybackService service, final int[] appWidgetIds) {
-    	int playButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_play : R.drawable.btn_playback_play_compat;
+        int playButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_play : R.drawable.btn_playback_play_compat;
         int pauseButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_pause : R.drawable.btn_playback_pause_compat;
         int repeatAllButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_repeat_all : R.drawable.btn_playback_repeat_all_compat;
         int repeatOneButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_repeat_one : R.drawable.btn_playback_repeat_one_compat;
         int shuffleAllButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_shuffle_all : R.drawable.btn_playback_shuffle_all_compat;
+        int previousButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_previous : R.drawable.btn_playback_previous_compat;
+        int nextButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_next : R.drawable.btn_playback_next_compat;
         final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
                 R.layout.app_widget_large_alternate);
 
@@ -131,6 +133,11 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, artistName);
         appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, albumName);
         appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, bitmap);
+
+        appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_previous,
+                    previousButtonResId);
+        appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_next,
+                    nextButtonResId);
 
         // Set correct drawable for pause state
         final boolean isPlaying = service.isPlaying();

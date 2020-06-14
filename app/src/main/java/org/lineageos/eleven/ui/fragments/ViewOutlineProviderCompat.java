@@ -39,24 +39,24 @@ public abstract class ViewOutlineProviderCompat {
         @Override
         public void getOutline(View view, Outline outline) {
             Drawable background = view.getBackground();
-            if (background != null) {        
-            	try {
-            		//background.getOutline(outline);
-            	    Class<?> clazz = background.getClass();
-            	    Method m = clazz.getMethod("getOutline", outline.getClass());
-            	    m.invoke(background, outline);
+            if (background != null) {
+                try {
+                    //background.getOutline(outline);
+                    Class<?> clazz = background.getClass();
+                    Method m = clazz.getMethod("getOutline", outline.getClass());
+                    m.invoke(background, outline);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
             } else {
-            	try {
-            		//outline.setRect(0, 0, view.getWidth(), view.getHeight());
-            	    Class<?> clazz = outline.getClass();
-            	    Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
-            	    m.invoke(outline, 0, 0, view.getWidth(), view.getHeight());
-            	    // outline.setAlpha(0.0f);
-            	    m = clazz.getMethod("setAlpha", new Class[] {float.class});
-            	    m.invoke(outline, 0.0f);
+                try {
+                    //outline.setRect(0, 0, view.getWidth(), view.getHeight());
+                    Class<?> clazz = outline.getClass();
+                    Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
+                    m.invoke(outline, 0, 0, view.getWidth(), view.getHeight());
+                    // outline.setAlpha(0.0f);
+                    m = clazz.getMethod("setAlpha", new Class[] {float.class});
+                    m.invoke(outline, 0.0f);
                 } catch (Exception ex) {
                     throw new RuntimeException(ex);
                 }
@@ -72,15 +72,15 @@ public abstract class ViewOutlineProviderCompat {
     public static final ViewOutlineProviderCompat BOUNDS = new ViewOutlineProviderCompat() {
         @Override
         public void getOutline(View view, Outline outline) {
-        	try {
-        		//outline.setRect(0, 0, view.getWidth(), view.getHeight());
-        	    Class<?> clazz = outline.getClass();
-        	    Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
-        	    m.invoke(outline, 0, 0, view.getWidth(), view.getHeight());
+            try {
+                //outline.setRect(0, 0, view.getWidth(), view.getHeight());
+                Class<?> clazz = outline.getClass();
+                Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
+                m.invoke(outline, 0, 0, view.getWidth(), view.getHeight());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-                
+
         }
     };
     /**
@@ -92,17 +92,17 @@ public abstract class ViewOutlineProviderCompat {
     public static final ViewOutlineProviderCompat PADDED_BOUNDS = new ViewOutlineProviderCompat() {
         @Override
         public void getOutline(View view, Outline outline) {
-        	try {
-        		//outline.setRect(view.getPaddingLeft(),
+            try {
+                //outline.setRect(view.getPaddingLeft(),
                 //view.getPaddingTop(),
                 //view.getWidth() - view.getPaddingRight(),
                 //view.getHeight() - view.getPaddingBottom());
-        	    Class<?> clazz = outline.getClass();
-        	    Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
-        	    m.invoke(outline, view.getPaddingLeft(), 
-        	    		view.getPaddingTop(),
-        	    		view.getWidth() - view.getPaddingRight(), 
-        	    		view.getHeight() - view.getPaddingBottom());
+                Class<?> clazz = outline.getClass();
+                Method m = clazz.getMethod("setRect", new Class[] { int.class, int.class, int.class, int.class});
+                m.invoke(outline, view.getPaddingLeft(), 
+                        view.getPaddingTop(),
+                        view.getWidth() - view.getPaddingRight(), 
+                        view.getHeight() - view.getPaddingBottom());
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
@@ -121,8 +121,8 @@ public abstract class ViewOutlineProviderCompat {
      * @param outline The empty outline to be populated.
      */
     public abstract void getOutline(View view, Outline outline);
-    
-    
+
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static class ViewOutlineProviderL extends ViewOutlineProvider {
 
@@ -136,6 +136,6 @@ public abstract class ViewOutlineProviderCompat {
         public void getOutline(View view, Outline outline) {
             myProvider.getOutline(view, outline);
         }
-    }    
-    
+    }
+
 }

@@ -15,10 +15,13 @@
 */
 package org.lineageos.eleven.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Build;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +29,9 @@ import android.text.Spannable;
 import android.text.SpannableString;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.view.ContextThemeWrapper;
+import androidx.appcompat.view.menu.MenuBuilder;
+import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.fragment.app.FragmentManager;
 
@@ -71,13 +77,13 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
      * @param view the view to anchor the popup menu against
      * @param position the item that was clicked in the popup menu (or -1 if not relevant)
      */
+    @SuppressLint("RestrictedApi")
     public void showPopupMenu(final View view, final int position) {
-        // create the popup menu
-        PopupMenu popupMenu = new PopupMenu(mActivity, view);
+        final ContextThemeWrapper wrapper = new ContextThemeWrapper(mActivity,
+                R.style.Eleven_Theme_PopupMenuOverlapAnchor);
+        final PopupMenu popupMenu = new PopupMenu(wrapper, view, Gravity.NO_GRAVITY,
+                R.attr.actionOverflowMenuStyle, 0);
         final Menu menu = popupMenu.getMenu();
-
-        // hook up the click listener
-        popupMenu.setOnMenuItemClickListener(this);
 
         // figure what type of pop up menu it is
         mType = onPreparePopupMenu(position);
@@ -88,17 +94,20 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN){
                 Menu m = popupMenu.getMenu();
                 for (int i = 0; i < m.size(); i++) {
-                    MenuItem mi = m.getItem(i);                
+                    MenuItem mi = m.getItem(i);
                     Typeface font = Roboto.getTypeface(mActivity,Roboto.ROBOTO_LIGHT);
                     SpannableString mNewTitle = new SpannableString(mi.getTitle());
                     mNewTitle.setSpan(new CustomTypefaceSpan(font), 0 , mNewTitle.length(),  Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-                    mi.setTitle(mNewTitle);            
+                    mi.setTitle(mNewTitle);
                 }
             }
 
-            // show it
-            popupMenu.show();
         }
+
+        popupMenu.setOnMenuItemClickListener(this);
+        final MenuPopupHelper helper = new MenuPopupHelper(wrapper,
+                (MenuBuilder) popupMenu.getMenu(), view);
+        helper.show();
     }
 
     /**
@@ -357,18 +366,20 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                     final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
                     builder.setTitle(R.string.add_to_playlist);
                     final List<String> menuItemList = MusicUtils.makePlaylist(mActivity);
-                    builder.setItems(menuItemList.toArray(new String[0]), new DialogInterface.OnClickListener() {
-                        @Override public void onClick(DialogInterface dialog, int which) {
-                            if (which == 0) {
-                                CreateNewPlaylist.getInstance(getIdList()).show(
-                                        mFragmentManager, "CreatePlaylist");
-                                return;
-                            }
-
-                            final String name = menuItemList.get(which);
-                            final long playListId = MusicUtils.getIdForPlaylist(mActivity, name);
-                            MusicUtils.addToPlaylist(mActivity, getIdList(), playListId);
+                    builder.setItems(menuItemList.toArray(new String[0]), (dialog, which) -> {
+                        if (which == 0) {
+                            CreateNewPlaylist.getInstance(getIdList()).show(
+                                    mFragmentManager, "CreatePlaylist");
+                            return;
                         }
+                        final String name = menuItemList.get(which);
+                        final long playListId = MusicUtils.getIdForPlaylist(mActivity, name);
+                        MusicUtils.addToPlaylist(mActivity, getIdList(), playListId);
+                    });
+                    builder.setPositiveButton(R.string.new_playlist, (dialog, which) -> {
+                        dialog.dismiss();
+                        CreateNewPlaylist.getInstance(getIdList())
+                                .show(mFragmentManager, "CreatePlaylist");
                     });
                     builder.show();
                     return true;

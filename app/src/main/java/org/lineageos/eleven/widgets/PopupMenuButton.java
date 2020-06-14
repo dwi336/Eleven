@@ -17,11 +17,11 @@
 package org.lineageos.eleven.widgets;
 
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import org.lineageos.eleven.R;
 
@@ -34,11 +34,7 @@ public class PopupMenuButton extends AppCompatImageView implements IPopupMenuCal
         super(context, attrs);
 
         setScaleType(ScaleType.CENTER_INSIDE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            setBackground(ContextCompat.getDrawable(context,R.drawable.selectable_background_light));
-        } else {
-            setBackgroundResource(R.drawable.selectable_background_light);
-        }
+        ViewCompat.setBackground(this, ContextCompat.getDrawable(context,R.drawable.selectable_background_light));
         setOnClickListener(this);
     }
 

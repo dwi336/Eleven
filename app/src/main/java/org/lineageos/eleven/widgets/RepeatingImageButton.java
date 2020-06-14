@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.utils.ElevenUtils;
@@ -49,11 +50,7 @@ public class RepeatingImageButton extends AppCompatImageButton implements OnClic
     public RepeatingImageButton(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         setPadding(0, 0, 0, 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        	setBackground(ContextCompat.getDrawable(context, R.drawable.selectable_background));
-        } else {
-        	setBackgroundResource(R.drawable.selectable_background);
-        }
+        ViewCompat.setBackground(this, ContextCompat.getDrawable(context, R.drawable.selectable_background));
         setFocusable(true);
         setLongClickable(true);
         setOnClickListener(this);

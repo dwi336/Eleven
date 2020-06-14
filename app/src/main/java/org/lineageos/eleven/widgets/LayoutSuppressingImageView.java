@@ -38,7 +38,6 @@ public class LayoutSuppressingImageView extends AppCompatImageView {
     @SuppressLint("MissingSuperCall")
     @Override
     public void requestLayout() {
-    	super.requestLayout();
         forceLayout();
     }
 

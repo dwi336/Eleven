@@ -19,14 +19,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="org.lineageos.eleven"
     android:versionCode="3"
-    android:versionName="3.0"
-    tools:ignore="GradleOverrides">
-
-    <uses-sdk
-        android:minSdkVersion="14"
-        android:targetSdkVersion="29" />
-
-    <original-package android:name="com.cyanogenmod.eleven" />
+    android:versionName="3.0">
 
     <!-- Used for caching and creating new playlists -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -71,10 +64,6 @@
         android:taskAffinity="org.lineageos.eleven.task"
         android:theme="@style/Eleven.Theme">
 
-        <!-- Searchable -->
-        <meta-data
-            android:name="android.app.default_searchable"
-            android:value=".ui.activities.SearchActivity" />
         <!-- Main activity -->
         <activity
             android:name="org.lineageos.eleven.ui.activities.HomeActivity"
@@ -106,28 +95,11 @@
             </intent-filter>
         </activity>
 
-        <!-- Search interface -->
-        <activity
-            android:name="org.lineageos.eleven.ui.activities.SearchActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="true"
-            android:theme="@style/Eleven.Theme">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-                <action android:name="android.intent.action.MEDIA_SEARCH" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-        </activity>
         <!-- Used to set options -->
         <activity
             android:name="org.lineageos.eleven.ui.activities.SettingsActivity"
             android:label="@string/menu_settings"
-            android:theme="@style/Eleven.Theme.ActionBar.Overlay" />
+            android:theme="@style/Eleven.Theme.ActionBar.Overlay"/>
         <!-- Audio Preview -->
         <activity
             android:name=".ui.activities.preview.AudioPreviewActivity"
@@ -213,7 +185,6 @@
         <receiver android:name="org.lineageos.eleven.MediaButtonIntentReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
-                <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
         </receiver>
         <!-- Used to recalculate sorting of songs based on the user's locale -->

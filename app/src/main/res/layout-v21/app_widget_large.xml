@@ -17,7 +17,7 @@
 -->
 <GridLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/app_widget_large_min_height"
@@ -81,7 +81,7 @@
             android:contentDescription="@string/accessibility_prev"
             android:padding="@dimen/notification_expanded_button_padding"
             android:scaleType="fitCenter"
-            sothree:srcCompat="@drawable/btn_playback_previous" />
+            app:srcCompat="@drawable/btn_playback_previous" />
 
         <ImageButton
             android:id="@+id/app_widget_large_play"
@@ -91,7 +91,7 @@
             android:background="?android:selectableItemBackground"
             android:padding="@dimen/notification_expanded_button_padding"
             android:scaleType="fitCenter"
-            sothree:srcCompat="@drawable/btn_playback_pause" />
+            app:srcCompat="@drawable/btn_playback_pause" />
 
         <ImageButton
             android:id="@+id/app_widget_large_next"
@@ -102,7 +102,7 @@
             android:contentDescription="@string/accessibility_next"
             android:padding="@dimen/notification_expanded_button_padding"
             android:scaleType="fitCenter"
-            sothree:srcCompat="@drawable/btn_playback_next" />
+            app:srcCompat="@drawable/btn_playback_next" />
     </LinearLayout>
 
 </GridLayout>

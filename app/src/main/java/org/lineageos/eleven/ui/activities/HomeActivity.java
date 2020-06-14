@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The CyanogenMod Project
+ * Copyright (C) 2019 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,11 +34,13 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.core.content.ContextCompat;
 
 import org.lineageos.eleven.Config;
 import org.lineageos.eleven.R;
@@ -53,9 +56,9 @@ import org.lineageos.eleven.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.lineageos.eleven.ui.fragments.profile.LastAddedFragment;
 import org.lineageos.eleven.ui.fragments.profile.TopTracksFragment;
 import org.lineageos.eleven.utils.ElevenUtils;
-import org.lineageos.eleven.utils.BitmapWithColors;
 import org.lineageos.eleven.utils.MusicUtils;
 import org.lineageos.eleven.utils.NavUtils;
+import org.lineageos.eleven.utils.colors.BitmapWithColors;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -260,7 +263,7 @@ public class HomeActivity extends SlidingPanelActivity implements
             //statusBarColor = window.getStatusBarColor();
             int statusBarColor = 0;
             try {
-            	Class<?> clazz = window.getClass();
+                Class<?> clazz = window.getClass();
                 Method m = clazz.getMethod("getStatusBarColor",  new Class[] {} );
                 statusBarColor = ((Integer)(m.invoke(window, new Object[] {}))).intValue();
             } catch (Exception ex) {
@@ -507,8 +510,8 @@ public class HomeActivity extends SlidingPanelActivity implements
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[],
-            int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+            @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_STORAGE: {
                 if (checkPermissionGrantResults(grantResults)) {
@@ -544,7 +547,7 @@ public class HomeActivity extends SlidingPanelActivity implements
                     permissionArray[i] = permissionList.get(i);
                 }
 
-                requestPermissions(permissionArray, PERMISSION_REQUEST_STORAGE);
+                ActivityCompat.requestPermissions(this, permissionArray, PERMISSION_REQUEST_STORAGE);
             }
         }
 

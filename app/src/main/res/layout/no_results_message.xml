@@ -17,7 +17,8 @@
 
 <org.lineageos.eleven.widgets.NoResultsContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/no_results_container"
     android:gravity="center_horizontal"
     android:layout_width="@dimen/no_results_width"
@@ -25,7 +26,8 @@
     android:layout_centerInParent="true"
     android:layout_gravity="center"
     android:orientation="vertical"
-    android:visibility="gone">
+    android:visibility="gone"
+    tools:visibility="visible">
 
     <ImageView
         android:id="@+id/no_results_image"
@@ -34,7 +36,7 @@
         android:layout_gravity="center_horizontal"
         android:paddingBottom="@dimen/white_note_padding_bottom"
         android:scaleType="centerInside"
-        sothree:srcCompat="@drawable/no_results" />
+        app:srcCompat="@drawable/no_results" />
 
     <LinearLayout
         android:layout_width="fill_parent"

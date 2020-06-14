@@ -15,7 +15,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height"
     android:gravity="center_vertical"
@@ -64,7 +64,6 @@
         <include
             android:layout_width="@dimen/list_item_progress_width"
             android:layout_height="@dimen/list_item_progress_height"
-            android:layout_centerVertical="true"
             layout="@layout/play_pause_progress_button"/>
     </FrameLayout>
 
@@ -74,5 +73,5 @@
         android:layout_height="@dimen/overflow_height"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        sothree:srcCompat="@drawable/menu_button_light" />
+        app:srcCompat="@drawable/menu_button_light" />
 </RelativeLayout>

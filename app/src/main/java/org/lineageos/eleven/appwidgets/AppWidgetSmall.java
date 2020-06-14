@@ -54,7 +54,6 @@ public class AppWidgetSmall extends AppWidgetBase {
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
             final int[] appWidgetIds) {
-        super.onUpdate(context, appWidgetManager, appWidgetIds);
         defaultAppWidget(context, appWidgetIds);
         final Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
         updateIntent.putExtra(MusicPlaybackService.CMDNAME, AppWidgetSmall.CMDAPPWIDGETUPDATE);
@@ -114,6 +113,8 @@ public class AppWidgetSmall extends AppWidgetBase {
     public void performUpdate(final MusicPlaybackService service, final int[] appWidgetIds) {
         int playButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_play : R.drawable.btn_playback_play_compat;
         int pauseButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_pause : R.drawable.btn_playback_pause_compat; 
+        int previousButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_previous : R.drawable.btn_playback_previous_compat;
+        int nextButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_next : R.drawable.btn_playback_next_compat;
 
         final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
                 R.layout.app_widget_small);
@@ -131,6 +132,11 @@ public class AppWidgetSmall extends AppWidgetBase {
             appWidgetView.setTextViewText(R.id.app_widget_small_line_two, artistName);
         }
         appWidgetView.setImageViewBitmap(R.id.app_widget_small_image, bitmap);
+
+        appWidgetView.setImageViewResource(R.id.app_widget_small_previous,
+                    previousButtonResId);
+        appWidgetView.setImageViewResource(R.id.app_widget_small_next,
+                    nextButtonResId);
 
         // Set correct drawable for pause state
         final boolean isPlaying = service.isPlaying();

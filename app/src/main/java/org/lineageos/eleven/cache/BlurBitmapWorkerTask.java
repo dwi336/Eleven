@@ -22,19 +22,13 @@ import android.graphics.drawable.TransitionDrawable;
 import android.util.Log;
 import android.widget.ImageView;
 
-// Because of androidx.renderscript issue https://issuetracker.google.com/u/0/issues/119582492
-// Using android.support.v8.Renderscript-Libraries instead of androidx.renderscript
-import android.support.v8.renderscript.Allocation;
-//import androidx.renderscript.Allocation;
-import android.support.v8.renderscript.Element;
-//import androidx.renderscript.Element;
-import android.support.v8.renderscript.RenderScript;
-//import androidx.renderscript.RenderScript;
-import android.support.v8.renderscript.ScriptIntrinsicBlur;
-//import androidx.renderscript.ScriptIntrinsicBlur;
+import androidx.renderscript.Allocation;
+import androidx.renderscript.Element;
+import androidx.renderscript.RenderScript;
+import androidx.renderscript.ScriptIntrinsicBlur;
 
 import org.lineageos.eleven.cache.ImageWorker.ImageType;
-import org.lineageos.eleven.widgets.BlurScrimImage;
+import org.lineageos.eleven.widgets.AlbumScrimImage;
 
 import java.lang.ref.WeakReference;
 
@@ -61,9 +55,9 @@ public class BlurBitmapWorkerTask extends BitmapWorkerTask<String, Void, BlurBit
     }
 
     /**
-     * The {@link org.lineageos.eleven.widgets.BlurScrimImage} used to set the result
+     * The {@link org.lineageos.eleven.widgets.AlbumScrimImage} used to set the result
      */
-    private final WeakReference<BlurScrimImage> mBlurScrimImage;
+    private final WeakReference<AlbumScrimImage> mBlurScrimImage;
 
     /**
      * RenderScript used to blur the image
@@ -73,19 +67,19 @@ public class BlurBitmapWorkerTask extends BitmapWorkerTask<String, Void, BlurBit
     /**
      * Constructor of <code>BlurBitmapWorkerTask</code>
      * @param key used for caching the image
-     * @param blurScrimImage The {@link BlurScrimImage} to use.
+     * @param albumScrimImage The {@link AlbumScrimImage} to use.
      * @param imageType The type of image URL to fetch for.
      * @param fromDrawable what drawable to transition from
      */
-    public BlurBitmapWorkerTask(final String key, final BlurScrimImage blurScrimImage,
+    public BlurBitmapWorkerTask(final String key, final AlbumScrimImage albumScrimImage,
                                 final ImageType imageType, final Drawable fromDrawable,
                                 final Context context, final RenderScript renderScript) {
-        super(key, blurScrimImage.getImageView(), imageType, fromDrawable, context);
-        mBlurScrimImage = new WeakReference<>(blurScrimImage);
+        super(key, albumScrimImage.getImageView(), imageType, fromDrawable, context);
+        mBlurScrimImage = new WeakReference<>(albumScrimImage);
         mRenderScript = renderScript;
 
         // use the existing image as the drawable and if it doesn't exist fallback to transparent
-        mFromDrawable = blurScrimImage.getImageView().getDrawable();
+        mFromDrawable = albumScrimImage.getImageView().getDrawable();
         if (mFromDrawable == null) {
             mFromDrawable = fromDrawable;
         }
@@ -163,19 +157,19 @@ public class BlurBitmapWorkerTask extends BitmapWorkerTask<String, Void, BlurBit
      */
     @Override
     protected void onPostExecute(ResultContainer resultContainer) {
-        BlurScrimImage blurScrimImage = mBlurScrimImage.get();
-        if (blurScrimImage != null) {
+        AlbumScrimImage albumScrimImage = mBlurScrimImage.get();
+        if (albumScrimImage != null) {
             if (resultContainer == null) {
                 // if we have no image, then signal the transition to the default state
-                blurScrimImage.transitionToDefaultState();
+                albumScrimImage.transitionToDefaultState();
             } else {
                 // create the palette transition
                 TransitionDrawable paletteTransition = ImageWorker.createPaletteTransition(
-                        blurScrimImage,
+                        albumScrimImage,
                         resultContainer.mPaletteColor);
 
                 // set the transition drawable
-                blurScrimImage.setTransitionDrawable(resultContainer.mImageViewBitmapDrawable,
+                albumScrimImage.setTransitionDrawable(resultContainer.mImageViewBitmapDrawable,
                         paletteTransition);
             }
         }
@@ -186,7 +180,7 @@ public class BlurBitmapWorkerTask extends BitmapWorkerTask<String, Void, BlurBit
      */
     @Override
     protected final ImageView getAttachedImageView() {
-        final BlurScrimImage blurImage  = mBlurScrimImage.get();
+        final AlbumScrimImage blurImage  = mBlurScrimImage.get();
         final BitmapWorkerTask bitmapWorkerTask = ImageWorker.getBitmapWorkerTask(blurImage);
         if (this == bitmapWorkerTask) {
             return blurImage.getImageView();

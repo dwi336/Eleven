@@ -139,7 +139,7 @@ public class LocaleSet {
                 throw new RuntimeException(ex);
             }
         }
-    	
+
         // we will use a dash as per BCP 47
         final char SEP = '-';
         String language = loc.getLanguage();
@@ -195,8 +195,8 @@ public class LocaleSet {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             return Locale.forLanguageTag(languageTag);
         }
-    	
-    	String[] tag = languageTag.split("-");
+
+        String[] tag = languageTag.split("-");
         if (tag.length == 0) {
             return new Locale("");
         }
@@ -204,9 +204,9 @@ public class LocaleSet {
         if ((language.length() != 2 && language.length() != 3) || language.equals("und")) {
             return new Locale("");
         }
-    	if ( language.equals("fil") ){
-    		language = "tl";
-    	}
+        if ( language.equals("fil") ){
+            language = "tl";
+        }
         if (tag.length == 1) {
             return new Locale(language);
         }
@@ -216,7 +216,7 @@ public class LocaleSet {
         }
         return new Locale(language, country);
     }
-    
+
     private final LocaleWrapper mPrimaryLocale;
     private final LocaleWrapper mSecondaryLocale;
 

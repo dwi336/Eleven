@@ -394,10 +394,7 @@ public class LocalizedStore {
             Log.d(TAG, "Running selection: " + selection);
         }
 
-        Cursor c = null;
-        try {
-            c = mMusicDatabase.getReadableDatabase().rawQuery(selection, null);
-
+        try (Cursor c = mMusicDatabase.getReadableDatabase().rawQuery(selection, null)) {
             if (c != null && c.moveToFirst()) {
                 sortData.ids = new long[c.getCount()];
                 sortData.bucketLabels = new ArrayList<>(c.getCount());
@@ -405,10 +402,6 @@ public class LocalizedStore {
                     sortData.ids[c.getPosition()] = c.getLong(0);
                     sortData.bucketLabels.add(c.getString(1));
                 } while (c.moveToNext());
-            }
-        } finally {
-            if (c != null) {
-                c.close();
             }
         }
 

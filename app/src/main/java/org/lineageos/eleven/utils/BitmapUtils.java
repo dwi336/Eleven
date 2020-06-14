@@ -13,16 +13,9 @@
 
 package org.lineageos.eleven.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.drawable.Drawable;
-
-import androidx.annotation.DrawableRes;
-import androidx.appcompat.widget.AppCompatDrawableManager;
-
-import java.lang.reflect.Method;
 
 /**
  * {@link Bitmap} specific helpers.
@@ -33,23 +26,6 @@ public final class BitmapUtils {
 
     /* Initial blur radius. */
     private static final int DEFAULT_BLUR_RADIUS = 8;
-
-    /**
-     * Calling internal methods via reflection
-     */
-    private static Class<?> cAppCompatDrawableManager;;
-    private static Method mGetAppCompatDrawableManager;
-    private static Method mGetDrawable;
-
-    static {
-        try {
-            cAppCompatDrawableManager = AppCompatDrawableManager.class;
-            mGetAppCompatDrawableManager = cAppCompatDrawableManager.getMethod("get", new Class[0]);
-            mGetDrawable = cAppCompatDrawableManager.getMethod("getDrawable", new Class[] {Context.class, int.class});
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-    }
 
     /** This class is never instantiated */
     private BitmapUtils() {
@@ -315,20 +291,5 @@ public final class BitmapUtils {
         final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG);
         mCanvas.drawBitmap(bitmap, 0, 0, paint);
         return mTarget;
-    }
-
-    public static Bitmap vectorDrawableToBitmap(Context ctx, @DrawableRes int resVector) {
-        Drawable drawable = null;
-        try {
-            AppCompatDrawableManager mgr = (AppCompatDrawableManager) mGetAppCompatDrawableManager.invoke(cAppCompatDrawableManager);
-            drawable = (Drawable)mGetDrawable.invoke(mgr, ctx, resVector);
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
-        return bitmap;
     }
 }

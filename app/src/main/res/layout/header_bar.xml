@@ -16,7 +16,7 @@
 
 <org.lineageos.eleven.ui.HeaderBar 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/header_bar_height"
     android:enabled="false"
@@ -26,7 +26,7 @@
     android:paddingLeft="@dimen/drag_and_drop_width"
     android:background="@color/header_action_bar_color"
     android:elevation="@dimen/action_bar_elevation"
-    sothree:theme="@style/ToolBarTheme">
+    app:theme="@style/ToolBarTheme">
 
     <ImageView
         android:id="@+id/header_bar_up"
@@ -36,7 +36,7 @@
         android:layout_weight="0"
         android:scaleType="centerCrop"
         android:background="@drawable/selectable_background"
-        sothree:srcCompat="@drawable/btn_header_collapse"/>
+        app:srcCompat="@drawable/btn_header_collapse"/>
 
     <TextView
         android:id="@+id/header_bar_title"
@@ -51,16 +51,6 @@
         android:textStyle="bold" />
 
     <ImageView
-        android:id="@+id/header_bar_search_button"
-        android:layout_width="@dimen/header_bar_custom_button_width"
-        android:layout_height="@dimen/header_bar_button_height"
-        android:layout_gravity="center_vertical"
-        android:layout_weight="0"
-        sothree:srcCompat="@drawable/ic_action_search"
-        android:background="@drawable/selectable_background"
-        android:scaleType="centerInside" />
-
-    <ImageView
         android:id="@+id/header_bar_menu_button"
         android:layout_width="@dimen/header_bar_menu_button_width"
         android:layout_height="@dimen/header_bar_button_height"
@@ -68,6 +58,6 @@
         android:layout_weight="0"
         android:scaleType="centerInside"
         android:background="@drawable/selectable_background"
-        sothree:srcCompat="@drawable/menu_button_light"/>
+        app:srcCompat="@drawable/menu_button_light"/>
 
 </org.lineageos.eleven.ui.HeaderBar>

@@ -181,10 +181,10 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
         TextView textView = null;
         
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
-        	textView = new TextView(getContext());
+            textView = new TextView(getContext());
         }
         else{
-        	textView = (RobotoTextView) new RobotoTextView(getContext(),Roboto.ROBOTO_MEDIUM);
+            textView = (RobotoTextView) new RobotoTextView(getContext(),Roboto.ROBOTO_MEDIUM);
         }
 
         textView.setText(tabTitle);
@@ -257,4 +257,3 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
         return position;
     }
 }
-

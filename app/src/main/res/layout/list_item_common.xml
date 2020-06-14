@@ -1,6 +1,6 @@
 <merge
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <ImageView
         android:id="@+id/image"
         android:layout_width="@dimen/list_item_image_width"
@@ -51,13 +51,13 @@
             android:id="@+id/now_playing"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            sothree:srcCompat="@drawable/now_playing_icon"
+            app:srcCompat="@drawable/now_playing_icon"
             android:visibility="gone" />
 
         <org.lineageos.eleven.widgets.PopupMenuButton
             android:id="@+id/popup_menu_button"
             android:layout_width="@dimen/overflow_width"
             android:layout_height="@dimen/overflow_height"
-            sothree:srcCompat="@drawable/menu_button" />
+            app:srcCompat="@drawable/menu_button" />
     </LinearLayout>
 </merge>

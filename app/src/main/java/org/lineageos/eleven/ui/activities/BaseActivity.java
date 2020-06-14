@@ -1,14 +1,19 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Licensed under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Copyright (C) 2019 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.lineageos.eleven.ui.activities;
@@ -22,7 +27,6 @@ import android.content.ServiceConnection;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.TypedValue;
@@ -37,8 +41,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
-import org.lineageos.eleven.IElevenService;
 import org.lineageos.eleven.MusicPlaybackService;
 import org.lineageos.eleven.MusicStateListener;
 import org.lineageos.eleven.R;
@@ -49,12 +53,10 @@ import org.lineageos.eleven.utils.Lists;
 import org.lineageos.eleven.utils.MusicUtils;
 import org.lineageos.eleven.utils.MusicUtils.ServiceToken;
 import org.lineageos.eleven.utils.NavUtils;
-import org.lineageos.eleven.widgets.PlayPauseProgressButton;
+import org.lineageos.eleven.widgets.PlayPauseButtonContainer;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-
-import static org.lineageos.eleven.utils.MusicUtils.mService;
 
 /**
  * A base {@link AppCompatActivity} used to update the bottom bar and
@@ -84,7 +86,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     /**
      * Play pause progress button
      */
-    private PlayPauseProgressButton mPlayPauseProgressButton;
+    private PlayPauseButtonContainer mPlayPauseButtonContainer;
 
     /**
      * Track name (BAB)
@@ -117,9 +119,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
 
         // Control the media volume
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
-
-        // Bind Eleven's service
-        mToken = MusicUtils.bindToService(this, this);
 
         // Initialize the broadcast receiver
         mPlaybackStatus = new PlaybackStatus(this);
@@ -155,7 +154,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
      */
     @Override
     public void onServiceConnected(final ComponentName name, final IBinder service) {
-        mService = IElevenService.Stub.asInterface(service);
         // Set the playback drawables
         updatePlaybackControls();
         // Current info
@@ -169,7 +167,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
      */
     @Override
     public void onServiceDisconnected(final ComponentName name) {
-        mService = null;
     }
 
     /**
@@ -177,8 +174,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
      */
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
-        // Search view
-        getMenuInflater().inflate(R.menu.search_btn, menu);
         // Settings
         getMenuInflater().inflate(R.menu.activity_base, menu);
 
@@ -194,9 +189,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         if (id == R.id.menu_settings){
             // Settings
             NavUtils.openSettings(this);
-            return true;
-        } else if (id == R.id.menu_search){
-            NavUtils.openSearch(BaseActivity.this, "");
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -220,6 +212,10 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     @Override
     protected void onStart() {
         super.onStart();
+
+        // Bind Eleven's service
+        mToken = MusicUtils.bindToService(this, this);
+
         final IntentFilter filter = new IntentFilter();
         // Play and pause changes
         filter.addAction(MusicPlaybackService.PLAYSTATE_CHANGED);
@@ -232,8 +228,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         // If there is an error playing a track
         filter.addAction(MusicPlaybackService.TRACK_ERROR);
         registerReceiver(mPlaybackStatus, filter);
-
-        mPlayPauseProgressButton.resume();
     }
 
     /**
@@ -243,7 +237,16 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     protected void onStop() {
         super.onStop();
 
-        mPlayPauseProgressButton.pause();
+        // Unbind from the service
+        MusicUtils.unbindFromService(mToken);
+        mToken = null;
+
+        // Unregister the receiver
+        try {
+            unregisterReceiver(mPlaybackStatus);
+        } catch (final Throwable e) {
+            //$FALL-THROUGH$
+        }
     }
 
     /**
@@ -252,18 +255,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        // Unbind from the service
-        if (mToken != null) {
-            MusicUtils.unbindFromService(mToken);
-            mToken = null;
-        }
-
-        // Unregister the receiver
-        try {
-            unregisterReceiver(mPlaybackStatus);
-        } catch (final Throwable e) {
-            //$FALL-THROUGH$
-        }
 
         // Remove any music status listeners
         mMusicStateListener.clear();
@@ -276,24 +267,22 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         setupActionBar(getString(resId));
     }
 
-    @SuppressWarnings("deprecation")
     public void setupActionBar(String title) {
         setActionBarTitle(title);
 
         if (mActionBarBackground == null) {
-            final int actionBarColor = ContextCompat.getColor(this, R.color.header_action_bar_color);
+            final int actionBarColor = ContextCompat.getColor(this,
+                    R.color.header_action_bar_color);
             mActionBarBackground = new ColorDrawable(actionBarColor);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            	mToolBar.setBackground(mActionBarBackground);
-            } else {
-                mToolBar.setBackgroundDrawable(mActionBarBackground);
-            }
+            ViewCompat.setBackground(mToolBar, mActionBarBackground);
         }
     }
 
     public void setActionBarTitle(String title) {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setTitle(title);
+        final ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setTitle(title);
+        }
     }
 
     public void setActionBarAlpha(int alpha) {
@@ -303,8 +292,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     public void setActionBarElevation(boolean isElevated) {
         float targetElevation = isElevated
                 ? getResources().getDimension(R.dimen.action_bar_elevation) : 0;
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setElevation(targetElevation);
+        ViewCompat.setElevation(mToolBar, targetElevation);
     }
 
     public void setFragmentPadding(boolean enablePadding) {
@@ -317,15 +305,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
      */
     protected void initBottomActionBar() {
         // Play and pause button
-        mPlayPauseProgressButton = (PlayPauseProgressButton)findViewById(R.id.playPauseProgressButton);
-        mPlayPauseProgressButton.enableAndShow();
+        mPlayPauseButtonContainer = findViewById(R.id.playPauseProgressButton);
+        mPlayPauseButtonContainer.enableAndShow();
 
         // Track name
-        mTrackName = (TextView)findViewById(R.id.bottom_action_bar_line_one);
+        mTrackName = findViewById(R.id.bottom_action_bar_line_one);
         // Artist name
-        mArtistName = (TextView)findViewById(R.id.bottom_action_bar_line_two);
+        mArtistName = findViewById(R.id.bottom_action_bar_line_two);
         // Album art
-        mAlbumArt = (ImageView)findViewById(R.id.bottom_action_bar_album_art);
+        mAlbumArt = findViewById(R.id.bottom_action_bar_album_art);
         // Open to the currently playing album profile
         mAlbumArt.setOnClickListener(mOpenCurrentAlbumProfile);
     }
@@ -351,7 +339,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
      */
     private void updatePlaybackControls() {
         // Set the play and pause image
-        mPlayPauseProgressButton.getPlayPauseButton().updateState();
+        mPlayPauseButtonContainer.updateState();
     }
 
     /**
@@ -404,8 +392,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
                         baseActivity.onMetaChanged();
                         break;
                     case MusicPlaybackService.PLAYSTATE_CHANGED:
-                        // Set the play and pause image
-                        baseActivity.mPlayPauseProgressButton.getPlayPauseButton().updateState();
+                        baseActivity.mPlayPauseButtonContainer.updateState();
                         break;
                     case MusicPlaybackService.REFRESH:
                         baseActivity.restartLoader();

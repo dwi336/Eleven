@@ -16,7 +16,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_short_height"
@@ -37,7 +37,7 @@
             android:layout_height="@dimen/list_item_image_height"
             android:layout_centerVertical="true"
             android:scaleType="centerCrop"
-            sothree:srcCompat="@drawable/history_icon" />
+            app:srcCompat="@drawable/history_icon" />
 
         <TextView
             android:id="@+id/line_one"
@@ -54,5 +54,5 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        sothree:srcCompat="@drawable/inset_list_divider" />
+        app:srcCompat="@drawable/inset_list_divider" />
 </RelativeLayout>

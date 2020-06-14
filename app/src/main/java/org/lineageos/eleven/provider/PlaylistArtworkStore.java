@@ -178,19 +178,13 @@ public class PlaylistArtworkStore {
      */
     private ContentValues getExistingContentValues(final SQLiteDatabase database, final long playlistId) {
         final ContentValues values = new ContentValues(5);
-        Cursor c = null;
-        try {      
-            c = getEntry(database, playlistId);
+        try (final Cursor c = getEntry(database, playlistId)) {
             if (c != null && c.moveToFirst()) {
                 values.put(PlaylistArtworkStoreColumns.ID, c.getLong(0));
                 values.put(PlaylistArtworkStoreColumns.LAST_UPDATE_ARTIST, c.getLong(1));
                 values.put(PlaylistArtworkStoreColumns.NUM_SONGS_LAST_UPDATE_ARTIST, c.getInt(2));
                 values.put(PlaylistArtworkStoreColumns.LAST_UPDATE_COVER, c.getLong(3));
                 values.put(PlaylistArtworkStoreColumns.NUM_SONGS_LAST_UPDATE_COVER, c.getInt(4));
-            }
-        } finally {
-            if (c != null) {
-                c.close();
             }
         }
 
@@ -206,9 +200,7 @@ public class PlaylistArtworkStore {
      */
     private boolean needsUpdate(final long playlistId, final String columnName, final String countColumnName) {
         final SQLiteDatabase database = mMusicDatabase.getReadableDatabase();
-        Cursor c = null;
-        try {      
-            c = getEntry(database, playlistId);
+        try (final Cursor c = getEntry(database, playlistId)) {
             if (c != null && c.moveToFirst()) {
                 final long lastUpdate = c.getLong(c.getColumnIndex(columnName));
                 final long msSinceEpoch = System.currentTimeMillis();
@@ -222,12 +214,7 @@ public class PlaylistArtworkStore {
                     return false;
                 }
             }
-        } finally {
-            if (c != null) {
-                c.close();
-            }
         }
-
         return true;
     }
 

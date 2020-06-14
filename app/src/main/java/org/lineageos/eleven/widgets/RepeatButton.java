@@ -17,7 +17,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ImageButton;
-import androidx.core.content.ContextCompat;
 
 import org.lineageos.eleven.MusicPlaybackService;
 import org.lineageos.eleven.R;
@@ -44,17 +43,17 @@ public class RepeatButton extends AudioButton {
         switch (MusicUtils.getRepeatMode()) {
             case MusicPlaybackService.REPEAT_ALL:
                 setContentDescription(getResources().getString(R.string.accessibility_repeat_all));
-                setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat_all));
+                setImageResource(R.drawable.btn_playback_repeat_all);
                 setAlpha(ACTIVE_ALPHA);
                 break;
             case MusicPlaybackService.REPEAT_CURRENT:
                 setContentDescription(getResources().getString(R.string.accessibility_repeat_one));
-                setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat_one));
+                setImageResource(R.drawable.btn_playback_repeat_one);
                 setAlpha(ACTIVE_ALPHA);
                 break;
             case MusicPlaybackService.REPEAT_NONE:
                 setContentDescription(getResources().getString(R.string.accessibility_repeat));
-                setImageDrawable(ContextCompat.getDrawable(getContext(),R.drawable.btn_playback_repeat_all));
+                setImageResource(R.drawable.btn_playback_repeat_all);
                 setAlpha(INACTIVE_ALPHA);
                 break;
             default:

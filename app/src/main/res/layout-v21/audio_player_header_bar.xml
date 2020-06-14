@@ -13,85 +13,50 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
-<RelativeLayout
+<androidx.appcompat.widget.Toolbar
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
-    android:layout_width="fill_parent"
-    android:layout_height="@dimen/header_bar_height"
-    android:orientation="horizontal"
-    android:paddingStart="@dimen/header_bar_padding_left"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/audio_player_header"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/actionBarSize"
+    android:background="@android:color/transparent"
     android:elevation="@dimen/action_bar_elevation"
-    android:background="@android:color/transparent">
+    android:theme="@style/ToolBarTheme"
+    app:popupTheme="@style/ToolBarPopupTheme"
+    tools:background="@color/blue_dark">
 
     <LinearLayout
-        android:id="@+id/header_bar_button_container"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true">
+        android:id="@+id/header_bar_text_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
 
-        <ImageView
-            android:id="@+id/header_bar_add_button"
-            android:layout_width="@dimen/header_bar_custom_button_width"
-            android:layout_height="@dimen/header_bar_button_height"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="0"
-            android:background="@drawable/selectable_background"
-            sothree:srcCompat="@drawable/btn_add_to_playlist"
-            android:scaleType="centerInside" />
-
-        <ImageView
-            android:id="@+id/header_bar_search_button"
-            android:layout_width="@dimen/header_bar_custom_button_width"
-            android:layout_height="@dimen/header_bar_button_height"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="0"
-            android:background="@drawable/selectable_background"
-            sothree:srcCompat="@drawable/ic_action_search"
-            android:scaleType="centerInside" />
-
-        <ImageView
-            android:id="@+id/header_bar_menu_button"
-            android:layout_width="@dimen/header_bar_menu_button_width"
-            android:layout_height="@dimen/header_bar_button_height"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="0"
-            android:scaleType="centerInside"
-            android:background="@drawable/selectable_background"
-            sothree:srcCompat="@drawable/menu_button_light"/>
-    </LinearLayout>
-
-    <LinearLayout
-            android:id="@+id/header_bar_text_container"
+        <TextView
+            android:id="@+id/header_bar_song_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_toStartOf="@id/header_bar_button_container">
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAllCaps="true"
+            android:textColor="@color/header_action_bar_text_color"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold"
+            tools:text="Really long and nice album title" />
 
         <TextView
-                android:id="@+id/header_bar_song_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textAllCaps="true"
-                android:textColor="@color/header_action_bar_text_color"
-                android:textSize="@dimen/text_size_medium"
-                android:textStyle="bold" />
-
-        <TextView
-                android:id="@+id/header_bar_artist_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="2dp"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:textAllCaps="true"
-                android:textColor="@color/header_action_bar_text_color"
-                android:textSize="@dimen/text_size_micro" />
+            android:id="@+id/header_bar_artist_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingBottom="2dp"
+            android:textAllCaps="true"
+            android:textColor="@color/header_action_bar_text_color"
+            android:textSize="@dimen/text_size_micro"
+            tools:text="Name of Artist" />
     </LinearLayout>
-</RelativeLayout>
+</androidx.appcompat.widget.Toolbar>

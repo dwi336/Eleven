@@ -16,16 +16,14 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Main Material -->
-    <style name="Eleven.Theme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
+    <style name="Eleven.Theme" parent="@style/Theme.AppCompat.Light">
         <item name="android:windowContentOverlay">@null</item>
         <item name="popupMenuStyle">@style/PopupMenu</item>
         <item name="dropDownListViewStyle">@style/DropDownListView</item>
         <item name="textAppearanceSmallPopupMenu">@style/SmallPopupMenu</item>
         <item name="textAppearanceLargePopupMenu">@style/LargePopupMenu</item>
         <item name="android:listViewStyle">@style/ListView</item>
-        <item name="android:actionBarStyle">@style/ActionBar</item>
         <item name="actionBarStyle">@style/ActionBar</item>
-        <item name="android:actionBarWidgetTheme">@style/ActionBarWidgetTheme</item>
         <item name="actionBarWidgetTheme">@style/ActionBarWidgetTheme</item>
         <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
         <item name="alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
@@ -35,34 +33,31 @@
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">false</item>
         <item name="android:windowAllowReturnTransitionOverlap">false</item>
-    </style> 
+    </style>
 
     <style name="AppCompatAlertDialogStyle" parent="@style/Theme.AppCompat.Light.Dialog.Alert">
         <item name="colorAccent">@color/material_pesto</item>
         <item name="android:background">#FFFFFF</item>
     </style>
     
-    <style name="ActionBarWidgetTheme" parent="@style/Theme.AppCompat">
+    <style name="ActionBarWidgetTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
         <!-- This is the color of the search text hint in the action bar -->
         <item name="android:textColorHint">@color/search_hint_color</item>
         <item name="popupMenuStyle">@style/PopupMenu</item>
         <item name="dropDownListViewStyle">@style/DropDownListView</item>
         <item name="textAppearanceSmallPopupMenu">@style/SmallPopupMenu</item>
         <item name="textAppearanceLargePopupMenu">@style/LargePopupMenu</item>
-        <!-- Empty icon -->
-        <item name="icon">@android:color/transparent</item>
     </style>
 
     <!-- Make the action bar not take up space -->
     <style name="Eleven.Theme.ActionBar.Overlay" parent="@style/Eleven.Theme">
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-        <item name="windowActionBarOverlay">false</item>
     </style>
 
     <!-- Set the default list view divider color and size -->
     <style name="ListView" parent="@style/Widget.AppCompat.ListView">
-        <item name="android:divider">@color/list_item_divider_color</item>
+        <item name="divider">@color/list_item_divider_color</item>
         <item name="android:dividerHeight">@dimen/divider_height</item>
     </style>
 
@@ -89,7 +84,7 @@
     </style>
 
     <!-- Sets the action bar menu icon -->
-    <style name="ActionOverFlowButton" parent="@style/Widget.AppCompat.ActionButton.Overflow">
+    <style name="ActionOverFlowButton" parent="@style/Widget.AppCompat.ActionButton">
         <item name="android:src">@drawable/menu_button_light</item>
         <item name="android:minWidth">0dip</item>
         <item name="android:paddingLeft">8dip</item>
@@ -206,4 +201,11 @@
     <style name="ToolBarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="ToolBarPopupTheme" parent="@style/Theme.AppCompat.Light" />
+
+    <style name="Eleven.Theme.PopupMenuOverlapAnchor">
+        <item name="android:overlapAnchor">true</item>
+        <item name="android:dropDownVerticalOffset">0dp</item>
+        <item name="android:dropDownHorizontalOffset">0dp</item>
+    </style>
+
 </resources>

@@ -17,7 +17,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height"
@@ -43,7 +43,7 @@
                 android:layout_height="@dimen/list_item_top_track_image_size"
                 android:layout_gravity="center"
                 android:scaleType="centerCrop"
-                sothree:srcCompat="@drawable/gray_circle" />
+                app:srcCompat="@drawable/gray_circle" />
             <TextView
                 android:id="@+id/position_number"
                 android:layout_width="wrap_content"
@@ -90,14 +90,14 @@
                 android:id="@+id/now_playing"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                sothree:srcCompat="@drawable/now_playing_icon"
+                app:srcCompat="@drawable/now_playing_icon"
                 android:visibility="gone" />
 
             <org.lineageos.eleven.widgets.PopupMenuButton
                 android:id="@+id/popup_menu_button"
                 android:layout_width="@dimen/overflow_width"
                 android:layout_height="@dimen/overflow_height"
-                sothree:srcCompat="@drawable/menu_button" />
+                app:srcCompat="@drawable/menu_button" />
         </LinearLayout>
     </RelativeLayout>
 
@@ -106,5 +106,5 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        sothree:srcCompat="@drawable/inset_list_divider" />
+        app:srcCompat="@drawable/inset_list_divider" />
 </RelativeLayout>

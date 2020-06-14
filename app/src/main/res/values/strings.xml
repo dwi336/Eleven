@@ -2,6 +2,7 @@
 <!--
      Copyright (C) 2012-2013 Andrew Neal
      Copyright (C) 2012-2014 The CyanogenMod Project
+     Copyright (C) 2017-2020 The LineageOS Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -36,7 +37,6 @@
 
     <!-- Option menu items -->
     <string name="menu_settings">Settings</string>
-    <string name="menu_search">Search</string>
     <string name="menu_shuffle_item">Shuffle</string>
     <string name="menu_shuffle_all">Shuffle all</string>
     <string name="menu_shuffle_playlist">Shuffle playlist</string>
@@ -139,12 +139,11 @@
     <string name="settings_download_artist_images_title">Download missing artist images</string>
     <string name="settings_general_category">General</string>
     <string name="settings_show_music_visualization_title">Show music visualization</string>
+    <string name="settings_use_blur_title">Blur background</string>
     <string name="settings_show_lyrics_title">Show song lyrics</string>
     <string name="settings_show_lyrics_summary">For songs that have an srt file</string>
     <string name="settings_shake_to_play">Shake to Play</string>
     <string name="settings_shake_to_play_summary">Shake your device to play next song</string>
-    <string name="settings_lockscreen_album_art">Lockscreen album art</string>
-    <string name="settings_lockscreen_album_art_summary">Replace lockscreen background with album art</string>
 
     <!-- App widget -->
     <string name="app_widget_small">Music: 4 \u00d7 1</string>
@@ -156,8 +155,6 @@
     <!-- Empty list / error messages -->
     <string name="no_effects_for_you">The equalizer could not be opened.</string>
     <string name="empty_music">To copy music from your computer to your device, use a USB cable.</string>
-    <string name="empty_search">No search results found</string>
-    <string name="empty_search_check">Please check that you have the correct spelling or try a different keyword.</string>
     <string name="empty_favorite">Songs you mark as favorites will be shown here.</string>
     <string name="empty_recent_main">No recent songs</string>
     <string name="empty_recent">Songs you have listened to recently will show up here.</string>
@@ -200,7 +197,6 @@
     <string name="footer_search_songs">Show all songs</string>
     <string name="footer_search_playlists">Show all playlists</string>
 
-    <string name="searchHint">Search music</string>
     <string name="search_title_artists">All \"%s\" artists</string>
     <string name="search_title_albums">All \"%s\" albums</string>
     <string name="search_title_songs">All \"%s\" songs</string>

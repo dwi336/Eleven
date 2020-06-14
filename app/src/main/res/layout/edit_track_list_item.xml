@@ -17,7 +17,7 @@
 -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/edit_track_list_parent"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height" >
@@ -28,7 +28,7 @@
         android:layout_height="@dimen/drag_and_drop_height"
         android:layout_centerVertical="true"
         android:scaleType="fitXY"
-        sothree:srcCompat="@drawable/gripper" />
+        app:srcCompat="@drawable/gripper" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -48,5 +48,5 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        sothree:srcCompat="@drawable/dnd_list_divider" />
+        app:srcCompat="@drawable/dnd_list_divider" />
 </RelativeLayout>

@@ -1,7 +1,6 @@
 package org.lineageos.eleven.widgets;
 
 import android.content.Context;
-import android.os.Build;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
@@ -9,6 +8,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.utils.ElevenUtils;
@@ -21,11 +21,7 @@ public abstract class AudioButton extends AppCompatImageButton implements OnClic
     public AudioButton(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         setPadding(0, 0, 0, 0);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        	setBackground(ContextCompat.getDrawable(context, R.drawable.selectable_background));
-        } else {
-            setBackgroundResource(R.drawable.selectable_background);
-        }
+        ViewCompat.setBackground(this, ContextCompat.getDrawable(context, R.drawable.selectable_background));
         // Control playback (cycle shuffle)
         setOnClickListener(this);
         // Show the cheat sheet
