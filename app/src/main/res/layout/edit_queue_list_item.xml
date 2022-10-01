@@ -18,7 +18,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/edit_track_list_parent"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height" >
 
@@ -27,14 +26,13 @@
         android:layout_width="@dimen/drag_and_drop_width"
         android:layout_height="@dimen/drag_and_drop_height"
         android:layout_centerVertical="true"
-        android:scaleType="fitXY"
         app:srcCompat="@drawable/gripper_light" />
 
     <FrameLayout
-        android:id="@+id/edit_track_list_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/edit_track_list_item_handle"
+        android:layout_toEndOf="@+id/edit_track_list_item_handle"
         android:gravity="center_vertical">
 
         <include layout="@layout/list_item_queue" />

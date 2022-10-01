@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2010 The Android Open Source Project
+ * Copyright (C) 2021 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -11,32 +12,27 @@
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
- * limitations under the License
+ * limitations under the License.
  */
-
 package org.lineageos.eleven.locale;
-
-import android.util.Log;
-
-import androidx.annotation.VisibleForTesting;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Locale;
 
 //import libcore.icu.AlphabeticIndex;
 //import android.icu.text.AlphabeticIndex;
 
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Locale;
 
 /**
  * This utility class provides specialized handling for locale specific
  * information: labels, name lookup keys.
- *
+ * <p>
  * This class has been modified from ContactLocaleUtils.java for now to rip out
  * Chinese/Japanese specific Alphabetic Indexers because the MediaProvider's sort
  * is using a Collator sort which can result in confusing behavior, so for now we will
  * simplify and batch up those results until we later support our own internal databases
- * An example of what This is, if we have songs "Able", "Xylophone" and "上" in
+ * An example of what This is, if we have songs "Able", "Xylophone" and "ä¸" in
  * simplified chinese language The media provider would give it to us in that order sorted,
  * but the ICU lib would return "A", "X", "S".  Unless we write our own db or do our own sort
  * there is no good easy solution
@@ -55,11 +51,11 @@ public class LocaleUtils {
     /**
      * This class is the default implementation and should be the base class
      * for other locales.
-     *
+     * <p>
      * sortKey: same as name
      * nameLookupKeys: none
      * labels: uses ICU AlphabeticIndex for labels and extends by labeling
-     *     phone numbers "#".  Eg English labels are: [A-Z], #, " "
+     * phone numbers "#".  Eg English labels are: [A-Z], #, " "
      */
     private static class LocaleUtilsBase {
         private static final String EMPTY_STRING = "";
@@ -87,10 +83,6 @@ public class LocaleUtils {
             mNumberBucketIndex = mAlphabeticIndexBucketCount - 1;
         }
 
-        public String getSortKey(String name) {
-            return name;
-        }
-
         /**
          * Returns the bucket index for the specified string. AlphabeticIndex
          * sorts strings into buckets numbered in order from 0 to N, where the
@@ -115,9 +107,9 @@ public class LocaleUtils {
                     prefixIsNumeric = true;
                     break;
                 } else if (!Character.isSpaceChar(codePoint) &&
-                           codePoint != '+' && codePoint != '(' &&
-                           codePoint != ')' && codePoint != '.' &&
-                           codePoint != '-' && codePoint != '#') {
+                        codePoint != '+' && codePoint != '(' &&
+                        codePoint != ')' && codePoint != '.' &&
+                        codePoint != '-' && codePoint != '#') {
                     break;
                 }
                 offset += Character.charCount(codePoint);
@@ -161,15 +153,10 @@ public class LocaleUtils {
             return mAlphabeticIndex.getBucketLabel(bucketIndex);
         }
 
-        @SuppressWarnings("unused")
-        public Iterator<String> getNameLookupKeys(String name, int nameStyle) {
-            return null;
-        }
-
         public ArrayList<String> getLabels() {
             final int bucketCount = getBucketCount();
             final ArrayList<String> labels = new ArrayList<>(bucketCount);
-            for(int i = 0; i < bucketCount; ++i) {
+            for (int i = 0; i < bucketCount; ++i) {
                 labels.add(getBucketLabel(i));
             }
             return labels;
@@ -204,27 +191,14 @@ public class LocaleUtils {
         return sSingleton;
     }
 
-    @VisibleForTesting
-    public static synchronized void setLocale(Locale locale) {
-        setLocales(new LocaleSet(locale));
-    }
-
     public static synchronized void setLocales(LocaleSet locales) {
         if (sSingleton == null || !sSingleton.isLocale(locales)) {
             sSingleton = new LocaleUtils(locales);
         }
     }
 
-    public String getSortKey(String name, int nameStyle) {
-        return mUtils.getSortKey(name);
-    }
-
     public int getBucketIndex(String name) {
         return mUtils.getBucketIndex(name);
-    }
-
-    public int getBucketCount() {
-        return mUtils.getBucketCount();
     }
 
     public String getBucketLabel(int bucketIndex) {

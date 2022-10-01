@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2014 The CyanogenMod Project
- * Copyright (C) 2019 The LineageOS Project
- * Copyright (C) 2019 SHIFT GmbH
+ * Copyright (C) 2019-2021 The LineageOS Project
+ * Copyright (C) 2019-2021 SHIFT GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,44 +17,58 @@
  */
 package org.lineageos.eleven.widgets;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.graphics.RenderEffect;
+import android.graphics.Shader;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.core.content.ContextCompat;
-import androidx.core.view.ViewCompat;
-
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.cache.ImageWorker;
+import org.lineageos.eleven.utils.ImageUtils;
+
+import androidx.core.content.ContextCompat;
+import androidx.core.view.ViewCompat;
 
 public class AlbumScrimImage extends FrameLayout {
     private static final int COLOR_GREY_30 = 0x4c000000;
 
+    private static final float BLUR_RADIUS = 50f;
+
     private ImageView mImageView;
     private View mScrimView;
 
-    private boolean mUsingDefaultBlur;
+    private final int mDefaultArtworkColor;
+    private boolean mUsingDefaultArtwork;
 
     public AlbumScrimImage(Context context, AttributeSet attrs) {
         super(context, attrs);
 
-        mUsingDefaultBlur = true;
+        mDefaultArtworkColor = ContextCompat.getColor(getContext(), R.color.default_artwork_color);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        mImageView = findViewById(R.id.blurImage);
-        mScrimView = findViewById(R.id.blurScrim);
+        mImageView = findViewById(R.id.albumImage);
+        mScrimView = findViewById(R.id.albumScrim);
+
+        // generate and set default artwork
+        final Drawable defaultArtworkDrawable = createDefaultArtworkDrawable();
+        mImageView.setImageDrawable(defaultArtworkDrawable);
+
+        mUsingDefaultArtwork = true;
     }
 
     public ImageView getImageView() {
@@ -65,24 +79,28 @@ public class AlbumScrimImage extends FrameLayout {
      * Transitions the image to the default state (default blur artwork)
      */
     public void transitionToDefaultState() {
-        // if we are already showing the default blur and we are transitioning to the default blur
-        // then don't do the transition at all
-        if (mUsingDefaultBlur) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S){
+            clearBlurEffect();
+        }
+
+        // if we are already showing the default artwork and we are transitioning to the
+        // default artwork then don't do the transition at all
+        if (mUsingDefaultArtwork) {
             return;
         }
 
-        Bitmap blurredBitmap = ((BitmapDrawable) ContextCompat.getDrawable(
-                getContext(), R.drawable.default_artwork_blur)).getBitmap();
+        final Drawable drawable = createDefaultArtworkDrawable();
+        final Bitmap albumBitmap = ImageUtils.drawableToBitmap(drawable);
 
-        TransitionDrawable imageTransition = ImageWorker.createImageTransitionDrawable(
-                getResources(), mImageView.getDrawable(), blurredBitmap,
-                ImageWorker.FADE_IN_TIME_SLOW, true, true);
+        final TransitionDrawable imageTransition = ImageWorker.createImageTransitionDrawable(
+                getResources(), mImageView.getDrawable(), albumBitmap,
+                ImageWorker.FADE_IN_TIME_SLOW, true);
 
-        TransitionDrawable paletteTransition = ImageWorker.createPaletteTransition(this,
+        final TransitionDrawable paletteTransition = ImageWorker.createPaletteTransition(this,
                 Color.TRANSPARENT);
 
         setTransitionDrawable(imageTransition, paletteTransition);
-        mUsingDefaultBlur = true;
+        mUsingDefaultArtwork = true;
     }
 
     /**
@@ -92,10 +110,10 @@ public class AlbumScrimImage extends FrameLayout {
      * @param paletteTransition the transition for the scrim overlay
      */
     public void setTransitionDrawable(TransitionDrawable imageTransition,
-            TransitionDrawable paletteTransition) {
+                                      TransitionDrawable paletteTransition) {
         ViewCompat.setBackground(mScrimView, paletteTransition);
         mImageView.setImageDrawable(imageTransition);
-        mUsingDefaultBlur = false;
+        mUsingDefaultArtwork = false;
     }
 
     public void setGradientDrawable(GradientDrawable gradientDrawable) {
@@ -104,6 +122,22 @@ public class AlbumScrimImage extends FrameLayout {
         ViewCompat.setBackground(mScrimView, scrimDrawable);
 
         mImageView.setImageDrawable(gradientDrawable);
-        mUsingDefaultBlur = false;
+        mUsingDefaultArtwork = false;
+    }
+
+    @TargetApi(Build.VERSION_CODES.S)
+    public void applyBlurEffect() {
+        final RenderEffect blurEffect = RenderEffect.createBlurEffect(
+                BLUR_RADIUS, BLUR_RADIUS, Shader.TileMode.CLAMP);
+        mImageView.setRenderEffect(blurEffect);
+    }
+
+    @TargetApi(Build.VERSION_CODES.S)
+    public void clearBlurEffect() {
+        mImageView.setRenderEffect(null);
+    }
+
+    private Drawable createDefaultArtworkDrawable() {
+        return new ColorDrawable(mDefaultArtworkColor);
     }
 }

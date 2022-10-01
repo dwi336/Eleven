@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2014 The Android Open Source Project
+ * Copyright (C) 2021 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +48,7 @@ import java.lang.reflect.Method;
 public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnPageChangeListener {
 
     ViewPager mPager;
-    private ViewPagerTabStrip mTabStrip;
+    private final ViewPagerTabStrip mTabStrip;
 
     /**
      * Linearlayout that will contain the TextViews serving as tabs. This is the only child
@@ -58,7 +59,7 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
     final int mTextSize;
     final boolean mTextAllCaps;
     int mPrevSelected = -1;
-    int mSidePadding;
+    final int mSidePadding;
 
     private static final ViewOutlineProviderCompat VIEW_BOUNDS_OUTLINE_PROVIDER;
     static {
@@ -84,11 +85,11 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
     private static final int TAB_SIDE_PADDING_IN_DPS = 10;
 
     // TODO: This should use <declare-styleable> in the future
-    private static final int[] ATTRS = new int[] {
-        android.R.attr.textSize,
-        android.R.attr.textStyle,
-        android.R.attr.textColor,
-        android.R.attr.textAllCaps
+    private static final int[] ATTRS = new int[]{
+            android.R.attr.textSize,
+            android.R.attr.textStyle,
+            android.R.attr.textColor,
+            android.R.attr.textAllCaps
     };
 
     /**
@@ -111,7 +112,11 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
             final int height = getHeight();
             final int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
 
-            Toast toast = Toast.makeText(context, mPager.getAdapter().getPageTitle(mPosition),
+            final PagerAdapter adapter = mPager.getAdapter();
+            if (adapter == null) {
+                return false;
+            }
+            Toast toast = Toast.makeText(context, adapter.getPageTitle(mPosition),
                     Toast.LENGTH_SHORT);
 
             // Show the toast under the tab
@@ -165,7 +170,10 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
 
     public void setViewPager(ViewPager viewPager) {
         mPager = viewPager;
-        addTabs(mPager.getAdapter());
+        final PagerAdapter adapter = mPager.getAdapter();
+        if (adapter != null) {
+            addTabs(adapter);
+        }
     }
 
     private void addTabs(PagerAdapter adapter) {
@@ -224,11 +232,11 @@ public class ViewPagerTabs extends HorizontalScrollView implements ViewPager.OnP
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
         position = getRtlPosition(position);
         int tabStripChildCount = mTabStrip.getChildCount();
-        if ((tabStripChildCount == 0) || (position < 0) || (position >= tabStripChildCount)) {
+        if (position < 0 || position >= tabStripChildCount) {
             return;
         }
 
-        mTabStrip.onPageScrolled(position, positionOffset, positionOffsetPixels);
+        mTabStrip.onPageScrolled(position, positionOffset);
     }
 
     @Override

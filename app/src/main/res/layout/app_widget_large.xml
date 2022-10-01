@@ -2,6 +2,7 @@
 <!--
   Copyright (C) 2012 Andrew Neal
   Copyright (C) 2014 The CyanogenMod Project
+  Copyright (C) 2021 The LineageOS Project
 
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
@@ -19,102 +20,91 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/app_widget_large_min_height"
-    android:orientation="horizontal"
-    android:background="@color/widget_background_color"
-    tools:ignore="ContentDescription" >
-
-    <ImageView
-        android:id="@+id/app_widget_large_image"
-        android:layout_width="@dimen/notification_expanded_height"
-        android:layout_height="@dimen/notification_expanded_height"
-        android:layout_marginBottom="@dimen/app_widget_bottom_margin"
-        android:scaleType="fitXY" />
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_app_widget"
+    android:padding="8dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
-    
-        <LinearLayout
-            android:id="@+id/app_widget_large_info_container"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="fill"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:paddingLeft="@dimen/notification_info_container_padding_left" >
+        android:orientation="horizontal" >
 
-            <TextView
-                android:id="@+id/app_widget_large_line_one"
-                style="@style/NotificationText"
-                android:textColor="@color/widget_text"
-                android:textSize="@dimen/text_size_medium"
-                android:textStyle="bold" />
-
-            <TextView
-                android:id="@+id/app_widget_large_line_two"
-                style="@style/NotificationText"
-                android:textColor="@color/widget_text"
-                android:textSize="@dimen/text_size_small" />
-
-            <TextView
-                android:id="@+id/app_widget_large_line_three"
-                style="@style/NotificationText"
-                android:textColor="@color/widget_text"
-                android:textSize="@dimen/text_size_small" />
-        </LinearLayout>
+        <ImageView
+            android:id="@+id/app_widget_large_image"
+            android:layout_width="@dimen/app_widget_large_alternate_artwork_size"
+            android:layout_height="@dimen/app_widget_large_alternate_artwork_size"
+            android:layout_weight="0"
+            android:contentDescription="@null"
+            android:scaleType="fitXY" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:orientation="vertical" >
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:layout_marginStart="@dimen/notification_info_container_padding_left"
+            android:layout_marginLeft="@dimen/notification_info_container_padding_left"
+            android:gravity="center"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/app_widget_large_buttons"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="fill_horizontal"
-                android:layout_marginBottom="@dimen/app_widget_bottom_margin"
-                android:dividerPadding="@dimen/notification_expanded_buttons_divider_padding"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:showDividers="middle" >
+            <ImageButton
+                android:id="@+id/app_widget_large_previous"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/accessibility_prev"
+                android:padding="@dimen/notification_expanded_button_padding"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_playback_previous_widget_compat" />
 
-                <ImageButton
-                    android:id="@+id/app_widget_large_previous"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/notification_expanded_button_height"
-                    android:layout_weight="1"
-                    android:background="?android:selectableItemBackground"
-                    android:contentDescription="@string/accessibility_prev"
-                    android:padding="@dimen/notification_expanded_button_padding"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn_playback_previous_compat" />
+            <ImageButton
+                android:id="@+id/app_widget_large_play"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@null"
+                android:padding="@dimen/notification_expanded_button_padding"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_playback_pause_widget_compat" />
 
-                <ImageButton
-                    android:id="@+id/app_widget_large_play"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/notification_expanded_button_height"
-                    android:layout_weight="1"
-                    android:background="?android:selectableItemBackground"
-                    android:padding="@dimen/notification_expanded_button_padding"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn_playback_pause_compat" />
-
-                <ImageButton
-                    android:id="@+id/app_widget_large_next"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/notification_expanded_button_height"
-                    android:layout_weight="1"
-                    android:background="?android:selectableItemBackground"
-                    android:contentDescription="@string/accessibility_next"
-                    android:padding="@dimen/notification_expanded_button_padding"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/btn_playback_next_compat" />
-            </LinearLayout>
+            <ImageButton
+                android:id="@+id/app_widget_large_next"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="?android:selectableItemBackground"
+                android:contentDescription="@string/accessibility_next"
+                android:padding="@dimen/notification_expanded_button_padding"
+                android:scaleType="centerCrop"
+                android:src="@drawable/btn_playback_next_widget_compat" />
         </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/app_widget_large_info_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="fill_horizontal"
+        android:orientation="vertical"
+        android:paddingTop="8dp">
+
+        <TextView
+            android:id="@+id/app_widget_large_line_one"
+            style="@style/NotificationText"
+            android:textColor="@color/widget_text"
+            android:textSize="@dimen/text_size_medium"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/app_widget_large_line_two"
+            style="@style/NotificationText"
+            android:textColor="@color/widget_text"
+            android:textSize="@dimen/text_size_small" />
+
+        <TextView
+            android:id="@+id/app_widget_large_line_three"
+            style="@style/NotificationText"
+            android:textColor="@color/widget_text"
+            android:textSize="@dimen/text_size_small" />
     </LinearLayout>
 </LinearLayout>

@@ -1,18 +1,19 @@
 /*
-* Copyright (C) 2014 The CyanogenMod Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2014 The CyanogenMod Project
+ * Copyright (C) 2021 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.lineageos.eleven.utils;
 
 import android.annotation.SuppressLint;
@@ -53,7 +54,7 @@ import java.util.TreeSet;
  */
 public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListener {
     // the different types of pop up menus
-    public static enum PopupMenuType {
+    public enum PopupMenuType {
         Artist,
         Album,
         Song,
@@ -63,9 +64,9 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
         Queue,
     }
 
-    protected Activity mActivity;
+    protected final Activity mActivity;
     protected PopupMenuType mType;
-    protected FragmentManager mFragmentManager;
+    protected final FragmentManager mFragmentManager;
 
     public PopupMenuHelper(final Activity activity, final FragmentManager fragmentManager) {
         mActivity = activity;
@@ -74,7 +75,8 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
 
     /**
      * Call this to inflate and show the pop up menu
-     * @param view the view to anchor the popup menu against
+     *
+     * @param view     the view to anchor the popup menu against
      * @param position the item that was clicked in the popup menu (or -1 if not relevant)
      */
     @SuppressLint("RestrictedApi")
@@ -112,6 +114,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
 
     /**
      * This function allows classes to setup any variables before showing the popup menu
+     *
      * @param position the position passed in from showPopupMenu
      * @return the pop up menu type, or null if we shouldn't show a pop up menu
      */
@@ -123,11 +126,13 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
     protected abstract long[] getIdList();
 
     protected abstract long getSourceId();
+
     protected abstract Config.IdType getSourceType();
 
     /**
      * @return the group id to be used for pop up menu inflating
      */
+    @SuppressWarnings("SameReturnValue")
     protected int getGroupId() {
         return 0;
     }
@@ -188,6 +193,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
 
     /**
      * Creates the pop up menu by inflating the menu items
+     *
      * @param menu Menu to use for adding to
      */
     public void createPopupMenu(final Menu menu) {
@@ -210,21 +216,22 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
 
     /**
      * Gets the default menu items for the specified type
+     *
      * @param type of pop up menu to create
      * @return list of menu items to inflate
      */
     private static int[] getIdsForType(PopupMenuType type) {
         switch (type) {
             case Artist:
-                return new int[] {
-                    FragmentMenuItems.PLAY_SELECTION,
-                    FragmentMenuItems.ADD_TO_QUEUE,
-                    FragmentMenuItems.ADD_TO_PLAYLIST,
-                    FragmentMenuItems.DELETE,
-                    FragmentMenuItems.CHANGE_IMAGE,
+                return new int[]{
+                        FragmentMenuItems.PLAY_SELECTION,
+                        FragmentMenuItems.ADD_TO_QUEUE,
+                        FragmentMenuItems.ADD_TO_PLAYLIST,
+                        FragmentMenuItems.DELETE,
+                        FragmentMenuItems.CHANGE_IMAGE,
                 };
             case Album:
-                return new int[] {
+                return new int[]{
                         FragmentMenuItems.PLAY_SELECTION,
                         FragmentMenuItems.ADD_TO_QUEUE,
                         FragmentMenuItems.ADD_TO_PLAYLIST,
@@ -233,7 +240,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                         FragmentMenuItems.CHANGE_IMAGE,
                 };
             case Song:
-                return new int[] {
+                return new int[]{
                         FragmentMenuItems.PLAY_SELECTION,
                         FragmentMenuItems.PLAY_NEXT,
                         FragmentMenuItems.PLAY_ALBUM,
@@ -244,25 +251,25 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                         FragmentMenuItems.DELETE,
                 };
             case Playlist:
-                return new int[] {
+                return new int[]{
                         FragmentMenuItems.PLAY_SELECTION,
                         FragmentMenuItems.ADD_TO_QUEUE,
                         FragmentMenuItems.RENAME_PLAYLIST,
                         FragmentMenuItems.DELETE,
                 };
             case SmartPlaylist:
-                return new int[] {
+                return new int[]{
                         FragmentMenuItems.PLAY_SELECTION,
                         FragmentMenuItems.ADD_TO_QUEUE,
                 };
             case SearchResult:
-                return new int[] {
+                return new int[]{
                         FragmentMenuItems.PLAY_SELECTION,
                         FragmentMenuItems.ADD_TO_QUEUE,
                         FragmentMenuItems.ADD_TO_PLAYLIST,
                 };
             case Queue:
-                return new int[] {
+                return new int[]{
                         FragmentMenuItems.PLAY_NEXT,
                         FragmentMenuItems.ADD_TO_PLAYLIST,
                         FragmentMenuItems.REMOVE_FROM_QUEUE,
@@ -277,8 +284,9 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
 
     /**
      * Allows containing classes to add/remove ids to the menu
+     *
      * @param type the pop up menu type
-     * @param set the treeset to add/remove menu items
+     * @param set  the treeset to add/remove menu items
      */
     protected void updateMenuIds(PopupMenuType type, TreeSet<Integer> set) {
         // do nothing
@@ -287,6 +295,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
     /**
      * Gets the string resource for an id - if the string resource doesn't exist in this class
      * the containing class can override this method
+     *
      * @param id the menu id
      * @return string resource id
      */
@@ -296,6 +305,7 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
 
     /**
      * Gets the string resource for an id
+     *
      * @param id the menu id
      * @return string resource id
      */
@@ -366,20 +376,21 @@ public abstract class PopupMenuHelper implements PopupMenu.OnMenuItemClickListen
                     final AlertDialog.Builder builder = new AlertDialog.Builder(mActivity);
                     builder.setTitle(R.string.add_to_playlist);
                     final List<String> menuItemList = MusicUtils.makePlaylist(mActivity);
-                    builder.setItems(menuItemList.toArray(new String[0]), (dialog, which) -> {
-                        if (which == 0) {
-                            CreateNewPlaylist.getInstance(getIdList()).show(
-                                    mFragmentManager, "CreatePlaylist");
-                            return;
+                    builder.setItems(menuItemList.toArray(new String[0]), new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            final String name = menuItemList.get(which);
+                            final long playListId = MusicUtils.getIdForPlaylist(mActivity, name);
+                            MusicUtils.addToPlaylist(mActivity, getIdList(), playListId);
                         }
-                        final String name = menuItemList.get(which);
-                        final long playListId = MusicUtils.getIdForPlaylist(mActivity, name);
-                        MusicUtils.addToPlaylist(mActivity, getIdList(), playListId);
                     });
-                    builder.setPositiveButton(R.string.new_playlist, (dialog, which) -> {
-                        dialog.dismiss();
-                        CreateNewPlaylist.getInstance(getIdList())
-                                .show(mFragmentManager, "CreatePlaylist");
+                    builder.setPositiveButton(R.string.new_playlist, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(final DialogInterface dialog, final int which) {
+                            dialog.dismiss();
+                            CreateNewPlaylist.getInstance(getIdList())
+                                    .show(mFragmentManager, "CreatePlaylist");
+                        }
                     });
                     builder.show();
                     return true;

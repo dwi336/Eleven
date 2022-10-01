@@ -1,5 +1,6 @@
 <!--
      Copyright (C) 2014 The CyanogenMod Project
+     Copyright (C) 2021 The LineageOS Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -23,7 +24,9 @@
     android:gravity="center_vertical"
     android:orientation="horizontal"
     android:paddingStart="@dimen/drag_and_drop_width"
+    android:paddingEnd="@dimen/drag_and_drop_width"
     android:paddingLeft="@dimen/drag_and_drop_width"
+    android:paddingRight="@dimen/drag_and_drop_width"
     android:background="@color/header_action_bar_color"
     android:elevation="@dimen/action_bar_elevation"
     app:theme="@style/ToolBarTheme">
@@ -46,7 +49,7 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:textAllCaps="true"
-        android:textColor="@color/header_action_bar_text_color"
+        android:textColor="@color/white"
         android:textSize="@dimen/text_size_medium"
         android:textStyle="bold" />
 

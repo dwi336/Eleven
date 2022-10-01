@@ -1,14 +1,19 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Licensed under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Copyright (C) 2020-2021 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 
 package org.lineageos.eleven;
@@ -19,15 +24,6 @@ package org.lineageos.eleven;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public final class Config {
-
-    /* This class is never initiated. */
-    public Config() {
-    }
-
-    /**
-     * My personal Last.fm API key, please use your own.
-     */
-    public static final String LASTFM_API_KEY = "0bec3f7ec1f914d7c960c12a916c8fb3";
 
     /**
      * Used to distinguish album art from artist images
@@ -56,7 +52,9 @@ public final class Config {
      */
     public static final String ALBUM_YEAR = "album_year";
 
-    /** number of songs in a album or track list */
+    /**
+     * number of songs in a album or track list
+     */
     public static final String SONG_COUNT = "song_count";
 
     /**
@@ -65,27 +63,18 @@ public final class Config {
     public static final String MIME_TYPE = "mime_type";
 
     /**
-     * Play from search intent
-     */
-    public static final String PLAY_FROM_SEARCH = "android.media.action.MEDIA_PLAY_FROM_SEARCH";
-
-    /**
      * The smart playlist type
      */
     public static final String SMART_PLAYLIST_TYPE = "smart_playlist_type";
 
-    /**
-     * Number of search results to show at the top level search
-     */
-    public static final int SEARCH_NUM_RESULTS_TO_GET = 3;
 
-    public static enum SmartPlaylistType {
+    public enum SmartPlaylistType {
         LastAdded(-1, R.string.playlist_last_added),
         RecentlyPlayed(-2, R.string.playlist_recently_played),
         TopTracks(-3, R.string.playlist_top_tracks);
 
-        public long mId;
-        public int mTitleId;
+        public final long mId;
+        public final int mTitleId;
 
         SmartPlaylistType(long id, int titleId) {
             mId = id;
@@ -107,7 +96,7 @@ public final class Config {
      * This helps identify where an id has come from.  Mainly used to determine when a user
      * clicks a song where that song came from (artist/album/playlist)
      */
-    public static enum IdType {
+    public enum IdType {
         NA(0),
         Artist(1),
         Album(2),

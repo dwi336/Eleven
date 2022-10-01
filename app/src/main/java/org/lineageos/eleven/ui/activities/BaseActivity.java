@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Copyright (C) 2019 The LineageOS Project
+ * Copyright (C) 2019-2021 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.lineageos.eleven.ui.activities;
 
 import android.content.BroadcastReceiver;
@@ -42,24 +41,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.FragmentActivity;
 
 import org.lineageos.eleven.MusicPlaybackService;
 import org.lineageos.eleven.MusicStateListener;
 import org.lineageos.eleven.R;
-import org.lineageos.eleven.cache.ICacheListener;
-import org.lineageos.eleven.cache.ImageFetcher;
 import org.lineageos.eleven.utils.ElevenUtils;
 import org.lineageos.eleven.utils.Lists;
 import org.lineageos.eleven.utils.MusicUtils;
 import org.lineageos.eleven.utils.MusicUtils.ServiceToken;
 import org.lineageos.eleven.utils.NavUtils;
 import org.lineageos.eleven.widgets.PlayPauseButtonContainer;
+import org.lineageos.eleven.widgets.PlayPauseProgressButton;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 /**
- * A base {@link AppCompatActivity} used to update the bottom bar and
+ * A base {@link FragmentActivity} used to update the bottom bar and
  * bind to Eleven's service.
  * <p>
  * {@link SlidingPanelActivity} extends from this skeleton.
@@ -67,10 +66,10 @@ import java.util.ArrayList;
  * @author Andrew Neal (andrewdneal@gmail.com)
  */
 public abstract class BaseActivity extends AppCompatActivity implements ServiceConnection,
-        MusicStateListener, ICacheListener {
+        MusicStateListener {
 
     /**
-     * Playstate and meta change listener
+     * Play-state and meta change listener
      */
     private final ArrayList<MusicStateListener> mMusicStateListener = Lists.newArrayList();
 
@@ -86,7 +85,9 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     /**
      * Play pause progress button
      */
+    private PlayPauseProgressButton mPlayPauseProgressButton;
     private PlayPauseButtonContainer mPlayPauseButtonContainer;
+
 
     /**
      * Track name (BAB)
@@ -110,13 +111,13 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
 
     private Drawable mActionBarBackground;
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    private boolean mRequestingPermissions;
 
+    /**
+     * Called when all requirements (like permissions) are satisfied and we are ready
+     * to initialize the app.
+     */
+    protected void init(final Bundle savedInstanceState) {
         // Control the media volume
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
 
@@ -125,16 +126,15 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
 
         // Calculate ActionBar height
         TypedValue value = new TypedValue();
-        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, value, true))
-        {
+        if (getTheme().resolveAttribute(android.R.attr.actionBarSize, value, true)) {
             mActionBarHeight = TypedValue.complexToDimensionPixelSize(value.data,
                     getResources().getDisplayMetrics());
         }
 
         // Set the layout
-        setContentView(setContentView());
+        setContentView(R.layout.activity_base);
 
-        mToolBar = (Toolbar) findViewById(R.id.toolbar);
+        mToolBar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolBar);
 
         setActionBarTitle(getString(R.string.app_name));
@@ -142,16 +142,25 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         // set the background on the root view
         getWindow().getDecorView().getRootView().setBackgroundColor(
                 ContextCompat.getColor(this, R.color.background_color));
-        // Initialze the bottom action bar
+        // Initialize the bottom action bar
         initBottomActionBar();
 
-        // listen to changes to the cache status
-        ImageFetcher.getInstance(this).addCacheListener(this);
+        // if we are requesting permissions on app launch, we skip binding
+        // at onStart() and need to bind after we got permissions and call init()
+        // to ensure the UI is properly set up.
+        if (mRequestingPermissions) {
+            mToken = MusicUtils.bindToService(this, this);
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    public boolean isInitialized() {
+        return mToken != null;
+    }
+
+    public void setRequestingPermissions(final boolean requestingPermissions) {
+        mRequestingPermissions = requestingPermissions;
+    }
+
     @Override
     public void onServiceConnected(final ComponentName name, final IBinder service) {
         // Set the playback drawables
@@ -162,16 +171,10 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         handlePendingPlaybackRequests();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onServiceDisconnected(final ComponentName name) {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean onCreateOptionsMenu(final Menu menu) {
         // Settings
@@ -180,13 +183,9 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         return super.onCreateOptionsMenu(menu);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.menu_settings){
+        if (item.getItemId() == R.id.menu_settings) {
             // Settings
             NavUtils.openSettings(this);
             return true;
@@ -194,27 +193,26 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void onResume() {
         super.onResume();
-        // Set the playback drawables
-        updatePlaybackControls();
-        // Current info
-        onMetaChanged();
+
+        if (isInitialized()) {
+            // Set the playback drawables
+            updatePlaybackControls();
+            // Current info
+            onMetaChanged();
+        }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void onStart() {
         super.onStart();
 
-        // Bind Eleven's service
-        mToken = MusicUtils.bindToService(this, this);
+        // Bind Eleven's service, if all permissions are granted
+        if (!mRequestingPermissions) {
+            mToken = MusicUtils.bindToService(this, this);
+        }
 
         final IntentFilter filter = new IntentFilter();
         // Play and pause changes
@@ -230,9 +228,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         registerReceiver(mPlaybackStatus, filter);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -249,18 +244,12 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
         // Remove any music status listeners
         mMusicStateListener.clear();
-
-        // remove cache listeners
-        ImageFetcher.getInstance(this).removeCacheListener(this);
     }
 
     public void setupActionBar(int resId) {
@@ -305,6 +294,8 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
      */
     protected void initBottomActionBar() {
         // Play and pause button
+        mPlayPauseProgressButton = findViewById(R.id.playPauseProgressButtonAlt);
+        mPlayPauseProgressButton.enableAndShow();
         mPlayPauseButtonContainer = findViewById(R.id.playPauseProgressButton);
         mPlayPauseButtonContainer.enableAndShow();
 
@@ -340,6 +331,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
     private void updatePlaybackControls() {
         // Set the play and pause image
         mPlayPauseButtonContainer.updateState();
+        mPlayPauseProgressButton.updateState();
     }
 
     /**
@@ -347,9 +339,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
      */
     private final View.OnClickListener mOpenCurrentAlbumProfile = new View.OnClickListener() {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void onClick(final View v) {
             if (MusicUtils.getCurrentAudioId() != -1) {
@@ -375,9 +364,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
             mReference = new WeakReference<>(activity);
         }
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void onReceive(final Context context, final Intent intent) {
             final String action = intent.getAction();
@@ -386,26 +372,22 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
             }
 
             final BaseActivity baseActivity = mReference.get();
-            if (baseActivity != null) {
-                switch (action) {
-                    case MusicPlaybackService.META_CHANGED:
-                        baseActivity.onMetaChanged();
-                        break;
-                    case MusicPlaybackService.PLAYSTATE_CHANGED:
-                        baseActivity.mPlayPauseButtonContainer.updateState();
-                        break;
-                    case MusicPlaybackService.REFRESH:
-                        baseActivity.restartLoader();
-                        break;
-                    case MusicPlaybackService.PLAYLIST_CHANGED:
-                        baseActivity.onPlaylistChanged();
-                        break;
-                    case MusicPlaybackService.TRACK_ERROR:
-                        final String errorMsg = context.getString(R.string.error_playing_track,
-                                intent.getStringExtra(MusicPlaybackService.TrackErrorExtra.TRACK_NAME));
-                        Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
-                        break;
-                }
+            if (baseActivity == null) {
+                return;
+            }
+            if (MusicPlaybackService.META_CHANGED.equals(action)) {
+                baseActivity.onMetaChanged();
+            } else if (MusicPlaybackService.PLAYSTATE_CHANGED.equals(action)) {
+                baseActivity.mPlayPauseButtonContainer.updateState();
+                baseActivity.mPlayPauseProgressButton.updateState();
+            } else if (MusicPlaybackService.REFRESH.equals(action)) {
+                baseActivity.restartLoader();
+            } else if (MusicPlaybackService.PLAYLIST_CHANGED.equals(action)) {
+                baseActivity.onPlaylistChanged();
+            } else if (MusicPlaybackService.TRACK_ERROR.equals(action)) {
+                final String errorMsg = context.getString(R.string.error_playing_track,
+                        intent.getStringExtra(MusicPlaybackService.TrackErrorExtra.TRACK_NAME));
+                Toast.makeText(baseActivity, errorMsg, Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -415,7 +397,7 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
         // update action bar info
         updateBottomActionBarInfo();
 
-        // Let the listener know to the meta chnaged
+        // Let the listener know to the meta changed
         for (final MusicStateListener listener : mMusicStateListener) {
             if (listener != null) {
                 listener.onMetaChanged();
@@ -464,17 +446,6 @@ public abstract class BaseActivity extends AppCompatActivity implements ServiceC
             mMusicStateListener.remove(status);
         }
     }
-
-    @Override
-    public void onCacheUnpaused() {
-        // Set the album art
-        ElevenUtils.getImageFetcher(this).loadCurrentArtwork(mAlbumArt);
-    }
-
-    /**
-     * @return The resource ID to be inflated.
-     */
-    public abstract int setContentView();
 
     /**
      * handle pending playback requests

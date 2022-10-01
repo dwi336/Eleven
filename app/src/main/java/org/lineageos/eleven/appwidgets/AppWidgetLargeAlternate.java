@@ -1,16 +1,20 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Licensed under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with the
- * License. You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0 Unless required by applicable law
- * or agreed to in writing, software distributed under the License is
- * distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the specific language
- * governing permissions and limitations under the License.
+ * Copyright (C) 2021 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
-
 package org.lineageos.eleven.appwidgets;
 
 import android.annotation.SuppressLint;
@@ -37,7 +41,7 @@ import org.lineageos.eleven.widgets.ShuffleButton;
 @SuppressLint("NewApi")
 public class AppWidgetLargeAlternate extends AppWidgetBase {
 
-    public static final String CMDAPPWIDGETUPDATE = "app_widget_large_alternate_update";
+    public static final String APP_WIDGET_UPDATE = "app_widget_large_alternate_update";
 
     private static AppWidgetLargeAlternate mInstance;
 
@@ -48,16 +52,13 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         return mInstance;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public void onUpdate(final Context context, final AppWidgetManager appWidgetManager,
             final int[] appWidgetIds) {
         defaultAppWidget(context, appWidgetIds);
         final Intent updateIntent = new Intent(MusicPlaybackService.SERVICECMD);
         updateIntent.putExtra(MusicPlaybackService.CMDNAME,
-                AppWidgetLargeAlternate.CMDAPPWIDGETUPDATE);
+                AppWidgetLargeAlternate.APP_WIDGET_UPDATE);
         updateIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, appWidgetIds);
         updateIntent.setFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY);
         context.sendBroadcast(updateIntent);
@@ -70,11 +71,41 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
     private void defaultAppWidget(final Context context, final int[] appWidgetIds) {
         final RemoteViews appWidgetViews = new RemoteViews(context.getPackageName(),
                 R.layout.app_widget_large_alternate);
+        // RemoteViews doesn't support AppCompatImageView. Drawable must be set programmatically.
+        int shuffleAllButtonResId = 0;
+        int previousButtonResId = 0;
+        int pauseButtonResId = 0;
+        int nextButtonResId = 0;
+        int repeatAllButtonResId = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            shuffleAllButtonResId = R.drawable.btn_playback_shuffle_all_widget;
+            previousButtonResId = R.drawable.btn_playback_previous_widget;
+            pauseButtonResId = R.drawable.btn_playback_pause_widget;
+            nextButtonResId = R.drawable.btn_playback_next_widget;
+            repeatAllButtonResId = R.drawable.btn_playback_repeat_all_widget;
+        } else {
+            shuffleAllButtonResId = R.drawable.btn_playback_shuffle_all_widget_compat;
+            previousButtonResId = R.drawable.btn_playback_previous_widget_compat;
+            pauseButtonResId = R.drawable.btn_playback_pause_widget_compat;
+            nextButtonResId = R.drawable.btn_playback_next_widget_compat;
+            repeatAllButtonResId = R.drawable.btn_playback_repeat_all_widget_compat;
+        }
+        appWidgetViews.setImageViewResource(R.id.app_widget_large_alternate_shuffle,
+                shuffleAllButtonResId);
+        appWidgetViews.setImageViewResource(R.id.app_widget_large_alternate_previous,
+                previousButtonResId);
+        appWidgetViews.setImageViewResource(R.id.app_widget_large_alternate_play,
+                    pauseButtonResId);
+        appWidgetViews.setImageViewResource(R.id.app_widget_large_alternate_next,
+                nextButtonResId);
+        appWidgetViews.setImageViewResource(R.id.app_widget_large_alternate_repeat,
+                repeatAllButtonResId);
         linkButtons(context, appWidgetViews);
         pushUpdate(context, appWidgetIds, appWidgetViews);
     }
 
-    private void pushUpdate(final Context context, final int[] appWidgetIds, final RemoteViews views) {
+    private void pushUpdate(final Context context, final int[] appWidgetIds,
+                            final RemoteViews views) {
         final AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
         if (appWidgetIds != null) {
             appWidgetManager.updateAppWidget(appWidgetIds, views);
@@ -113,13 +144,24 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
      * Update all active widget instances by pushing changes
      */
     public void performUpdate(final MusicPlaybackService service, final int[] appWidgetIds) {
-        int playButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_play : R.drawable.btn_playback_play_compat;
-        int pauseButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_pause : R.drawable.btn_playback_pause_compat;
-        int repeatAllButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_repeat_all : R.drawable.btn_playback_repeat_all_compat;
-        int repeatOneButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_repeat_one : R.drawable.btn_playback_repeat_one_compat;
-        int shuffleAllButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_shuffle_all : R.drawable.btn_playback_shuffle_all_compat;
-        int previousButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_previous : R.drawable.btn_playback_previous_compat;
-        int nextButtonResId = (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) ? R.drawable.btn_playback_next : R.drawable.btn_playback_next_compat;
+        int playButtonResId = 0;
+        int pauseButtonResId = 0;
+        int repeatAllButtonResId = 0;
+        int repeatOneButtonResId = 0;
+        int shuffleAllButtonResId = 0;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            playButtonResId = R.drawable.btn_playback_play_widget;
+            pauseButtonResId = R.drawable.btn_playback_pause_widget;
+            repeatAllButtonResId = R.drawable.btn_playback_repeat_all_widget;
+            repeatOneButtonResId = R.drawable.btn_playback_repeat_one_widget;
+            shuffleAllButtonResId = R.drawable.btn_playback_shuffle_all_widget;
+        } else {
+            playButtonResId = R.drawable.btn_playback_play_widget_compat;
+            pauseButtonResId = R.drawable.btn_playback_pause_widget_compat;
+            repeatAllButtonResId = R.drawable.btn_playback_repeat_all_widget_compat;
+            repeatOneButtonResId = R.drawable.btn_playback_repeat_one_widget_compat;
+            shuffleAllButtonResId = R.drawable.btn_playback_shuffle_all_widget_compat;
+        }
         final RemoteViews appWidgetView = new RemoteViews(service.getPackageName(),
                 R.layout.app_widget_large_alternate);
 
@@ -133,11 +175,6 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_two, artistName);
         appWidgetView.setTextViewText(R.id.app_widget_large_alternate_line_three, albumName);
         appWidgetView.setImageViewBitmap(R.id.app_widget_large_alternate_image, bitmap);
-
-        appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_previous,
-                    previousButtonResId);
-        appWidgetView.setImageViewResource(R.id.app_widget_large_alternate_next,
-                    nextButtonResId);
 
         // Set correct drawable for pause state
         final boolean isPlaying = service.isPlaying();
@@ -201,7 +238,7 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
     }
 
     /**
-     * Link up various button actions using {@link PendingIntents}.
+     * Link up various button actions using {@link PendingIntent}s.
      *
      */
     private void linkButtons(final Context context, final RemoteViews views) {
@@ -213,21 +250,24 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         // Home
         action = new Intent(context, HomeActivity.class);
         action.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        pendingIntent = PendingIntent.getActivity(context, 0, action, 0);
+        pendingIntent = PendingIntent.getActivity(context, 0, action, PendingIntent.FLAG_IMMUTABLE);
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_info_container,
                 pendingIntent);
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_image, pendingIntent);
 
         // Shuffle modes
-        pendingIntent = buildPendingIntent(context, MusicPlaybackService.SHUFFLE_ACTION, serviceName);
+        pendingIntent = buildPendingIntent(context, MusicPlaybackService.SHUFFLE_ACTION,
+                serviceName);
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_shuffle, pendingIntent);
 
         // Previous track
-        pendingIntent = buildPendingIntent(context, MusicPlaybackService.PREVIOUS_ACTION, serviceName);
+        pendingIntent = buildPendingIntent(context, MusicPlaybackService.PREVIOUS_ACTION,
+                serviceName);
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_previous, pendingIntent);
 
         // Play and pause
-        pendingIntent = buildPendingIntent(context, MusicPlaybackService.TOGGLEPAUSE_ACTION, serviceName);
+        pendingIntent = buildPendingIntent(context, MusicPlaybackService.TOGGLEPAUSE_ACTION,
+                serviceName);
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_play, pendingIntent);
 
         // Next track
@@ -235,7 +275,8 @@ public class AppWidgetLargeAlternate extends AppWidgetBase {
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_next, pendingIntent);
 
         // Repeat modes
-        pendingIntent = buildPendingIntent(context, MusicPlaybackService.REPEAT_ACTION, serviceName);
+        pendingIntent = buildPendingIntent(context, MusicPlaybackService.REPEAT_ACTION,
+                serviceName);
         views.setOnClickPendingIntent(R.id.app_widget_large_alternate_repeat, pendingIntent);
     }
 

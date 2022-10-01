@@ -1,7 +1,8 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Copyright (C) 2019 The LineageOS Project
+ * Copyright (C) 2019-2021 The LineageOS Project
+ * Copyright (C) 2021 SHIFT GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,24 +16,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.lineageos.eleven.widgets;
 
-import android.animation.Animator;
 import android.content.Context;
-import android.os.Build;
+import android.graphics.drawable.AnimatedVectorDrawable;
+import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.ViewAnimationUtils;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
-import android.view.ViewAnimationUtils;
-import android.widget.ImageButton;
 
 import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
+import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.lineageos.eleven.R;
 import org.lineageos.eleven.utils.ElevenUtils;
@@ -46,14 +44,15 @@ import org.lineageos.eleven.utils.MusicUtils;
 public class PlayPauseButton extends AppCompatImageButton
         implements OnClickListener, OnLongClickListener {
 
+    private boolean isPlaying;
+
     /**
      * @param context The {@link Context} to use
-     * @param attrs The attributes of the XML tag that is inflating the view.
+     * @param attrs   The attributes of the XML tag that is inflating the view.
      */
     public PlayPauseButton(final Context context, final AttributeSet attrs) {
         super(context, attrs);
         ViewCompat.setBackground(this, ContextCompat.getDrawable(context, R.drawable.selectable_background));
-
         // Control playback (play/pause)
         setOnClickListener(this);
         // Show the cheat sheet
@@ -63,18 +62,6 @@ public class PlayPauseButton extends AppCompatImageButton
     @Override
     public void onClick(final View v) {
         MusicUtils.playOrPause();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            int centerX = (v.getLeft() + v.getRight())  / 2;
-            int centerY = (v.getTop()  + v.getBottom()) / 2;
-            int startRadius = 0;
-            int endRadius = (int) Math.hypot(v.getWidth(), v.getHeight());
-
-            Animator anim = ViewAnimationUtils.createCircularReveal(
-                    v, centerX, centerY, startRadius, endRadius);
-
-            anim.setDuration(800);
-            anim.start();
-        }
         updateState();
     }
 
@@ -92,12 +79,23 @@ public class PlayPauseButton extends AppCompatImageButton
      * Sets the correct drawable for playback.
      */
     public void updateState() {
-        if (MusicUtils.isPlaying()) {
+        final boolean newState = MusicUtils.isPlaying();
+        if (isPlaying == newState) {
+            return;
+        }
+
+        isPlaying = newState;
+        final Drawable drawable;
+        if (newState) {
             setContentDescription(getResources().getString(R.string.accessibility_pause));
-            setImageResource(R.drawable.btn_playback_pause);
+            drawable = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.avd_play_to_pause);
         } else {
             setContentDescription(getResources().getString(R.string.accessibility_play));
-            setImageResource(R.drawable.btn_playback_play);
+            drawable = AnimatedVectorDrawableCompat.create(getContext(), R.drawable.avd_pause_to_play);
+        }
+        setImageDrawable(drawable);
+        if (drawable instanceof AnimatedVectorDrawableCompat) {
+            ((AnimatedVectorDrawableCompat) drawable).start();
         }
     }
 }

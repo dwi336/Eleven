@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?><!--
+<?xml version="1.0" encoding="utf-8"?>
+<!--
      Copyright (C) 2014 The CyanogenMod Project
+     Copyright (C) 2021 The LineageOS Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,8 +15,7 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="@dimen/item_normal_height"
@@ -36,21 +37,28 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center_vertical"
+        android:layout_toStartOf="@+id/play_pause_container"
         android:layout_toLeftOf="@+id/play_pause_container"
+        android:layout_toEndOf="@id/image"
         android:layout_toRightOf="@id/image"
+        android:paddingStart="@dimen/list_item_queue_text_padding_left"
+        android:paddingEnd="@dimen/list_item_queue_text_padding_left"
         android:paddingLeft="@dimen/list_item_queue_text_padding_left"
         android:orientation="vertical">
+
         <TextView
             android:id="@+id/line_one"
             style="@style/ListItemMainText.Light.Single"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@+id/line_two"
             style="@style/ListItemSecondaryText.Light.Single"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <FrameLayout
@@ -58,8 +66,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
+        android:layout_toStartOf="@+id/popup_menu_button"
         android:layout_toLeftOf="@+id/popup_menu_button"
+        android:paddingStart="@dimen/list_item_progress_padding_left"
         android:paddingLeft="@dimen/list_item_progress_padding_left"
+        android:paddingEnd="@dimen/list_item_progress_padding_right"
         android:paddingRight="@dimen/list_item_progress_padding_right">
         <include
             android:layout_width="@dimen/list_item_progress_width"
@@ -71,6 +82,7 @@
         android:id="@id/popup_menu_button"
         android:layout_width="@dimen/overflow_width"
         android:layout_height="@dimen/overflow_height"
+        android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         app:srcCompat="@drawable/menu_button_light" />

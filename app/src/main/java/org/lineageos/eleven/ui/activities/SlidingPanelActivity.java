@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2012 Andrew Neal
- * Copyright (C) 2019 The LineageOS Project
+ * Copyright (C) 2019-2021 The LineageOS Project
+ * Copyright (C) 2021 SHIFT GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.lineageos.eleven.ui.activities;
 
 import android.graphics.Color;
@@ -24,6 +24,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
@@ -36,6 +37,7 @@ import org.lineageos.eleven.ui.fragments.QueueFragment;
 import org.lineageos.eleven.utils.ElevenUtils;
 import org.lineageos.eleven.utils.MusicUtils;
 import org.lineageos.eleven.utils.PreferenceUtils;
+import org.lineageos.eleven.utils.colors.BitmapWithColors;
 import org.lineageos.eleven.utils.colors.ColorExtractor;
 import org.lineageos.eleven.widgets.AlbumScrimImage;
 
@@ -60,7 +62,8 @@ public abstract class SlidingPanelActivity extends BaseActivity {
     private SlidingUpPanelLayout mSecondPanel;
     protected Panel mTargetNavigatePanel;
 
-    private final ShowPanelClickListener mShowMusicPlayer = new ShowPanelClickListener(Panel.MusicPlayer);
+    private final ShowPanelClickListener mShowMusicPlayer =
+            new ShowPanelClickListener(Panel.MusicPlayer);
 
     // this is the blurred image that goes behind the now playing and queue fragments
     private AlbumScrimImage mAlbumScrimImage;
@@ -72,9 +75,6 @@ public abstract class SlidingPanelActivity extends BaseActivity {
      */
     private final View.OnClickListener mOpenNowPlaying = new View.OnClickListener() {
 
-        /**
-         * {@inheritDoc}
-         */
         @Override
         public void onClick(final View v) {
             if (MusicUtils.getCurrentAudioId() != -1) {
@@ -95,12 +95,10 @@ public abstract class SlidingPanelActivity extends BaseActivity {
         bottomActionBar.setOnClickListener(mOpenNowPlaying);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected void onCreate(final Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void init(final Bundle savedInstanceState) {
+        super.init(savedInstanceState);
+
         mUseBlur = PreferenceUtils.getInstance(this).getUseBlur();
 
         mTargetNavigatePanel = Panel.None;
@@ -108,8 +106,8 @@ public abstract class SlidingPanelActivity extends BaseActivity {
         setupFirstPanel();
         setupSecondPanel();
 
-        // get the blur scrim image
-        mAlbumScrimImage = findViewById(R.id.blurScrimImage);
+        // get the album scrim image
+        mAlbumScrimImage = findViewById(R.id.albumScrimImage);
 
         if (savedInstanceState != null) {
             int panelIndex = savedInstanceState.getInt(STATE_KEY_CURRENT_PANEL,
@@ -126,14 +124,14 @@ public abstract class SlidingPanelActivity extends BaseActivity {
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         outState.putInt(STATE_KEY_CURRENT_PANEL, getCurrentPanel().ordinal());
     }
 
     private void setupFirstPanel() {
-        mFirstPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout);
+        mFirstPanel = findViewById(R.id.sliding_layout);
         mFirstPanel.setPanelSlideListener(new SimplePanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -153,7 +151,7 @@ public abstract class SlidingPanelActivity extends BaseActivity {
     }
 
     private void setupSecondPanel() {
-        mSecondPanel = (SlidingUpPanelLayout)findViewById(R.id.sliding_layout2);
+        mSecondPanel = findViewById(R.id.sliding_layout2);
         mSecondPanel.setPanelSlideListener(new SimplePanelSlideListener() {
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
@@ -180,22 +178,19 @@ public abstract class SlidingPanelActivity extends BaseActivity {
         });
 
         // setup the header bar
-        setupQueueHeaderBar(R.id.secondHeaderBar, R.string.page_play_queue, mShowMusicPlayer);
+        setupQueueHeaderBar(mShowMusicPlayer);
 
         // set the drag view offset to allow the panel to go past the top of the viewport
         // since the previous view's is hiding the slide offset, we need to subtract that
         // from action bat height
-        int slideOffset = getResources().getDimensionPixelOffset(R.dimen.sliding_panel_indicator_height);
+        int slideOffset = getResources().getDimensionPixelOffset(
+                R.dimen.sliding_panel_indicator_height);
         slideOffset -= ElevenUtils.getActionBarHeight(this);
         mSecondPanel.setSlidePanelOffset(slideOffset);
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-    }
-
-    @Override protected void onResume() {
+    protected void onResume() {
         super.onResume();
 
         // recreate activity if blur preference has changed to apply changes
@@ -203,14 +198,6 @@ public abstract class SlidingPanelActivity extends BaseActivity {
         if (mUseBlur != useBlur) {
             recreate();
         }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int setContentView() {
-        return R.layout.activity_base;
     }
 
     @Override
@@ -282,6 +269,10 @@ public abstract class SlidingPanelActivity extends BaseActivity {
     }
 
     public Panel getCurrentPanel() {
+        if (!isInitialized()) {
+            return Panel.None;
+        }
+
         if (mSecondPanel.isPanelExpanded()) {
             return Panel.Queue;
         } else if (mFirstPanel.isPanelExpanded()) {
@@ -303,13 +294,6 @@ public abstract class SlidingPanelActivity extends BaseActivity {
         updateScrimImage();
     }
 
-    @Override
-    public void onCacheUnpaused() {
-        super.onCacheUnpaused();
-
-        updateScrimImage();
-    }
-
     private void updateScrimImage() {
         ElevenUtils.getImageFetcher(this).updateScrimImage(mAlbumScrimImage,
                 mColorExtractorCallback);
@@ -324,31 +308,32 @@ public abstract class SlidingPanelActivity extends BaseActivity {
         return (QueueFragment) getSupportFragmentManager().findFragmentById(R.id.queueFragment);
     }
 
-    private final ColorExtractor.Callback mColorExtractorCallback = (bitmapWithColors) -> {
-        if (bitmapWithColors == null) {
-            return;
-        }
+    private final ColorExtractor.Callback mColorExtractorCallback = new ColorExtractor.Callback(){
+        public final void onColorExtracted(BitmapWithColors bitmapWithColors) {
+            if (bitmapWithColors == null) {
+               return;
+            }
 
-        // update scrim image
-        final int[] gradientColors = new int[]{
-                bitmapWithColors.getVibrantColor(), bitmapWithColors.getVibrantDarkColor()
-        };
+            // update scrim image
+            final int[] gradientColors = new int[]{
+                    bitmapWithColors.getVibrantColor(), bitmapWithColors.getVibrantDarkColor()
+            };
 
-        final GradientDrawable gradientDrawable;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            gradientDrawable = new GradientDrawable();
-            gradientDrawable.setColors(gradientColors);
-        } else {
-            gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,gradientColors);
+            final GradientDrawable gradientDrawable;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                gradientDrawable = new GradientDrawable();
+                gradientDrawable.setColors(gradientColors);
+            } else {
+                gradientDrawable = new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,gradientColors);
+            }
+            mAlbumScrimImage.setGradientDrawable(gradientDrawable);
         }
-        mAlbumScrimImage.setGradientDrawable(gradientDrawable);
     };
 
-    protected void setupQueueHeaderBar(final int containerId, final int textId,
-            final View.OnClickListener headerClickListener) {
-        final HeaderBar headerBar = findViewById(containerId);
+    protected void setupQueueHeaderBar(final View.OnClickListener headerClickListener) {
+        final HeaderBar headerBar = findViewById(R.id.secondHeaderBar);
         headerBar.setFragment(getQueueFragment());
-        headerBar.setTitleText(textId);
+        headerBar.setTitleText(R.string.page_play_queue);
         headerBar.setBackgroundColor(Color.TRANSPARENT);
         headerBar.setHeaderClickListener(headerClickListener);
 
@@ -357,7 +342,7 @@ public abstract class SlidingPanelActivity extends BaseActivity {
 
     private class ShowPanelClickListener implements View.OnClickListener {
 
-        private Panel mTargetPanel;
+        private final Panel mTargetPanel;
 
         public ShowPanelClickListener(Panel targetPanel) {
             mTargetPanel = targetPanel;

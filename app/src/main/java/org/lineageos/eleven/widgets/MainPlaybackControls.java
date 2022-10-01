@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The LineageOS Project
+ * Copyright (C) 2019-2021 The LineageOS Project
  * Copyright (C) 2019 SHIFT GmbH
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -38,9 +38,7 @@ public class MainPlaybackControls extends FrameLayout {
     private final SeekBar mSeeker;
 
     private final ShuffleButton mShuffleButton;
-    private final RepeatingImageButton mPreviousButton;
     private final PlayPauseButtonContainer mPlayPauseButtonContainer;
-    private final RepeatingImageButton mNextButton;
     private final RepeatButton mRepeatButton;
 
     public MainPlaybackControls(@NonNull Context context) {
@@ -52,7 +50,7 @@ public class MainPlaybackControls extends FrameLayout {
     }
 
     public MainPlaybackControls(@NonNull Context context, @Nullable AttributeSet attrs,
-            int defStyleAttr) {
+                                int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         LayoutInflater.from(context).inflate(R.layout.main_playback_controls, this, true);
@@ -64,15 +62,41 @@ public class MainPlaybackControls extends FrameLayout {
         mPlayPauseButtonContainer = findViewById(R.id.playPauseProgressButton);
         mShuffleButton = findViewById(R.id.action_button_shuffle);
         mRepeatButton = findViewById(R.id.action_button_repeat);
-        mPreviousButton = findViewById(R.id.action_button_previous);
-        mNextButton = findViewById(R.id.action_button_next);
+        final RepeatingImageButton previousButton = findViewById(R.id.action_button_previous);
+        final RepeatingImageButton nextButton = findViewById(R.id.action_button_next);
 
-        mSeeker.setOnSeekBarChangeListener(mSeekerListener);
+        mSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    refreshCurrentTimeText(progress);
+                }
+            }
 
-        mPreviousButton.setRepeatListener(
-                (v, delta, repeatCount) -> seekRelative(repeatCount, delta, false));
-        mNextButton.setRepeatListener(
-                (v, delta, repeatCount) -> seekRelative(repeatCount, delta, true));
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // ignore
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                final long wantedDurationInMs = seekBar.getProgress() * 1000L;
+                MusicUtils.seek(wantedDurationInMs);
+            }
+        });
+
+        previousButton.setRepeatListener(new RepeatingImageButton.RepeatListener(){
+            @Override
+            public final void onRepeat(View v, long delta, int repeatCount) {
+                seekRelative(repeatCount, delta, false);
+            }
+        });
+        nextButton.setRepeatListener(new RepeatingImageButton.RepeatListener(){
+            @Override
+            public final void onRepeat(View v, long delta, int repeatCount) {
+                seekRelative(repeatCount, delta, true);
+            }
+        });
 
         mPlayPauseButtonContainer.enableAndShow();
     }
@@ -133,28 +157,6 @@ public class MainPlaybackControls extends FrameLayout {
     }
     // endregion refresh time
 
-    // region seeking
-    private final SeekBar.OnSeekBarChangeListener mSeekerListener =
-            new SeekBar.OnSeekBarChangeListener() {
-        @Override
-        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            if (fromUser) {
-                refreshCurrentTimeText(progress);
-            }
-        }
-
-        @Override
-        public void onStartTrackingTouch(SeekBar seekBar) {
-            // ignore
-        }
-
-        @Override
-        public void onStopTrackingTouch(SeekBar seekBar) {
-            final long wantedDurationInMs = seekBar.getProgress() * 1000L;
-            MusicUtils.seek(wantedDurationInMs);
-        }
-    };
-
     private void seekRelative(final int repeatCount, long delta, boolean forwards) {
         if (!MusicUtils.isPlaybackServiceConnected()) {
             return;
@@ -174,5 +176,4 @@ public class MainPlaybackControls extends FrameLayout {
             refreshCurrentTime();
         }
     }
-    // endregion seeking
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2014 The CyanogenMod Project
- * Copyright (C) 2019 The LineageOS Project
+ * Copyright (C) 2019-2021 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
  */
 package org.lineageos.eleven.ui.activities;
 
+import static org.lineageos.eleven.utils.PreferenceUtils.PERMISSION_REQUEST_STORAGE;
+
 import android.Manifest;
+import android.animation.Animator;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
 import android.content.Intent;
@@ -32,12 +35,15 @@ import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.ColorUtils;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -55,6 +61,7 @@ import org.lineageos.eleven.ui.fragments.RecentFragment;
 import org.lineageos.eleven.ui.fragments.phone.MusicBrowserPhoneFragment;
 import org.lineageos.eleven.ui.fragments.profile.LastAddedFragment;
 import org.lineageos.eleven.ui.fragments.profile.TopTracksFragment;
+import org.lineageos.eleven.utils.AnimatorEndListener;
 import org.lineageos.eleven.utils.ElevenUtils;
 import org.lineageos.eleven.utils.MusicUtils;
 import org.lineageos.eleven.utils.NavUtils;
@@ -74,7 +81,8 @@ public class HomeActivity extends SlidingPanelActivity implements
     private static final String ACTION_PREFIX = HomeActivity.class.getName();
     public static final String ACTION_VIEW_ARTIST_DETAILS = ACTION_PREFIX + ".view.ArtistDetails";
     public static final String ACTION_VIEW_ALBUM_DETAILS = ACTION_PREFIX + ".view.AlbumDetails";
-    public static final String ACTION_VIEW_PLAYLIST_DETAILS = ACTION_PREFIX + ".view.PlaylistDetails";
+    public static final String ACTION_VIEW_PLAYLIST_DETAILS =
+            ACTION_PREFIX + ".view.PlaylistDetails";
     public static final String ACTION_VIEW_SMART_PLAYLIST = ACTION_PREFIX + ".view.SmartPlaylist";
     public static final String EXTRA_BROWSE_PAGE_IDX = "BrowsePageIndex";
 
@@ -83,14 +91,15 @@ public class HomeActivity extends SlidingPanelActivity implements
     private static final int NEW_PHOTO = 1;
     public static final int EQUALIZER = 2;
 
-    private static final int PERMISSION_REQUEST_STORAGE = 1;
     private Bundle mSavedInstanceState;
 
     private String mKey;
     private boolean mLoadedBaseFragment = false;
     private boolean mHasPendingPlaybackRequest = false;
-    private Handler mHandler = new Handler();
+    private final Handler mHandler = new Handler();
     private boolean mBrowsePanelActive = true;
+
+    private View mRootView;
 
     /**
      * Used by the up action to determine how to handle this
@@ -102,13 +111,17 @@ public class HomeActivity extends SlidingPanelActivity implements
         super.onCreate(savedInstanceState);
 
         mSavedInstanceState = savedInstanceState;
+        mRootView = getWindow().getDecorView();
 
         if (!needRequestStoragePermission()) {
-            init();
+            init(savedInstanceState);
         }
     }
 
-    private void init() {
+    @Override
+    protected void init(Bundle savedInstanceState) {
+        super.init(savedInstanceState);
+
         // if we've been launched by an intent, parse it
         Intent launchIntent = getIntent();
         boolean intentHandled = false;
@@ -117,7 +130,7 @@ public class HomeActivity extends SlidingPanelActivity implements
         }
 
         // if the intent didn't cause us to load a fragment, load the music browse one
-        if (mSavedInstanceState == null && !mLoadedBaseFragment) {
+        if (savedInstanceState == null && !mLoadedBaseFragment) {
             final MusicBrowserPhoneFragment fragment = new MusicBrowserPhoneFragment();
             if (launchIntent != null) {
                 fragment.setDefaultPageIdx(launchIntent.getIntExtra(EXTRA_BROWSE_PAGE_IDX,
@@ -133,11 +146,10 @@ public class HomeActivity extends SlidingPanelActivity implements
 
         getSupportFragmentManager().addOnBackStackChangedListener(this);
 
-
         // if we are resuming from a saved instance state
-        if (mSavedInstanceState != null) {
+        if (savedInstanceState != null) {
             // track which fragments are loaded and if this is the top level activity
-            mTopLevelActivity = mSavedInstanceState.getBoolean(STATE_KEY_BASE_FRAGMENT);
+            mTopLevelActivity = savedInstanceState.getBoolean(STATE_KEY_BASE_FRAGMENT);
             mLoadedBaseFragment = mTopLevelActivity;
 
             // update the action bar based on the top most fragment
@@ -157,7 +169,7 @@ public class HomeActivity extends SlidingPanelActivity implements
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(STATE_KEY_BASE_FRAGMENT, mTopLevelActivity);
     }
@@ -170,7 +182,7 @@ public class HomeActivity extends SlidingPanelActivity implements
         mHandler.post(new Runnable() {
             @Override
             public void run() {
-                // removing the fragment doesn't cause the backstack event to be triggered even if
+                // removing the fragment doesn't cause the back-stack event to be triggered even if
                 // it is the top fragment, so if it is the top fragment, we will just manually
                 // call pop back stack
                 if (frag == getTopFragment()) {
@@ -190,7 +202,7 @@ public class HomeActivity extends SlidingPanelActivity implements
         boolean intentHandled = parseIntentForFragment(intent);
         // since this activity is marked 'singleTop' (launch mode), an existing activity instance
         // could be sent media play requests
-        if ( !intentHandled) {
+        if (!intentHandled) {
             handlePlaybackIntent(intent);
         }
     }
@@ -228,9 +240,9 @@ public class HomeActivity extends SlidingPanelActivity implements
                 protected BitmapWithColors doInBackground(Void... params) {
                     ImageFetcher imageFetcher = ImageFetcher.getInstance(HomeActivity.this);
                     return imageFetcher.getArtwork(
-                            MusicUtils.getAlbumName(), MusicUtils.getCurrentAlbumId(),
-                            MusicUtils.getArtistName(), true);
+                            MusicUtils.getAlbumName(), MusicUtils.getCurrentAlbumId(), true);
                 }
+
                 @Override
                 protected void onPostExecute(BitmapWithColors bmc) {
                     updateVisualizerColor(bmc != null
@@ -258,6 +270,7 @@ public class HomeActivity extends SlidingPanelActivity implements
         if (color == Color.TRANSPARENT) {
             color = ContextCompat.getColor(this, R.color.primary_dark);
         }
+        final boolean isDark = ColorUtils.calculateLuminance(color) > 0.5f;
         final Window window = getWindow();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){           
             //statusBarColor = window.getStatusBarColor();
@@ -269,14 +282,27 @@ public class HomeActivity extends SlidingPanelActivity implements
             } catch (Exception ex) {
                 throw new RuntimeException(ex);
             }
-            ObjectAnimator animator = ObjectAnimator.ofInt(window,
-                    "statusBarColor", statusBarColor, color);
+            final ObjectAnimator animator = ObjectAnimator.ofInt(window,
+                "statusBarColor", statusBarColor, color);
             animator.setEvaluator(new ArgbEvaluator());
             animator.setDuration(300);
+            animator.addListener( new AnimatorEndListener(){
+                @Override
+                public final void onAnimationEnd(Animator animation) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        int flags = mRootView.getSystemUiVisibility();
+                        if (isDark) {
+                            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                        } else {
+                            flags &= ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+                        }
+                        mRootView.setSystemUiVisibility(flags);
+                    }
+                }
+            });
             animator.start();
         }
     }
-
 
     private boolean parseIntentForFragment(Intent intent) {
         boolean handled = false;
@@ -285,18 +311,21 @@ public class HomeActivity extends SlidingPanelActivity implements
             Fragment targetFragment = null;
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
 
+            transaction.setCustomAnimations(
+                    androidx.fragment.R.animator.fragment_open_enter,
+                    androidx.fragment.R.animator.fragment_open_exit,
+                    androidx.fragment.R.animator.fragment_fade_enter,
+                    androidx.fragment.R.animator.fragment_fade_exit);
+
             if (action.equals(ACTION_VIEW_SMART_PLAYLIST)) {
                 long playlistId = intent.getExtras().getLong(Config.SMART_PLAYLIST_TYPE);
-                switch (Config.SmartPlaylistType.getTypeById(playlistId)) {
-                    case LastAdded:
-                        targetFragment = new LastAddedFragment();
-                        break;
-                    case RecentlyPlayed:
-                        targetFragment = new RecentFragment();
-                        break;
-                    case TopTracks:
-                        targetFragment = new TopTracksFragment();
-                        break;
+                Config.SmartPlaylistType type = Config.SmartPlaylistType.getTypeById(playlistId);
+                if (Config.SmartPlaylistType.LastAdded.equals(type)) {
+                    targetFragment = new LastAddedFragment();
+                } else if (Config.SmartPlaylistType.RecentlyPlayed.equals(type)) {
+                    targetFragment = new RecentFragment();
+                } else if (Config.SmartPlaylistType.TopTracks.equals(type)) {
+                    targetFragment = new TopTracksFragment();
                 }
             } else if (action.equals(ACTION_VIEW_PLAYLIST_DETAILS)) {
                 targetFragment = new PlaylistDetailFragment();
@@ -323,7 +352,10 @@ public class HomeActivity extends SlidingPanelActivity implements
                     // this happens when they launch search which is its own activity and then
                     // browse through that back to home activity
                     mLoadedBaseFragment = true;
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+                    final ActionBar actionBar = getSupportActionBar();
+                    if (actionBar != null) {
+                        actionBar.setDisplayHomeAsUpEnabled(true);
+                    }
                 }
                 // the current top fragment is about to be hidden by what we are replacing
                 // it with -- so tell that fragment not to make its action bar menu items visible
@@ -376,10 +408,9 @@ public class HomeActivity extends SlidingPanelActivity implements
 
     @Override
     public boolean onOptionsItemSelected(final MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                navigateToTop();
-                return true;
+        if (item.getItemId() == android.R.id.home) {
+            navigateToTop();
+            return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -392,7 +423,7 @@ public class HomeActivity extends SlidingPanelActivity implements
         final Fragment topFragment = getTopFragment();
         int targetFragmentIndex = MusicBrowserPhoneFragment.INVALID_PAGE_INDEX;
         if (topFragment instanceof IChildFragment) {
-            targetFragmentIndex = ((IChildFragment)topFragment).getMusicFragmentParent().ordinal();
+            targetFragmentIndex = ((IChildFragment) topFragment).getMusicFragmentParent().ordinal();
         }
 
         // If we are the top activity in the stack (as determined by the activity that has loaded
@@ -412,7 +443,7 @@ public class HomeActivity extends SlidingPanelActivity implements
     }
 
     /**
-     * Immediately clears the backstack
+     * Immediately clears the back-stack
      */
     protected void clearBackStack() {
         final FragmentManager fragmentManager = getSupportFragmentManager();
@@ -433,35 +464,34 @@ public class HomeActivity extends SlidingPanelActivity implements
     /**
      * Checks whether the passed intent contains a playback request,
      * and starts playback if that's the case
-     * @return true if the intent was consumed
+     *
      */
-    private boolean handlePlaybackIntent(Intent intent) {
-
+    private void handlePlaybackIntent(Intent intent) {
         if (intent == null) {
-            return false;
-        } else if ( !MusicUtils.isPlaybackServiceConnected() ) {
+            return;
+        } else if (!MusicUtils.isPlaybackServiceConnected()) {
             mHasPendingPlaybackRequest = true;
-            return false;
+            return;
         }
 
         String mimeType = intent.getType();
         boolean handled = false;
 
         if (MediaStore.Audio.Playlists.CONTENT_TYPE.equals(mimeType)) {
-            long id = parseIdFromIntent(intent, "playlistId", "playlist", -1);
+            long id = parseIdFromIntent(intent, "playlistId", "playlist");
             if (id >= 0) {
                 MusicUtils.playPlaylist(this, id, false);
                 handled = true;
             }
         } else if (MediaStore.Audio.Albums.CONTENT_TYPE.equals(mimeType)) {
-            long id = parseIdFromIntent(intent, "albumId", "album", -1);
+            long id = parseIdFromIntent(intent, "albumId", "album");
             if (id >= 0) {
                 int position = intent.getIntExtra("position", 0);
                 MusicUtils.playAlbum(this, id, position, false);
                 handled = true;
             }
         } else if (MediaStore.Audio.Artists.CONTENT_TYPE.equals(mimeType)) {
-            long id = parseIdFromIntent(intent, "artistId", "artist", -1);
+            long id = parseIdFromIntent(intent, "artistId", "artist");
             if (id >= 0) {
                 int position = intent.getIntExtra("position", 0);
                 MusicUtils.playArtist(this, id, position, false);
@@ -474,12 +504,10 @@ public class HomeActivity extends SlidingPanelActivity implements
             setIntent(new Intent());
         }
 
-        return handled;
-
     }
 
     private long parseIdFromIntent(Intent intent, String longKey,
-                                   String stringKey, long defaultId) {
+                                   String stringKey) {
         long id = intent.getLongExtra(longKey, -1);
         if (id < 0) {
             String idString = intent.getStringExtra(stringKey);
@@ -487,7 +515,7 @@ public class HomeActivity extends SlidingPanelActivity implements
                 try {
                     id = Long.parseLong(idString);
                 } catch (NumberFormatException e) {
-                    Log.e(TAG, e.getMessage());
+                    Log.e(TAG, "Invalid id", e);
                 }
             }
         }
@@ -504,21 +532,23 @@ public class HomeActivity extends SlidingPanelActivity implements
             ISetupActionBar setupActionBar = (ISetupActionBar) topFragment;
             setupActionBar.setupActionBar();
 
-            getSupportActionBar().setDisplayHomeAsUpEnabled(
-                    !(topFragment instanceof MusicBrowserPhoneFragment));
+            final androidx.appcompat.app.ActionBar actionBar = getSupportActionBar();
+            if (actionBar != null) {
+                actionBar.setDisplayHomeAsUpEnabled(
+                        !(topFragment instanceof MusicBrowserPhoneFragment));
+            }
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
-            @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_STORAGE: {
-                if (checkPermissionGrantResults(grantResults)) {
-                    init();
-                } else {
-                    finish();
-                }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_STORAGE) {
+            if (checkPermissionGrantResults(grantResults)) {
+                init(mSavedInstanceState);
+            } else {
+                finish();
             }
         }
     }
@@ -540,6 +570,8 @@ public class HomeActivity extends SlidingPanelActivity implements
         }
 
         if (needRequest) {
+            setRequestingPermissions(true);
+
             int count = permissionList.size();
             if (count > 0) {
                 String[] permissionArray = new String[count];
@@ -562,5 +594,4 @@ public class HomeActivity extends SlidingPanelActivity implements
         }
         return true;
     }
-
 }

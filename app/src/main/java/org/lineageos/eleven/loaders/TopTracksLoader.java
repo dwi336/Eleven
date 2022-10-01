@@ -1,19 +1,19 @@
 /*
-* Copyright (C) 2014 The CyanogenMod Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
+ * Copyright (C) 2014 The CyanogenMod Project
+ * Copyright (C) 2021 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.lineageos.eleven.loaders;
 
 import android.content.Context;
@@ -27,7 +27,7 @@ import org.lineageos.eleven.provider.SongPlayCount.SongPlayCountColumns;
 import java.util.ArrayList;
 
 /**
- * Used to query {@link android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI} and return
+ * Used to query MediaStore.Audio.Media.EXTERNAL_CONTENT_URI and return
  * a sorted list of songs based on either the TopTracks or the RecentSongs
  */
 public class TopTracksLoader extends SongLoader {
@@ -39,7 +39,7 @@ public class TopTracksLoader extends SongLoader {
         RecentSongs,
     }
 
-    protected QueryType mQueryType;
+    protected final QueryType mQueryType;
 
     public TopTracksLoader(final Context context, QueryType type) {
         super(context);
@@ -60,8 +60,8 @@ public class TopTracksLoader extends SongLoader {
         if (retCursor != null) {
             ArrayList<Long> missingIds = retCursor.getMissingIds();
             if (missingIds != null && missingIds.size() > 0) {
-                // for each unfound id, remove it from the database
-                // this codepath should only really be hit if the user removes songs
+                // for each not found id, remove it from the database
+                // this code-path should only really be hit if the user removes songs
                 // outside of the Eleven app
                 for (long id : missingIds) {
                     if (mQueryType == QueryType.TopTracks) {
@@ -78,53 +78,45 @@ public class TopTracksLoader extends SongLoader {
 
     /**
      * This creates a sorted cursor based on the top played results
+     *
      * @param context Android context
      * @return sorted cursor
      */
-    public static final SortedCursor makeTopTracksCursor(final Context context) {
+    public static SortedCursor makeTopTracksCursor(final Context context) {
         // first get the top results ids from the internal database
-        Cursor songs = SongPlayCount.getInstance(context).getTopPlayedResults(NUMBER_OF_SONGS);
 
-        try {
+        try (Cursor songs = SongPlayCount.getInstance(context)
+                .getTopPlayedResults(NUMBER_OF_SONGS)) {
             return makeSortedCursor(context, songs,
                     songs.getColumnIndex(SongPlayCountColumns.ID));
-        } finally {
-            if (songs != null) {
-                songs.close();
-                songs = null;
-            }
         }
     }
 
     /**
      * This creates a sorted cursor based on the recently played tracks
+     *
      * @param context Android context
      * @return sorted cursor
      */
-    public static final SortedCursor makeRecentTracksCursor(final Context context) {
+    public static SortedCursor makeRecentTracksCursor(final Context context) {
         // first get the top results ids from the internal database
-        Cursor songs = RecentStore.getInstance(context).queryRecentIds(null);
 
-        try {
+        try (Cursor songs = RecentStore.getInstance(context).queryRecentIds(null)) {
             return makeSortedCursor(context, songs,
                     songs.getColumnIndex(SongPlayCountColumns.ID));
-        } finally {
-            if (songs != null) {
-                songs.close();
-                songs = null;
-            }
         }
     }
 
     /**
      * This creates a sorted song cursor given a cursor that contains the sort order
-     * @param context Android context
-     * @param cursor This is the cursor used to determine the order of the ids
+     *
+     * @param context  Android context
+     * @param cursor   This is the cursor used to determine the order of the ids
      * @param idColumn the id column index of the cursor
      * @return a Sorted Cursor of songs
      */
-    public static final SortedCursor makeSortedCursor(final Context context, final Cursor cursor,
-                                                      final int idColumn) {
+    public static SortedCursor makeSortedCursor(final Context context, final Cursor cursor,
+                                                final int idColumn) {
         if (cursor != null && cursor.moveToFirst()) {
             // create the list of ids to select against
             StringBuilder selection = new StringBuilder();
@@ -143,7 +135,7 @@ public class TopTracksLoader extends SongLoader {
 
                 id = cursor.getLong(idColumn);
                 order[cursor.getPosition()] = id;
-                selection.append(String.valueOf(id));
+                selection.append(id);
             }
 
             selection.append(")");

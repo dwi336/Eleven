@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Copyright (C) 2018-2020 The LineageOS Project
+ * Copyright (C) 2018-2021 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.lineageos.eleven.cache;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.Fragment;
-import android.app.FragmentManager;
 import android.content.ComponentCallbacks2;
 import android.content.ContentUris;
 import android.content.Context;
@@ -32,12 +29,14 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.Looper;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
 
 import org.lineageos.eleven.cache.disklrucache.DiskLruCache;
 import org.lineageos.eleven.utils.ElevenUtils;
@@ -67,12 +66,12 @@ public final class ImageCache {
     /**
      * Default memory cache size as a percent of device memory class
      */
-    private static final float MEM_CACHE_DIVIDER = 0.25f;
+    private static final float MEM_CACHE_DIVIDER = 0.50f;
 
     /**
-     * Default disk cache size 10MB
+     * Default disk cache size 50MB
      */
-    private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10;
+    private static final int DISK_CACHE_SIZE = 50 * 1024 * 1024;
 
     /**
      * Compression settings when writing images to disk cache
@@ -99,18 +98,7 @@ public final class ImageCache {
      */
     private DiskLruCache mDiskCache;
 
-    /**
-     * listeners to the cache state
-     */
-    private HashSet<ICacheListener> mListeners = new HashSet<>();
-
     private static ImageCache sInstance;
-
-    /**
-     * Used to temporarily pause the disk cache while scrolling
-     */
-    public boolean mPauseDiskAccess = false;
-    private final Object mPauseLock = new Object();
 
     static {
         mArtworkUri = Uri.parse("content://media/external/audio/albumart");
@@ -131,7 +119,7 @@ public final class ImageCache {
      * @param context The {@link Context} to use
      * @return A new instance of this class.
      */
-    public final static ImageCache getInstance(final Context context) {
+    public static ImageCache getInstance(final Context context) {
         if (sInstance == null) {
             sInstance = new ImageCache(context.getApplicationContext());
         }
@@ -141,19 +129,18 @@ public final class ImageCache {
     /**
      * Initialize the cache, providing all parameters.
      *
-     * @param context The {@link Context} to use
-     * @param cacheParams The cache parameters to initialize the cache
+     * @param context     The {@link Context} to use
      */
     private void init(final Context context) {
-        ElevenUtils.execute(false, new AsyncTask<Void, Void, Void>() {
+        ElevenUtils.execute(new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(final Void... unused) {
-                // Initialize the disk cahe in a background thread
+                // Initialize the disk cache in a background thread
                 initDiskCache(context);
                 return null;
             }
-        }, (Void[])null);
+        }, (Void[]) null);
         // Set up the memory cache
         initLruCache(context);
     }
@@ -170,16 +157,14 @@ public final class ImageCache {
         // Set up disk cache
         if (mDiskCache == null || mDiskCache.isClosed()) {
             File diskCacheDir = getDiskCacheDir(context, TAG);
-            if (diskCacheDir != null) {
-                if (!diskCacheDir.exists()) {
-                    diskCacheDir.mkdirs();
-                }
-                if (getUsableSpace(diskCacheDir) > DISK_CACHE_SIZE) {
-                    try {
-                        mDiskCache = DiskLruCache.open(diskCacheDir, 1, 1, DISK_CACHE_SIZE);
-                    } catch (final IOException e) {
-                        diskCacheDir = null;
-                    }
+            if (!diskCacheDir.exists()) {
+                //noinspection ResultOfMethodCallIgnored
+                diskCacheDir.mkdirs();
+            }
+            if (getUsableSpace(diskCacheDir) > DISK_CACHE_SIZE) {
+                try {
+                    mDiskCache = DiskLruCache.open(diskCacheDir, 1, 1, DISK_CACHE_SIZE);
+                } catch (final IOException ignored) {
                 }
             }
         }
@@ -214,7 +199,7 @@ public final class ImageCache {
             }
 
             @Override
-            public void onConfigurationChanged(final Configuration newConfig) {
+            public void onConfigurationChanged(@NonNull final Configuration newConfig) {
                 // Nothing to do
             }
         });
@@ -225,18 +210,18 @@ public final class ImageCache {
      * , if not found a new one is created using the supplied params and saved
      * to a {@link RetainFragment}
      *
-     * @param activity The calling {@link FragmentActivity}
+     * @param activity The calling {@link Activity}
      * @return An existing retained ImageCache object or a new one if one did
-     *         not exist
+     * not exist
      */
-    public static ImageCache findOrCreateCache(final Activity activity) {
+    public static ImageCache findOrCreateCache(final FragmentActivity activity) {
 
         // Search for, or create an instance of the non-UI RetainFragment
         final RetainFragment retainFragment = findOrCreateRetainFragment(
-                activity.getFragmentManager());
+                activity.getSupportFragmentManager());
 
         // See if we already have an ImageCache stored in RetainFragment
-        ImageCache cache = (ImageCache)retainFragment.getObject();
+        ImageCache cache = (ImageCache) retainFragment.getObject();
 
         // No existing ImageCache, create one and store it in RetainFragment
         if (cache == null) {
@@ -252,11 +237,11 @@ public final class ImageCache {
      *
      * @param fm The {@link FragmentManager} to use
      * @return The existing instance of the {@link Fragment} or the new instance
-     *         if just created
+     * if just created
      */
     public static RetainFragment findOrCreateRetainFragment(final FragmentManager fm) {
         // Check to see if we have retained the worker fragment
-        RetainFragment retainFragment = (RetainFragment)fm.findFragmentByTag(TAG);
+        RetainFragment retainFragment = (RetainFragment) fm.findFragmentByTag(TAG);
 
         // If not retained, we need to create and add it
         if (retainFragment == null) {
@@ -269,7 +254,7 @@ public final class ImageCache {
     /**
      * Adds a new image to the memory and disk caches
      *
-     * @param data The key used to store the image
+     * @param data   The key used to store the image
      * @param bitmap The {@link Bitmap} to cache
      */
     public void addBitmapToCache(final String data, final Bitmap bitmap) {
@@ -279,8 +264,8 @@ public final class ImageCache {
     /**
      * Adds a new image to the memory and disk caches
      *
-     * @param data The key used to store the image
-     * @param bitmap The {@link Bitmap} to cache
+     * @param data    The key used to store the image
+     * @param bitmap  The {@link Bitmap} to cache
      * @param replace force a replace even if the bitmap exists in the cache
      */
     public void addBitmapToCache(final String data, final Bitmap bitmap, final boolean replace) {
@@ -312,8 +297,6 @@ public final class ImageCache {
                     }
                 }
             } catch (final IOException e) {
-                Log.e(TAG, "addBitmapToCache", e);
-            } catch (final IllegalStateException e) {
                 // if the user clears the cache while we have an async task going we could try
                 // writing to the disk cache while it isn't ready. Catching here will silently
                 // fail instead
@@ -327,7 +310,7 @@ public final class ImageCache {
     /**
      * Called to add a new image to the memory cache
      *
-     * @param data The key identifier
+     * @param data   The key identifier
      * @param bitmap The {@link Bitmap} to cache
      */
     public void addBitmapToMemCache(final String data, final Bitmap bitmap) {
@@ -337,8 +320,8 @@ public final class ImageCache {
     /**
      * Called to add a new image to the memory cache
      *
-     * @param data The key identifier
-     * @param bitmap The {@link Bitmap} to cache
+     * @param data    The key identifier
+     * @param bitmap  The {@link Bitmap} to cache
      * @param replace whether to force a replace if it already exists
      */
     public void addBitmapToMemCache(final String data, final Bitmap bitmap, final boolean replace) {
@@ -358,16 +341,7 @@ public final class ImageCache {
      * @return The {@link Bitmap} if found in cache, null otherwise
      */
     public final Bitmap getBitmapFromMemCache(final String data) {
-        if (data == null) {
-            return null;
-        }
-        if (mLruCache != null) {
-            final Bitmap lruBitmap = mLruCache.get(data);
-            if (lruBitmap != null) {
-                return lruBitmap;
-            }
-        }
-        return null;
+        return (data == null || mLruCache == null) ? null : mLruCache.get(data);
     }
 
     /**
@@ -387,7 +361,6 @@ public final class ImageCache {
             return getBitmapFromMemCache(data);
         }
 
-        waitUntilUnpaused();
         final String key = hashKeyForDisk(data);
         if (mDiskCache != null) {
             InputStream inputStream = null;
@@ -438,8 +411,8 @@ public final class ImageCache {
      * calling {@code #getArtworkFromFile(Context, String)} again
      *
      * @param context The {@link Context} to use
-     * @param data The name of the album art
-     * @param id The ID of the album to find artwork for
+     * @param data    The name of the album art
+     * @param id      The ID of the album to find artwork for
      * @return The artwork for an album
      */
     public final Bitmap getCachedArtwork(final Context context, final String data, final long id) {
@@ -461,7 +434,7 @@ public final class ImageCache {
      * Used to fetch the artwork for an album locally from the user's device
      *
      * @param context The {@link Context} to use
-     * @param albumID The ID of the album to find artwork for
+     * @param albumId The ID of the album to find artwork for
      * @return The artwork for an album
      */
     public final Bitmap getArtworkFromFile(final Context context, final long albumId) {
@@ -469,7 +442,6 @@ public final class ImageCache {
             return null;
         }
         Bitmap artwork = null;
-        waitUntilUnpaused();
 
         ParcelFileDescriptor parcelFileDescriptor = null;
         try {
@@ -480,7 +452,7 @@ public final class ImageCache {
                 artwork = BitmapFactory.decodeFileDescriptor(fileDescriptor);
             }
         } catch (final IllegalStateException e) {
-            // Log.e(TAG, "IllegalStateExcetpion - getArtworkFromFile - ", e);
+            // Log.e(TAG, "IllegalStateException - getArtworkFromFile - ", e);
         } catch (final FileNotFoundException e) {
             // Log.e(TAG, "FileNotFoundException - getArtworkFromFile - ", e);
         } catch (final OutOfMemoryError evict) {
@@ -497,7 +469,7 @@ public final class ImageCache {
      * cache first
      */
     public void flush() {
-        ElevenUtils.execute(false, new AsyncTask<Void, Void, Void>() {
+        ElevenUtils.execute(new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(final Void... unused) {
@@ -519,7 +491,7 @@ public final class ImageCache {
      * Clears the disk and memory caches
      */
     public void clearCaches() {
-        ElevenUtils.execute(false, new AsyncTask<Void, Void, Void>() {
+        ElevenUtils.execute(new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(final Void... unused) {
@@ -545,7 +517,7 @@ public final class ImageCache {
      * thread.
      */
     public void close() {
-        ElevenUtils.execute(false, new AsyncTask<Void, Void, Void>() {
+        ElevenUtils.execute(new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(final Void... unused) {
@@ -599,79 +571,19 @@ public final class ImageCache {
     }
 
     /**
-     * Used to temporarily pause the disk cache while the user is scrolling to
-     * improve scrolling.
-     *
-     * @param pause True to temporarily pause the disk cache, false otherwise.
-     */
-    public void setPauseDiskCache(final boolean pause) {
-        synchronized (mPauseLock) {
-            if (mPauseDiskAccess != pause) {
-                mPauseDiskAccess = pause;
-                if (!pause) {
-                    mPauseLock.notify();
-
-                    for (ICacheListener listener : mListeners) {
-                        listener.onCacheUnpaused();
-                    }
-                }
-            }
-        }
-    }
-
-    private void waitUntilUnpaused() {
-        synchronized (mPauseLock) {
-            if (Looper.myLooper() != Looper.getMainLooper()) {
-                while (mPauseDiskAccess) {
-                    try {
-                        mPauseLock.wait();
-                    } catch (InterruptedException e) {
-                        // ignored, we'll start waiting again
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * @return True if the user is scrolling, false otherwise.
-     */
-    public boolean isDiskCachePaused() {
-        return mPauseDiskAccess;
-    }
-
-    public void addCacheListener(ICacheListener listener) {
-        mListeners.add(listener);
-    }
-
-    public void removeCacheListener(ICacheListener listener) {
-        mListeners.remove(listener);
-    }
-
-    /**
      * Get a usable cache directory (external if available, internal otherwise)
      *
-     * @param context The {@link Context} to use
+     * @param context    The {@link Context} to use
      * @param uniqueName A unique directory name to append to the cache
-     *            directory
+     *                   directory
      * @return The cache directory
      */
     public static File getDiskCacheDir(final Context context, final String uniqueName) {
         // getExternalCacheDir(context) returns null if external storage is not ready
         final String cachePath = getExternalCacheDir(context) != null
-                                    ? getExternalCacheDir(context).getPath()
-                                    : context.getCacheDir().getPath();
+                ? getExternalCacheDir(context).getPath()
+                : context.getCacheDir().getPath();
         return new File(cachePath, uniqueName);
-    }
-
-    /**
-     * Check if external storage is built-in or removable
-     *
-     * @return True if external storage is removable (like an SD card), false
-     *         otherwise
-     */
-    public static boolean isExternalStorageRemovable() {
-        return Environment.isExternalStorageRemovable();
     }
 
     /**
@@ -717,7 +629,7 @@ public final class ImageCache {
      *
      * @param bytes The bytes to convert.
      * @return A {@link String} converted from the bytes of a hashable key used
-     *         to store a filename on the disk, to hex digits.
+     * to store a filename on the disk, to hex digits.
      */
     private static String bytesToHexString(final byte[] bytes) {
         final StringBuilder builder = new StringBuilder();

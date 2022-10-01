@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2012 Andrew Neal
  * Copyright (C) 2014 The CyanogenMod Project
- * Copyright (C) 2018-2020 The LineageOS Project
+ * Copyright (C) 2018-2021 The LineageOS Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,22 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.lineageos.eleven.utils;
 
 import android.Manifest.permission;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.preference.PreferenceManager;
-
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import org.lineageos.eleven.R;
 import org.lineageos.eleven.ui.fragments.AlbumFragment;
 import org.lineageos.eleven.ui.fragments.ArtistFragment;
 import org.lineageos.eleven.ui.fragments.SongFragment;
@@ -44,20 +41,14 @@ import org.lineageos.eleven.ui.fragments.phone.MusicBrowserPhoneFragment;
  */
 public final class PreferenceUtils {
 
-    /* Default start page (Artist page) */
-    public static final int DEFFAULT_PAGE = 2;
+    // Default start page (Artist page)
+    public static final int DEFAULT_PAGE = 2;
 
-    /* Saves the last page the pager was on in {@link MusicBrowserPhoneFragment} */
+    // Saves the last page the pager was on in {@link MusicBrowserPhoneFragment}
     public static final String START_PAGE = "start_page";
 
     // Sort order for the artist list
     public static final String ARTIST_SORT_ORDER = "artist_sort_order";
-
-    // Sort order for the artist song list
-    public static final String ARTIST_SONG_SORT_ORDER = "artist_song_sort_order";
-
-    // Sort order for the artist album list
-    public static final String ARTIST_ALBUM_SORT_ORDER = "artist_album_sort_order";
 
     // Sort order for the album list
     public static final String ALBUM_SORT_ORDER = "album_sort_order";
@@ -67,18 +58,6 @@ public final class PreferenceUtils {
 
     // Sort order for the song list
     public static final String SONG_SORT_ORDER = "song_sort_order";
-
-    // Key used to download images only on Wi-Fi
-    public static final String ONLY_ON_WIFI = "only_on_wifi";
-
-    // Key that gives permissions to download missing album covers
-    public static final String DOWNLOAD_MISSING_ARTWORK = "download_missing_artwork";
-
-    // Key that gives permissions to download missing artist images
-    public static final String DOWNLOAD_MISSING_ARTIST_IMAGES = "download_missing_artist_images";
-
-    // Key used to set the overall theme color
-    public static final String DEFAULT_THEME_COLOR = "default_theme_color";
 
     // datetime cutoff for determining which songs go in last added playlist
     public static final String LAST_ADDED_CUTOFF = "last_added_cutoff";
@@ -95,7 +74,8 @@ public final class PreferenceUtils {
     // shake to play flag
     public static final String SHAKE_TO_PLAY = "shake_to_play";
 
-    private static final int PERMISSION_REQUEST_RECORD_AUDIO = 1;
+    public static final int PERMISSION_REQUEST_STORAGE = 1;
+    public static final int PERMISSION_REQUEST_RECORD_AUDIO = 2;
 
     private static PreferenceUtils sInstance;
 
@@ -114,7 +94,7 @@ public final class PreferenceUtils {
      * @param context The {@link Context} to use.
      * @return A singleton of this class
      */
-    public static final PreferenceUtils getInstance(final Context context) {
+    public static PreferenceUtils getInstance(final Context context) {
         if (sInstance == null) {
             sInstance = new PreferenceUtils(context.getApplicationContext());
         }
@@ -125,37 +105,27 @@ public final class PreferenceUtils {
      * Saves the current page the user is on when they close the app.
      *
      * @param value The last page the pager was on when the onDestroy is called
-     *            in {@link MusicBrowserPhoneFragment}.
+     *              in {@link MusicBrowserPhoneFragment}.
      */
     public void setStartPage(final int value) {
-        ElevenUtils.execute(false, new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(final Void... unused) {
-                final SharedPreferences.Editor editor = mPreferences.edit();
-                editor.putInt(START_PAGE, value);
-                editor.apply();
-
-                return null;
-            }
-        }, (Void[])null);
+        final SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putInt(START_PAGE, value);
+        editor.apply();
     }
 
     /**
      * Set the listener for preference change
-     * @param listener
      */
-    public void setOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener){
+    public void setOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
         mPreferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
     /**
      * Set the listener for preference change
-     * @param listener
      */
-    public void removeOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener){
+    public void removeOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
         mPreferences.unregisterOnSharedPreferenceChangeListener(listener);
     }
-
 
     /**
      * Returns the last page the user was on when the app was exited.
@@ -163,79 +133,19 @@ public final class PreferenceUtils {
      * @return The page to start on when the app is opened.
      */
     public final int getStartPage() {
-        return mPreferences.getInt(START_PAGE, DEFFAULT_PAGE);
-    }
-
-    /**
-     * Sets the new theme color.
-     *
-     * @param value The new theme color to use.
-     */
-    public void setDefaultThemeColor(final int value) {
-        ElevenUtils.execute(false, new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(final Void... unused) {
-                final SharedPreferences.Editor editor = mPreferences.edit();
-                editor.putInt(DEFAULT_THEME_COLOR, value);
-                editor.apply();
-
-                return null;
-            }
-        }, (Void[])null);
-    }
-
-    /**
-     * Returns the current theme color.
-     *
-     * @param context The {@link Context} to use.
-     * @return The default theme color.
-     */
-    public final int getDefaultThemeColor(final Context context) {
-        return mPreferences.getInt(DEFAULT_THEME_COLOR,
-                ContextCompat.getColor(context, R.color.blue));
-    }
-
-    /**
-     * @return True if the user has checked to only download images on Wi-Fi,
-     *         false otherwise
-     */
-    public final boolean onlyOnWifi() {
-        return mPreferences.getBoolean(ONLY_ON_WIFI, true);
-    }
-
-    /**
-     * @return True if the user has checked to download missing album covers,
-     *         false otherwise.
-     */
-    public final boolean downloadMissingArtwork() {
-        return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTWORK, true);
-    }
-
-    /**
-     * @return True if the user has checked to download missing artist images,
-     *         false otherwise.
-     */
-    public final boolean downloadMissingArtistImages() {
-        return mPreferences.getBoolean(DOWNLOAD_MISSING_ARTIST_IMAGES, true);
+        return mPreferences.getInt(START_PAGE, DEFAULT_PAGE);
     }
 
     /**
      * Saves the sort order for a list.
      *
-     * @param key Which sort order to change
+     * @param key   Which sort order to change
      * @param value The new sort order
      */
     private void setSortOrder(final String key, final String value) {
-        ElevenUtils.execute(false, new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(final Void... unused) {
-                final SharedPreferences.Editor editor = mPreferences.edit();
-                editor.putString(key, value);
-                editor.apply();
-
-                return null;
-            }
-        }, (Void[])null);
+        final SharedPreferences.Editor editor = mPreferences.edit();
+        editor.putString(key, value);
+        editor.apply();
     }
 
     /**
@@ -255,42 +165,6 @@ public final class PreferenceUtils {
     }
 
     /**
-     * Sets the sort order for the artist song list.
-     *
-     * @param value The new sort order
-     */
-    public void setArtistSongSortOrder(final String value) {
-        setSortOrder(ARTIST_SONG_SORT_ORDER, value);
-    }
-
-    /**
-     * @return The sort order used for the artist song list in
-     *         {@link ArtistDetailSongAdapter}
-     */
-    public final String getArtistSongSortOrder() {
-        return mPreferences.getString(ARTIST_SONG_SORT_ORDER,
-                SortOrder.ArtistSongSortOrder.SONG_A_Z);
-    }
-
-    /**
-     * Sets the sort order for the artist album list.
-     *
-     * @param value The new sort order
-     */
-    public void setArtistAlbumSortOrder(final String value) {
-        setSortOrder(ARTIST_ALBUM_SORT_ORDER, value);
-    }
-
-    /**
-     * @return The sort order used for the artist album list in
-     *         {@link org.lineageos.eleven.ui.fragments.ArtistDetailFragment}
-     */
-    public final String getArtistAlbumSortOrder() {
-        return mPreferences.getString(ARTIST_ALBUM_SORT_ORDER,
-                SortOrder.ArtistAlbumSortOrder.ALBUM_A_Z);
-    }
-
-    /**
      * Sets the sort order for the album list.
      *
      * @param value The new sort order
@@ -307,17 +181,8 @@ public final class PreferenceUtils {
     }
 
     /**
-     * Sets the sort order for the album song list.
-     *
-     * @param value The new sort order
-     */
-    public void setAlbumSongSortOrder(final String value) {
-        setSortOrder(ALBUM_SONG_SORT_ORDER, value);
-    }
-
-    /**
      * @return The sort order used for the album song in
-     *         {@link AlbumSongFragment}
+     * AlbumSongFragment
      */
     public final String getAlbumSongSortOrder() {
         return mPreferences.getString(ALBUM_SONG_SORT_ORDER,
@@ -340,7 +205,9 @@ public final class PreferenceUtils {
         return mPreferences.getString(SONG_SORT_ORDER, SortOrder.SongSortOrder.SONG_A_Z);
     }
 
-    /** @parm lastAddedMillis timestamp in millis used as a cutoff for last added playlist */
+    /**
+     * @param lastAddedMillis timestamp in millis used as a cutoff for last added playlist
+     */
     public void setLastAddedCutoff(long lastAddedMillis) {
         mPreferences.edit().putLong(LAST_ADDED_CUTOFF, lastAddedMillis).apply();
     }

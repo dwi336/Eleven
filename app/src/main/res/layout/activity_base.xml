@@ -2,7 +2,7 @@
 <!--
   Copyright (C) 2012 Andrew Neal
   Copyright (C) 2014 The CyanogenMod Project
-  Copyright (C) 2017-2019 The LineageOS Project
+  Copyright (C) 2017-2021 The LineageOS Project
   Copyright (C) 2019 SHIFT GmbH
 
   Licensed under the Apache License, Version 2.0 (the "License");
@@ -47,7 +47,8 @@
             android:layout_height="?android:attr/actionBarSize"
             android:elevation="@dimen/action_bar_elevation"
             app:theme="@style/ToolBarTheme"
-            app:popupTheme="@style/ToolBarPopupTheme" />
+            app:popupTheme="@style/ToolBarPopupTheme"
+            app:titleTextAppearance="@style/TextAppearance.Widget.Event.Toolbar.Title" />
 
     </FrameLayout>
 
@@ -64,7 +65,7 @@
         app:shadowHeight="@dimen/sliding_panel_shadow_height">
 
         <include
-            layout="@layout/blur_scrim_image"
+            layout="@layout/album_scrim_image"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
@@ -81,7 +82,8 @@
                 class="org.lineageos.eleven.ui.fragments.AudioPlayerFragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                tools:ignore="FragmentTagUsage" />
         </LinearLayout>
 
         <LinearLayout
@@ -96,12 +98,12 @@
                 android:orientation="vertical">
 
                 <ImageView
-                    android:id="@+id/secondPanelDragIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/sliding_panel_indicator_height"
                     android:layout_gravity="center_horizontal"
                     android:scaleType="centerInside"
-                    app:srcCompat="@drawable/drag_indicator" />
+                    app:srcCompat="@drawable/drag_indicator"
+                    android:contentDescription="@null" />
 
                 <include
                     android:id="@+id/secondHeaderBar"
@@ -113,7 +115,8 @@
                 class="org.lineageos.eleven.ui.fragments.QueueFragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1" />
+                android:layout_weight="1"
+                tools:ignore="FragmentTagUsage" />
         </LinearLayout>
     </org.lineageos.eleven.slidinguppanel.SlidingUpPanelLayout>
 </org.lineageos.eleven.slidinguppanel.SlidingUpPanelLayout>

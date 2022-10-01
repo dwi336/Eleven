@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Copyright (C) 2012 Andrew Neal
      Copyright (C) 2014 The CyanogenMod Project
-     Copyright (C) 2019 The LineageOS Project
+     Copyright (C) 2019-2021 The LineageOS Project
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -18,15 +18,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="org.lineageos.eleven"
-    android:versionCode="3"
-    android:versionName="3.0">
+    android:versionCode="410"
+    android:versionName="4.1.0"
+    tools:ignore="GradleOverrides">
 
+    <!-- Android Studio will complain about not being able to
+         resove the symbol, but it compiles with no problem.
+         Do not remove for as long as there are officially supported
+         devices that were supported in 14.1 -->
+    <!-- suppress AndroidElementNotAllowed -->
     <!-- Used for caching and creating new playlists -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- Used to check for a network connection -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!-- Used to download images -->
-    <uses-permission android:name="android.permission.INTERNET" />
     <!-- Used to keep the service running when the phone sleeps -->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <!-- The main service uses a sticky broadcast -->
@@ -34,13 +38,15 @@
     <!-- Lower or raise the music based on the phone state -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <!-- Used to set the devices's ringtone -->
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <!-- Used to create launcher shortcuts -->
     <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
     <!-- Allows Eleven to read from External Storage -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <!-- Allows Eleven to modify media files on external storage -->
-    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_MEDIA_STORAGE"
+        tools:ignore="ProtectedPermissions" />
 
     <!-- Audio Visualizer Permissions -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
@@ -56,6 +62,7 @@
         android:name="org.lineageos.eleven.ElevenApplication"
         android:allowBackup="true"
         android:allowTaskReparenting="true"
+        android:requestLegacyExternalStorage="true"
         android:hardwareAccelerated="@bool/config_hardwareAccelerated"
         android:appCategory="audio"
         android:icon="@mipmap/ic_launcher"
@@ -98,13 +105,15 @@
         <!-- Used to set options -->
         <activity
             android:name="org.lineageos.eleven.ui.activities.SettingsActivity"
+            android:exported="false"
             android:label="@string/menu_settings"
             android:theme="@style/Eleven.Theme.ActionBar.Overlay"/>
         <!-- Audio Preview -->
         <activity
             android:name=".ui.activities.preview.AudioPreviewActivity"
-            android:launchMode="singleTask"
             android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
             android:taskAffinity=""
             android:theme="@style/Theme.AudioPreview">
             <intent-filter>
@@ -182,13 +191,17 @@
                 android:resource="@xml/app_widget_large_alternate" />
         </receiver>
         <!-- Media button receiver -->
-        <receiver android:name="org.lineageos.eleven.MediaButtonIntentReceiver" >
+        <receiver
+            android:name="org.lineageos.eleven.MediaButtonIntentReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
         <!-- Used to recalculate sorting of songs based on the user's locale -->
-        <receiver android:name=".locale.LocaleChangeReceiver">
+        <receiver
+            android:name=".locale.LocaleChangeReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.LOCALE_CHANGED"/>
             </intent-filter>
@@ -196,8 +209,8 @@
         <!-- Music service -->
         <service
             android:name="org.lineageos.eleven.MusicPlaybackService"
+            android:exported="false"
             android:label="@string/app_name"
             android:process=":main" />
     </application>
-
 </manifest>

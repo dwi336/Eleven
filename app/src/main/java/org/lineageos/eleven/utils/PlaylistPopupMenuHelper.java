@@ -1,27 +1,28 @@
 /*
-* Copyright (C) 2014 The CyanogenMod Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-* http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
+ * Copyright (C) 2014 The CyanogenMod Project
+ * Copyright (C) 2021 The LineageOS Project
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.lineageos.eleven.utils;
 
 import android.app.Activity;
-import android.view.ViewGroup;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.view.ViewGroup;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
@@ -34,7 +35,8 @@ import org.lineageos.eleven.model.Playlist;
 public abstract class PlaylistPopupMenuHelper extends PopupMenuHelper {
     private Playlist mPlaylist;
 
-    public PlaylistPopupMenuHelper(Activity activity, FragmentManager fragmentManager, PopupMenuType type) {
+    public PlaylistPopupMenuHelper(Activity activity, FragmentManager fragmentManager,
+                                   PopupMenuType type) {
         super(activity, fragmentManager);
         mType = type;
     }
@@ -49,7 +51,9 @@ public abstract class PlaylistPopupMenuHelper extends PopupMenuHelper {
     }
 
     public void updateName(String name) {
-        if(mPlaylist != null) { mPlaylist.mPlaylistName = name; }
+        if (mPlaylist != null) {
+            mPlaylist.mPlaylistName = name;
+        }
     }
 
     @Override
@@ -65,11 +69,14 @@ public abstract class PlaylistPopupMenuHelper extends PopupMenuHelper {
     @Override
     protected long[] getIdList() {
         if (mPlaylist.isSmartPlaylist()) {
-            return MusicUtils.getSongListForSmartPlaylist(mActivity,
-                    SmartPlaylistType.getTypeById(getSourceId()));
+            final Config.SmartPlaylistType type = SmartPlaylistType.getTypeById(getSourceId());
+            if (type != null) {
+                return MusicUtils.getSongListForSmartPlaylist(mActivity, type);
+            }
         } else {
             return MusicUtils.getSongListForPlaylist(mActivity, getSourceId());
         }
+        return new long[0];
     }
 
     @Override
@@ -89,10 +96,10 @@ public abstract class PlaylistPopupMenuHelper extends PopupMenuHelper {
      * Create a new {@link AlertDialog} for easy playlist deletion
      *
      * @param playlistName The title of the playlist being deleted
-     * @param playlistId The ID of the playlist being deleted
+     * @param playlistId   The ID of the playlist being deleted
      * @return A new {@link AlertDialog} used to delete playlists
      */
-    private final AlertDialog buildDeleteDialog(final long playlistId, final String playlistName) {
+    private AlertDialog buildDeleteDialog(final long playlistId, final String playlistName) {
         return new AlertDialog.Builder(mActivity, R.style.AppCompatAlertDialogStyle)
                 .setTitle(mActivity.getString(R.string.delete_dialog_title, playlistName))
                 .setPositiveButton(R.string.context_menu_delete, new OnClickListener() {
